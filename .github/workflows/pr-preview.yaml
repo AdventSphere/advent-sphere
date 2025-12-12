@@ -16,11 +16,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 変更検出 & マトリックス生成
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      backend: ${{ steps.filter.outputs.backend }}
+      # 生成したJSONを次のジョブに渡す
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -36,7 +37,31 @@ jobs:
               - 'package.json'
               - 'bun.lock'
 
-# プレビュー作成
+      # ここが魔法のステップ！変更状況に応じてJSONを組み立てる
+      - name: Generate Matrix JSON
+        id: set-matrix
+        run: |
+          # 配列を初期化
+          entries=()
+          
+          # フロントエンドに変更があれば配列に追加
+          if [ "${{ steps.filter.outputs.frontend }}" == "true" ]; then
+            entries+=('{"name":"frontend","directory":"frontend"}')
+          fi
+          
+          # バックエンドに変更があれば配列に追加
+          if [ "${{ steps.filter.outputs.backend }}" == "true" ]; then
+            entries+=('{"name":"backend","directory":"backend"}')
+          fi
+          
+          # 配列をカンマ区切りで結合してJSON配列の文字列にする
+          # IFS (Internal Field Separator) を使ったテクニック
+          json_array="[$(IFS=,; echo "${entries[*]}")]"
+          
+          echo "Generated Matrix: $json_array"
+          echo "matrix=$json_array" >> $GITHUB_OUTPUT
+
+  # プレビュー作成
   preview:
     needs: detect-changes
     runs-on: ubuntu-latest
@@ -44,18 +69,14 @@ jobs:
       contents: read
       pull-requests: write
     
-    if: ${{ needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.backend == 'true' }}
+    # マトリックスが空（[]）ならジョブ自体をスキップ
+    if: needs.detect-changes.outputs.matrix != '[]'
+    
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - name: frontend
-            directory: frontend
-            changed: ${{ needs.detect-changes.outputs.frontend }}
-          - name: backend
-            directory: backend
-            changed: ${{ needs.detect-changes.outputs.backend }}
-        exclude:
-          - changed: 'false'
+        # 受け取ったJSONをそのままマトリックスとして展開
+        include: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
 
     steps:
       - name: Checkout code
