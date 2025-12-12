@@ -162,36 +162,56 @@ jobs:
             const prNumber = context.issue.number;
             
             let versions = [];
+            // Artifactの読み込み（変更なし）
             if (fs.existsSync('/tmp/preview-info')) {
-                const artifactDirs = fs.readdirSync('/tmp/preview-info');
-                for (const dir of artifactDirs) {
-                  const filePath = `/tmp/preview-info/${dir}/versions.txt`;
-                  if (fs.existsSync(filePath)) {
-                    const content = fs.readFileSync(filePath, 'utf8');
-                    const lines = content.trim().split('\n');
-                    for (const line of lines) {
-                      const [name, alias, versionId, previewUrl] = line.split('|');
-                      versions.push({ name, alias, versionId, previewUrl });
-                    }
+                const files = fs.readdirSync('/tmp/preview-info', { recursive: true });
+                for (const file of files) {
+                  if (file.endsWith('versions.txt')) {
+                     const content = fs.readFileSync(`/tmp/preview-info/${file}`, 'utf8');
+                     const lines = content.trim().split('\n');
+                     for (const line of lines) {
+                        if (!line) continue;
+                        const [name, alias, versionId, previewUrl] = line.split('|');
+                        versions.push({ name, alias, versionId, previewUrl });
+                     }
                   }
                 }
             }
             
-            if (versions.length === 0) return;
-            
-            let commentBody = `## 🔍 Preview Deployments\n\n`;
-            commentBody += `**Branch:** \`${{ github.head_ref }}\`\n`;
-            commentBody += `**Commit:** ${context.sha.substring(0, 7)}\n\n`;
-            
-            for (const { name, alias, versionId, previewUrl } of versions) {
-              commentBody += `### ${name}\n`;
-              commentBody += `- **URL:** ${previewUrl}\n`;
-              commentBody += `- **Alias (Tag):** \`${alias}\`\n`;
-              commentBody += `- **Version ID:** \`${versionId}\`\n\n`;
+            if (versions.length === 0) {
+                console.log("No preview versions found.");
+                return;
             }
             
-            commentBody += `> 💡 This URL shows the version tagged with \`${versions[0].alias}\`.\n`;
-            commentBody += `<sub>Updated at ${new Date().toISOString()}</sub>`;
+            // --- デザイン構築 ---
+            
+            const date = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+            
+            // タイトル
+            let commentBody = `### 🚀 Deploy Preview Ready!\n\n`;
+            
+            // ヘッダー行
+            commentBody += `| Application | Status | URL | Version ID |\n`;
+            commentBody += `| :--- | :---: | :--- | :--- |\n`;
+            
+            // データ行
+            for (const { name, versionId, previewUrl } of versions) {
+              // 名前でアイコンを出し分け（必要ならキーワード調整してください）
+              const icon = name.includes('front') ? '🎨' : '⚙️';
+              const displayName = `**${name}**`;
+              const shortId = versionId.substring(0, 8); // ID短縮
+              
+              commentBody += `| ${icon} ${displayName} | ✅ Ready | [**Open Preview**](${previewUrl}) | \`${shortId}\` |\n`;
+            }
+            
+            commentBody += `\n`;
+
+            // フッター（コミット情報と時刻）
+            commentBody += `--- \n`;
+            commentBody += `> 🔨 **Latest Commit:** [${context.sha.substring(0, 7)}](${context.payload.pull_request.html_url}/commits/${context.sha})  \n`;
+            commentBody += `> 📅 **Deployed at:** ${date} (JST)`;
+            
+            // --- 投稿処理 ---
             
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -199,9 +219,10 @@ jobs:
               issue_number: prNumber,
             });
             
+            // 以前のコメントを探す（タイトルで検索）
             const botComment = comments.find(comment => 
               comment.user.type === 'Bot' && 
-              comment.body.includes('🔍 Preview Deployments')
+              (comment.body.includes('🚀 Deploy Preview Ready!') || comment.body.includes('🔍 Preview Deployments'))
             );
             
             if (botComment) {
