@@ -1,0 +1,23 @@
+{
+  "name": "advent-sphere",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "bun --filter '*' dev",
+    "build": "bun --filter '*' build",
+    "test": "bun --filter '*' test",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint . --write",
+    "format": "biome format .",
+    "format:fix": "biome format . --write",
+    "check": "biome check .",
+    "check:fix": "biome check . --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8"
+  }
+}

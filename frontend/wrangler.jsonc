@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "advent-sphere-app",
+  "compatibility_date": "2025-12-11",
+  "account_id": "259795a4f86aa24b889a53adf82d697a",
+  "assets": {
+    "not_found_handling": "single-page-application"
+  }
+}
