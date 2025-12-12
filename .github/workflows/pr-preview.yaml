@@ -118,7 +118,7 @@ jobs:
           echo "Deploying version with preview-alias: $alias"
           
           # 3. バージョンのアップロード (--preview-alias を指定することでプレビューURLが有効化される)
-          output=$(bunx wrangler versions upload --preview-alias "$alias" --message "PR #${{ github.event.pull_request.number }} - ${{ matrix.name }}")
+          output=$(bun run --filter ${{ matrix.name }} upload --preview-alias "$alias" --message "PR #${{ github.event.pull_request.number }} - ${{ matrix.name }}")
           echo "$output"
           
           # 4. バージョンID抽出

@@ -7,7 +7,8 @@
     "build": "vite build && tsc",
     "preview": "vite preview",
     "test": "vitest run",
-    "deploy": "bun run build && wrangler deploy"
+    "deploy": "bun run build && wrangler deploy",
+    "upload": "bun run build && wrangler versions upload"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
