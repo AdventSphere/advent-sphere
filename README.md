@@ -17,10 +17,10 @@ bun dev
 
 ## 開発
 ### フロントエンド
-[frontend/README.md](./packages/frontend/README.md)
+[frontend/README.md](./frontend/README.md)
 
 ### バックエンド
-[backend/README.md](./packages/backend/README.md)
+[backend/README.md](./backend/README.md)
 
 ## biome
 
