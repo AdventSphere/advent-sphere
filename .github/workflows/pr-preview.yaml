@@ -106,13 +106,11 @@ jobs:
           # 2. Worker名とサブドメインを取得
           worker_name=$(grep -oP '"name":\s*"\K[^"]+' wrangler.jsonc)
           
-          # wrangler whoami からサブドメインを取得（"Your workers.dev subdomain: xyz" の行を探す）
-          # ※ grepが失敗しないように || echo "unknown" をつける
-          subdomain=$(bunx wrangler whoami | grep 'workers.dev subdomain' | cut -d: -f2 | tr -d ' ' || echo "")
+          subdomain="${{ vars.CLOUDFLARE_SUBDOMAIN }}"
           
-          # サブドメインが取れなかった場合のフォールバック（環境変数で渡すことも検討してください）
           if [ -z "$subdomain" ]; then
-             echo "::warning::Could not fetch workers.dev subdomain. URL construction might fail."
+             echo "::error::Variable CLOUDFLARE_SUBDOMAIN is not set."
+             exit 1
           fi
 
           echo "Deploying version with preview-alias: $alias"
