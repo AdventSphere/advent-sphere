@@ -28,7 +28,7 @@ bun run test
 ## ルーティング
 
 - ルートは `src/routes/` ディレクトリにファイルを追加するだけで自動生成される
-- レイアウトは `src/routes/__root.tsx` で設定
+  - `bun run dev`で実行中にファイルを作る
 - ページ間移動は `<Link to="/path">` を使用
 
 ## Shadcn コンポーネント追加
