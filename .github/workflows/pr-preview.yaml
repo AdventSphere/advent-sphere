@@ -16,11 +16,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 変更検出 & マトリックス生成
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      backend: ${{ steps.filter.outputs.backend }}
+      # 生成したJSONを次のジョブに渡す
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -36,7 +37,31 @@ jobs:
               - 'package.json'
               - 'bun.lock'
 
-# プレビュー作成
+      # ここが魔法のステップ！変更状況に応じてJSONを組み立てる
+      - name: Generate Matrix JSON
+        id: set-matrix
+        run: |
+          # 配列を初期化
+          entries=()
+          
+          # フロントエンドに変更があれば配列に追加
+          if [ "${{ steps.filter.outputs.frontend }}" == "true" ]; then
+            entries+=('{"name":"frontend","directory":"frontend"}')
+          fi
+          
+          # バックエンドに変更があれば配列に追加
+          if [ "${{ steps.filter.outputs.backend }}" == "true" ]; then
+            entries+=('{"name":"backend","directory":"backend"}')
+          fi
+          
+          # 配列をカンマ区切りで結合してJSON配列の文字列にする
+          # IFS (Internal Field Separator) を使ったテクニック
+          json_array="[$(IFS=,; echo "${entries[*]}")]"
+          
+          echo "Generated Matrix: $json_array"
+          echo "matrix=$json_array" >> $GITHUB_OUTPUT
+
+  # プレビュー作成
   preview:
     needs: detect-changes
     runs-on: ubuntu-latest
@@ -44,18 +69,14 @@ jobs:
       contents: read
       pull-requests: write
     
-    if: ${{ needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.backend == 'true' }}
+    # マトリックスが空（[]）ならジョブ自体をスキップ
+    if: needs.detect-changes.outputs.matrix != '[]'
+    
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - name: frontend
-            directory: frontend
-            changed: ${{ needs.detect-changes.outputs.frontend }}
-          - name: backend
-            directory: backend
-            changed: ${{ needs.detect-changes.outputs.backend }}
-        exclude:
-          - changed: 'false'
+        # 受け取ったJSONをそのままマトリックスとして展開
+        include: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
 
     steps:
       - name: Checkout code
@@ -83,27 +104,25 @@ jobs:
           echo "alias=$alias" >> $GITHUB_OUTPUT
           
           # 2. Worker名とサブドメインを取得
-          worker_name=$(grep -oP '"name":\s*"\K[^"]+' wrangler.json)
+          worker_name=$(grep -oP '"name":\s*"\K[^"]+' wrangler.jsonc)
           
-          # wrangler whoami からサブドメインを取得（"Your workers.dev subdomain: xyz" の行を探す）
-          # ※ grepが失敗しないように || echo "unknown" をつける
-          subdomain=$(bunx wrangler whoami | grep 'workers.dev subdomain' | cut -d: -f2 | tr -d ' ' || echo "")
+          subdomain="${{ vars.CLOUDFLARE_SUBDOMAIN }}"
           
-          # サブドメインが取れなかった場合のフォールバック（環境変数で渡すことも検討してください）
           if [ -z "$subdomain" ]; then
-             echo "::warning::Could not fetch workers.dev subdomain. URL construction might fail."
+             echo "::error::Variable CLOUDFLARE_SUBDOMAIN is not set."
+             exit 1
           fi
 
           echo "Deploying version with preview-alias: $alias"
           
           # 3. バージョンのアップロード (--preview-alias を指定することでプレビューURLが有効化される)
-          output=$(bunx wrangler versions upload --preview-alias "$alias" --message "PR #${{ github.event.pull_request.number }} - ${{ matrix.name }}")
+          output=$(bun run --filter ${{ matrix.name }} upload --preview-alias "$alias" --message "PR #${{ github.event.pull_request.number }} - ${{ matrix.name }}")
           echo "$output"
           
           # 4. バージョンID抽出
           version_id=$(echo "$output" | grep -oP 'Version ID: \K[a-f0-9-]+' || echo "unknown")
           
-          # 5. URL構築: https://<tag>-<worker-name>.<subdomain>.workers.dev
+          # 5. URL構築: https://<branch-name>-<worker-name>.<subdomain>.workers.dev
           if [ -n "$subdomain" ]; then
             preview_url="https://${alias}-${worker_name}.${subdomain}.workers.dev"
           else
@@ -143,36 +162,56 @@ jobs:
             const prNumber = context.issue.number;
             
             let versions = [];
+            // Artifactの読み込み（変更なし）
             if (fs.existsSync('/tmp/preview-info')) {
-                const artifactDirs = fs.readdirSync('/tmp/preview-info');
-                for (const dir of artifactDirs) {
-                  const filePath = `/tmp/preview-info/${dir}/versions.txt`;
-                  if (fs.existsSync(filePath)) {
-                    const content = fs.readFileSync(filePath, 'utf8');
-                    const lines = content.trim().split('\n');
-                    for (const line of lines) {
-                      const [name, alias, versionId, previewUrl] = line.split('|');
-                      versions.push({ name, alias, versionId, previewUrl });
-                    }
+                const files = fs.readdirSync('/tmp/preview-info', { recursive: true });
+                for (const file of files) {
+                  if (file.endsWith('versions.txt')) {
+                     const content = fs.readFileSync(`/tmp/preview-info/${file}`, 'utf8');
+                     const lines = content.trim().split('\n');
+                     for (const line of lines) {
+                        if (!line) continue;
+                        const [name, alias, versionId, previewUrl] = line.split('|');
+                        versions.push({ name, alias, versionId, previewUrl });
+                     }
                   }
                 }
             }
             
-            if (versions.length === 0) return;
-            
-            let commentBody = `## 🔍 Preview Deployments\n\n`;
-            commentBody += `**Branch:** \`${{ github.head_ref }}\`\n`;
-            commentBody += `**Commit:** ${context.sha.substring(0, 7)}\n\n`;
-            
-            for (const { name, alias, versionId, previewUrl } of versions) {
-              commentBody += `### ${name}\n`;
-              commentBody += `- **URL:** ${previewUrl}\n`;
-              commentBody += `- **Alias (Tag):** \`${alias}\`\n`;
-              commentBody += `- **Version ID:** \`${versionId}\`\n\n`;
+            if (versions.length === 0) {
+                console.log("No preview versions found.");
+                return;
             }
             
-            commentBody += `> 💡 This URL shows the version tagged with \`${versions[0].alias}\`.\n`;
-            commentBody += `<sub>Updated at ${new Date().toISOString()}</sub>`;
+            // --- デザイン構築 ---
+            
+            const date = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+            
+            // タイトル
+            let commentBody = `### 🚀 Deploy Preview Ready!\n\n`;
+            
+            // ヘッダー行
+            commentBody += `| Application | Status | URL | Version ID |\n`;
+            commentBody += `| :--- | :---: | :--- | :--- |\n`;
+            
+            // データ行
+            for (const { name, versionId, previewUrl } of versions) {
+              // 名前でアイコンを出し分け（必要ならキーワード調整してください）
+              const icon = name.includes('front') ? '🎨' : '⚙️';
+              const displayName = `**${name}**`;
+              const shortId = versionId.substring(0, 8); // ID短縮
+              
+              commentBody += `| ${icon} ${displayName} | ✅ Ready | [**Open Preview**](${previewUrl}) | \`${shortId}\` |\n`;
+            }
+            
+            commentBody += `\n`;
+
+            // フッター（コミット情報と時刻）
+            commentBody += `--- \n`;
+            commentBody += `> 🔨 **Latest Commit:** [${context.sha.substring(0, 7)}](${context.payload.pull_request.html_url}/commits/${context.sha})  \n`;
+            commentBody += `> 📅 **Deployed at:** ${date} (JST)`;
+            
+            // --- 投稿処理 ---
             
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -180,9 +219,10 @@ jobs:
               issue_number: prNumber,
             });
             
+            // 以前のコメントを探す（タイトルで検索）
             const botComment = comments.find(comment => 
               comment.user.type === 'Bot' && 
-              comment.body.includes('🔍 Preview Deployments')
+              (comment.body.includes('🚀 Deploy Preview Ready!') || comment.body.includes('🔍 Preview Deployments'))
             );
             
             if (botComment) {

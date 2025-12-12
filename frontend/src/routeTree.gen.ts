@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as R3dSampleRouteImport } from './routes/3d-sample'
 import { Route as IndexRouteImport } from './routes/index'
 
+const R3dSampleRoute = R3dSampleRouteImport.update({
+  id: '/3d-sample',
+  path: '/3d-sample',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +25,39 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/3d-sample': typeof R3dSampleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/3d-sample': typeof R3dSampleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/3d-sample': typeof R3dSampleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/3d-sample'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/3d-sample'
+  id: '__root__' | '/' | '/3d-sample'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R3dSampleRoute: typeof R3dSampleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/3d-sample': {
+      id: '/3d-sample'
+      path: '/3d-sample'
+      fullPath: '/3d-sample'
+      preLoaderRoute: typeof R3dSampleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R3dSampleRoute: R3dSampleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
