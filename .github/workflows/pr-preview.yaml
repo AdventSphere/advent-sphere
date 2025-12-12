@@ -36,12 +36,15 @@ jobs:
               - 'package.json'
               - 'bun.lock'
 
+# プレビュー作成
   preview:
     needs: detect-changes
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
+    
+    if: ${{ needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.backend == 'true' }}
     strategy:
       matrix:
         include:
@@ -51,7 +54,9 @@ jobs:
           - name: backend
             directory: backend
             changed: ${{ needs.detect-changes.outputs.backend }}
-    if: matrix.changed == 'true'
+        exclude:
+          - changed: 'false'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
