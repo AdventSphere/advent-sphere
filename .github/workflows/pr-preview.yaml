@@ -104,7 +104,7 @@ jobs:
           echo "alias=$alias" >> $GITHUB_OUTPUT
           
           # 2. Worker名とサブドメインを取得
-          worker_name=$(grep -oP '"name":\s*"\K[^"]+' wrangler.json)
+          worker_name=$(grep -oP '"name":\s*"\K[^"]+' wrangler.jsonc)
           
           # wrangler whoami からサブドメインを取得（"Your workers.dev subdomain: xyz" の行を探す）
           # ※ grepが失敗しないように || echo "unknown" をつける
@@ -124,7 +124,7 @@ jobs:
           # 4. バージョンID抽出
           version_id=$(echo "$output" | grep -oP 'Version ID: \K[a-f0-9-]+' || echo "unknown")
           
-          # 5. URL構築: https://<tag>-<worker-name>.<subdomain>.workers.dev
+          # 5. URL構築: https://<branch-name>-<worker-name>.<subdomain>.workers.dev
           if [ -n "$subdomain" ]; then
             preview_url="https://${alias}-${worker_name}.${subdomain}.workers.dev"
           else
