@@ -5,5 +5,7 @@
   "account_id": "259795a4f86aa24b889a53adf82d697a",
   "assets": {
     "not_found_handling": "single-page-application"
-  }
+  },
+  "preview_urls": true,
+  "workers_dev": true,
 }

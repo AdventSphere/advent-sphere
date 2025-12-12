@@ -1,0 +1,197 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - "package.json"
+      - "bun.lock"
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+              - 'package.json'
+              - 'bun.lock'
+            backend:
+              - 'backend/**'
+              - 'package.json'
+              - 'bun.lock'
+
+  preview:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    strategy:
+      matrix:
+        include:
+          - name: frontend
+            directory: frontend
+            changed: ${{ needs.detect-changes.outputs.frontend }}
+          - name: backend
+            directory: backend
+            changed: ${{ needs.detect-changes.outputs.backend }}
+    if: matrix.changed == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.3
+      
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      
+      - name: Upload Preview Version
+        id: preview
+        working-directory: ${{ matrix.directory }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          # 1. ブランチ名からエイリアス（タグ）を生成
+          branch_name="${{ github.head_ref }}"
+          # Cloudflareのタグ仕様に合わせてサニタイズ（英数字とハイフンのみ、63文字以内）
+          alias=$(echo "$branch_name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/^-+\|-+$//g' | cut -c1-63)
+          echo "alias=$alias" >> $GITHUB_OUTPUT
+          
+          # 2. Worker名とサブドメインを取得
+          worker_name=$(grep -oP '"name":\s*"\K[^"]+' wrangler.json)
+          
+          # wrangler whoami からサブドメインを取得（"Your workers.dev subdomain: xyz" の行を探す）
+          # ※ grepが失敗しないように || echo "unknown" をつける
+          subdomain=$(bunx wrangler whoami | grep 'workers.dev subdomain' | cut -d: -f2 | tr -d ' ' || echo "")
+          
+          # サブドメインが取れなかった場合のフォールバック（環境変数で渡すことも検討してください）
+          if [ -z "$subdomain" ]; then
+             echo "::warning::Could not fetch workers.dev subdomain. URL construction might fail."
+          fi
+
+          echo "Deploying version with preview-alias: $alias"
+          
+          # 3. バージョンのアップロード (--preview-alias を指定することでプレビューURLが有効化される)
+          output=$(bunx wrangler versions upload --preview-alias "$alias" --message "PR #${{ github.event.pull_request.number }} - ${{ matrix.name }}")
+          echo "$output"
+          
+          # 4. バージョンID抽出
+          version_id=$(echo "$output" | grep -oP 'Version ID: \K[a-f0-9-]+' || echo "unknown")
+          
+          # 5. URL構築: https://<tag>-<worker-name>.<subdomain>.workers.dev
+          if [ -n "$subdomain" ]; then
+            preview_url="https://${alias}-${worker_name}.${subdomain}.workers.dev"
+          else
+            preview_url="unknown (check logs)"
+          fi
+          
+          echo "version_id=$version_id" >> $GITHUB_OUTPUT
+          echo "preview_url=$preview_url" >> $GITHUB_OUTPUT
+      
+      - name: Save version info
+        run: |
+          mkdir -p /tmp/preview-info
+          echo "${{ matrix.name }}|${{ steps.preview.outputs.alias }}|${{ steps.preview.outputs.version_id }}|${{ steps.preview.outputs.preview_url }}" >> /tmp/preview-info/versions.txt
+      
+      - name: Upload version info
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-versions-${{ matrix.name }}
+          path: /tmp/preview-info/versions.txt
+
+  comment:
+    needs: preview
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Download all version info
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/preview-info
+      
+      - name: Create preview comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const prNumber = context.issue.number;
+            
+            let versions = [];
+            if (fs.existsSync('/tmp/preview-info')) {
+                const artifactDirs = fs.readdirSync('/tmp/preview-info');
+                for (const dir of artifactDirs) {
+                  const filePath = `/tmp/preview-info/${dir}/versions.txt`;
+                  if (fs.existsSync(filePath)) {
+                    const content = fs.readFileSync(filePath, 'utf8');
+                    const lines = content.trim().split('\n');
+                    for (const line of lines) {
+                      const [name, alias, versionId, previewUrl] = line.split('|');
+                      versions.push({ name, alias, versionId, previewUrl });
+                    }
+                  }
+                }
+            }
+            
+            if (versions.length === 0) return;
+            
+            let commentBody = `## 🔍 Preview Deployments\n\n`;
+            commentBody += `**Branch:** \`${{ github.head_ref }}\`\n`;
+            commentBody += `**Commit:** ${context.sha.substring(0, 7)}\n\n`;
+            
+            for (const { name, alias, versionId, previewUrl } of versions) {
+              commentBody += `### ${name}\n`;
+              commentBody += `- **URL:** ${previewUrl}\n`;
+              commentBody += `- **Alias (Tag):** \`${alias}\`\n`;
+              commentBody += `- **Version ID:** \`${versionId}\`\n\n`;
+            }
+            
+            commentBody += `> 💡 This URL shows the version tagged with \`${versions[0].alias}\`.\n`;
+            commentBody += `<sub>Updated at ${new Date().toISOString()}</sub>`;
+            
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🔍 Preview Deployments')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+            }
