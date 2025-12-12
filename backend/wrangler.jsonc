@@ -3,10 +3,8 @@
   "name": "advent-sphere-backend",
   "main": "src/index.ts",
   "account_id": "259795a4f86aa24b889a53adf82d697a",
-  "compatibility_date": "2025-12-11"
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
+  "compatibility_date": "2025-12-11",
+  "compatibility_flags": ["nodejs_compat"],
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
@@ -22,13 +20,13 @@
   //     "bucket_name": "my-bucket"
   //   }
   // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "advent-sphere",
+      "database_id": "55c3cd49-0ef0-467a-9ef0-9211df2d78e2"
+    }
+  ]
   // "ai": {
   //   "binding": "AI"
   // },
