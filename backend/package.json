@@ -5,9 +5,12 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "upload": "wrangler versions upload",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@types/node": "^25.0.1",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.10.8"
