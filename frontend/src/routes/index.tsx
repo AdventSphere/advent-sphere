@@ -1,13 +1,25 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   component: App,
 });
 
 function App() {
+  const navigate = useNavigate();
+
   return (
-    <main className="w-full min-h-svh">
-      <h1>Hello World</h1>
+    <main className="w-full min-h-svh flex items-center bg-[color:var(--secondary)] text-[color:var(--primary)]">
+      <div className="w-full flex flex-col justify-center items-center">
+        <h1 className="text-4xl font-extrabold" >Advent Sphere</h1>
+        <h3 className="mt-2">アドベントスフィア</h3>
+        <Button
+          className="mt-8"
+          onClick={() => navigate({ to: "/new" })}
+        >
+          新しい部屋を作る
+        </Button>
+      </div>
     </main>
   );
 }
