@@ -11,6 +11,7 @@
     "remote:migrate": "wrangler d1 migrations apply advent-sphere"
   },
   "dependencies": {
+    "@google/genai": "^1.33.0",
     "@hono/standard-validator": "^0.2.0",
     "@hono/zod-openapi": "^1.1.5",
     "@scalar/hono-api-reference": "^0.9.28",
