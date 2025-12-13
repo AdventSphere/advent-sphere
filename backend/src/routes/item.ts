@@ -3,11 +3,7 @@ import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 import { env } from "cloudflare:workers";
 
-const uploadFunction = (
-  object: File,
-  path: string,
-  fileName: string,
-) => {
+const uploadFunction = (object: File, path: string, fileName: string) => {
   const key = `${path}/${fileName}`;
   return env.BUCKET.put(key, object);
 };
