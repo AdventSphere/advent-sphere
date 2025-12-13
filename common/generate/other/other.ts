@@ -5,24 +5,110 @@
  * OpenAPI spec version: 1.0.0
  */
 
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import * as axios from "axios";
-
+import type {
+  MutationFunction,
+  UseMutationOptions,
+  UseMutationResult,
+} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { axiosInstance } from "../../axios-instance";
 import type {
   CreatePhotoRequest,
   CreatePhotoResponse,
 } from "../adventSphereAPI.schemas";
 
+type AwaitedInput<T> = PromiseLike<T> | T;
+
+type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 /**
  * 新しい写真を作成します。
  * @summary 写真の作成
  */
-export const postOtherCreatePhoto = <
-  TData = AxiosResponse<CreatePhotoResponse>,
->(
+export const postOtherCreatePhoto = (
   createPhotoRequest: CreatePhotoRequest,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.post(`/other/createPhoto`, createPhotoRequest, options);
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<CreatePhotoResponse>(
+    {
+      url: `/other/createPhoto`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createPhotoRequest,
+      signal,
+    },
+    options,
+  );
 };
-export type PostOtherCreatePhotoResult = AxiosResponse<CreatePhotoResponse>;
+
+export const getPostOtherCreatePhotoMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+    TError,
+    { data: CreatePhotoRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+  TError,
+  { data: CreatePhotoRequest },
+  TContext
+> => {
+  const mutationKey = ["postOtherCreatePhoto"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+    { data: CreatePhotoRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postOtherCreatePhoto(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostOtherCreatePhotoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postOtherCreatePhoto>>
+>;
+export type PostOtherCreatePhotoMutationBody = CreatePhotoRequest;
+export type PostOtherCreatePhotoMutationError = unknown;
+
+/**
+ * @summary 写真の作成
+ */
+export const usePostOtherCreatePhoto = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+    TError,
+    { data: CreatePhotoRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+  TError,
+  { data: CreatePhotoRequest },
+  TContext
+> => {
+  const mutationOptions = getPostOtherCreatePhotoMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};

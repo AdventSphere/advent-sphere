@@ -5,9 +5,17 @@
  * OpenAPI spec version: 1.0.0
  */
 
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import * as axios from "axios";
-
+import type {
+  MutationFunction,
+  QueryFunction,
+  QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "../../axios-instance";
 import type {
   CreateRoom,
   CreateRoomResponse,
@@ -15,48 +23,346 @@ import type {
   UpdateRoom,
 } from "../adventSphereAPI.schemas";
 
+type AwaitedInput<T> = PromiseLike<T> | T;
+
+type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 /**
  * 新しいルームを作成します。
  * @summary ルームの作成
  */
-export const postRooms = <TData = AxiosResponse<CreateRoomResponse>>(
+export const postRooms = (
   createRoom: CreateRoom,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.post(`/rooms`, createRoom, options);
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<CreateRoomResponse>(
+    {
+      url: `/rooms`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createRoom,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getPostRoomsMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postRooms>>,
+    TError,
+    { data: CreateRoom },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postRooms>>,
+  TError,
+  { data: CreateRoom },
+  TContext
+> => {
+  const mutationKey = ["postRooms"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postRooms>>,
+    { data: CreateRoom }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postRooms(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostRoomsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postRooms>>
+>;
+export type PostRoomsMutationBody = CreateRoom;
+export type PostRoomsMutationError = unknown;
+
+/**
+ * @summary ルームの作成
+ */
+export const usePostRooms = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postRooms>>,
+    TError,
+    { data: CreateRoom },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof postRooms>>,
+  TError,
+  { data: CreateRoom },
+  TContext
+> => {
+  const mutationOptions = getPostRoomsMutationOptions(options);
+
+  return useMutation(mutationOptions);
 };
 /**
  * ルームIDを指定してルーム情報を取得します。
  * @summary ルーム情報の取得
  */
-export const getRoomsId = <TData = AxiosResponse<Room>>(
+export const getRoomsId = (
   id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.get(`/rooms/${id}`, options);
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<Room>(
+    { url: `/rooms/${id}`, method: "GET", signal },
+    options,
+  );
 };
+
+export const getGetRoomsIdQueryKey = (id?: string) => {
+  return [`/rooms/${id}`] as const;
+};
+
+export const getGetRoomsIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRoomsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRoomsId>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetRoomsIdQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRoomsId>>> = ({
+    signal,
+  }) => getRoomsId(id, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRoomsId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetRoomsIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRoomsId>>
+>;
+export type GetRoomsIdQueryError = void;
+
+/**
+ * @summary ルーム情報の取得
+ */
+
+export function useGetRoomsId<
+  TData = Awaited<ReturnType<typeof getRoomsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRoomsId>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetRoomsIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * ルームIDを指定してルームを削除します。
  * @summary ルームの削除
  */
-export const deleteRoomsId = <TData = AxiosResponse<void>>(
+export const deleteRoomsId = (
   id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.delete(`/rooms/${id}`, options);
+  options?: SecondParameter<typeof axiosInstance>,
+) => {
+  return axiosInstance<void>(
+    { url: `/rooms/${id}`, method: "DELETE" },
+    options,
+  );
+};
+
+export const getDeleteRoomsIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteRoomsId>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteRoomsId>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["deleteRoomsId"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteRoomsId>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteRoomsId(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteRoomsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteRoomsId>>
+>;
+
+export type DeleteRoomsIdMutationError = void;
+
+/**
+ * @summary ルームの削除
+ */
+export const useDeleteRoomsId = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteRoomsId>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteRoomsId>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions = getDeleteRoomsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
 };
 /**
  * ルームIDを指定してルーム情報を更新します。
  * @summary ルーム情報の更新
  */
-export const patchRoomsId = <TData = AxiosResponse<Room>>(
+export const patchRoomsId = (
   id: string,
   updateRoom: UpdateRoom,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.patch(`/rooms/${id}`, updateRoom, options);
+  options?: SecondParameter<typeof axiosInstance>,
+) => {
+  return axiosInstance<Room>(
+    {
+      url: `/rooms/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: updateRoom,
+    },
+    options,
+  );
 };
-export type PostRoomsResult = AxiosResponse<CreateRoomResponse>;
-export type GetRoomsIdResult = AxiosResponse<Room>;
-export type DeleteRoomsIdResult = AxiosResponse<void>;
-export type PatchRoomsIdResult = AxiosResponse<Room>;
+
+export const getPatchRoomsIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchRoomsId>>,
+    TError,
+    { id: string; data: UpdateRoom },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchRoomsId>>,
+  TError,
+  { id: string; data: UpdateRoom },
+  TContext
+> => {
+  const mutationKey = ["patchRoomsId"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchRoomsId>>,
+    { id: string; data: UpdateRoom }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return patchRoomsId(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PatchRoomsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchRoomsId>>
+>;
+export type PatchRoomsIdMutationBody = UpdateRoom;
+export type PatchRoomsIdMutationError = void;
+
+/**
+ * @summary ルーム情報の更新
+ */
+export const usePatchRoomsId = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchRoomsId>>,
+    TError,
+    { id: string; data: UpdateRoom },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof patchRoomsId>>,
+  TError,
+  { id: string; data: UpdateRoom },
+  TContext
+> => {
+  const mutationOptions = getPatchRoomsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};

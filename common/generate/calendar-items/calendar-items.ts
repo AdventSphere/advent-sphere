@@ -5,9 +5,17 @@
  * OpenAPI spec version: 1.0.0
  */
 
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import * as axios from "axios";
-
+import type {
+  MutationFunction,
+  QueryFunction,
+  QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "../../axios-instance";
 import type {
   CalendarItem,
   CreateCalendarItemRequest,
@@ -16,76 +24,409 @@ import type {
   PatchCalendarItemRequest,
 } from "../adventSphereAPI.schemas";
 
+type AwaitedInput<T> = PromiseLike<T> | T;
+
+type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 /**
  * すべてのカレンダーアイテムを取得します。
  * @summary カレンダーアイテム一覧の取得
  */
-export const getCalendarItemsRoomIdCalendarItems = <
-  TData = AxiosResponse<CalendarItem[]>,
+export const getCalendarItemsRoomIdCalendarItems = (
+  roomId: string,
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<CalendarItem[]>(
+    { url: `/calendarItems/${roomId}/calendarItems`, method: "GET", signal },
+    options,
+  );
+};
+
+export const getGetCalendarItemsRoomIdCalendarItemsQueryKey = (
+  roomId?: string,
+) => {
+  return [`/calendarItems/${roomId}/calendarItems`] as const;
+};
+
+export const getGetCalendarItemsRoomIdCalendarItemsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+  TError = unknown,
 >(
   roomId: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.get(`/calendarItems/${roomId}/calendarItems`, options);
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetCalendarItemsRoomIdCalendarItemsQueryKey(roomId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>
+  > = ({ signal }) =>
+    getCalendarItemsRoomIdCalendarItems(roomId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!roomId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
 };
+
+export type GetCalendarItemsRoomIdCalendarItemsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>
+>;
+export type GetCalendarItemsRoomIdCalendarItemsQueryError = unknown;
+
+/**
+ * @summary カレンダーアイテム一覧の取得
+ */
+
+export function useGetCalendarItemsRoomIdCalendarItems<
+  TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+  TError = unknown,
+>(
+  roomId: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCalendarItemsRoomIdCalendarItemsQueryOptions(
+    roomId,
+    options,
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * 新しいカレンダーアイテムを作成します。
  * @summary カレンダーアイテムの作成
  */
-export const postCalendarItemsRoomIdCalendarItems = <
-  TData = AxiosResponse<CreateCalendarItemResponse>,
->(
+export const postCalendarItemsRoomIdCalendarItems = (
   roomId: string,
   createCalendarItemRequest: CreateCalendarItemRequest,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.post(
-    `/calendarItems/${roomId}/calendarItems`,
-    createCalendarItemRequest,
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<CreateCalendarItemResponse>(
+    {
+      url: `/calendarItems/${roomId}/calendarItems`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createCalendarItemRequest,
+      signal,
+    },
     options,
   );
+};
+
+export const getPostCalendarItemsRoomIdCalendarItemsMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
+    TError,
+    { roomId: string; data: CreateCalendarItemRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
+  TError,
+  { roomId: string; data: CreateCalendarItemRequest },
+  TContext
+> => {
+  const mutationKey = ["postCalendarItemsRoomIdCalendarItems"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
+    { roomId: string; data: CreateCalendarItemRequest }
+  > = (props) => {
+    const { roomId, data } = props ?? {};
+
+    return postCalendarItemsRoomIdCalendarItems(roomId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostCalendarItemsRoomIdCalendarItemsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>
+>;
+export type PostCalendarItemsRoomIdCalendarItemsMutationBody =
+  CreateCalendarItemRequest;
+export type PostCalendarItemsRoomIdCalendarItemsMutationError = unknown;
+
+/**
+ * @summary カレンダーアイテムの作成
+ */
+export const usePostCalendarItemsRoomIdCalendarItems = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
+    TError,
+    { roomId: string; data: CreateCalendarItemRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
+  TError,
+  { roomId: string; data: CreateCalendarItemRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getPostCalendarItemsRoomIdCalendarItemsMutationOptions(options);
+
+  return useMutation(mutationOptions);
 };
 /**
  * 指定したIDのカレンダーアイテムを削除します。
  * @summary カレンダーアイテムの削除
  */
-export const deleteCalendarItemsRoomIdCalendarItemsId = <
-  TData = AxiosResponse<void>,
->(
+export const deleteCalendarItemsRoomIdCalendarItemsId = (
   roomId: string,
   id: string,
   deleteCalendarItemsRoomIdCalendarItemsIdBody: DeleteCalendarItemsRoomIdCalendarItemsIdBody,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.delete(`/calendarItems/${roomId}/calendarItems/${id}`, {
-    data: deleteCalendarItemsRoomIdCalendarItemsIdBody,
-    ...options,
-  });
+  options?: SecondParameter<typeof axiosInstance>,
+) => {
+  return axiosInstance<void>(
+    {
+      url: `/calendarItems/${roomId}/calendarItems/${id}`,
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      data: deleteCalendarItemsRoomIdCalendarItemsIdBody,
+    },
+    options,
+  );
+};
+
+export const getDeleteCalendarItemsRoomIdCalendarItemsIdMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
+    TError,
+    {
+      roomId: string;
+      id: string;
+      data: DeleteCalendarItemsRoomIdCalendarItemsIdBody;
+    },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
+  TError,
+  {
+    roomId: string;
+    id: string;
+    data: DeleteCalendarItemsRoomIdCalendarItemsIdBody;
+  },
+  TContext
+> => {
+  const mutationKey = ["deleteCalendarItemsRoomIdCalendarItemsId"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
+    {
+      roomId: string;
+      id: string;
+      data: DeleteCalendarItemsRoomIdCalendarItemsIdBody;
+    }
+  > = (props) => {
+    const { roomId, id, data } = props ?? {};
+
+    return deleteCalendarItemsRoomIdCalendarItemsId(
+      roomId,
+      id,
+      data,
+      requestOptions,
+    );
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteCalendarItemsRoomIdCalendarItemsIdMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>
+  >;
+export type DeleteCalendarItemsRoomIdCalendarItemsIdMutationBody =
+  DeleteCalendarItemsRoomIdCalendarItemsIdBody;
+export type DeleteCalendarItemsRoomIdCalendarItemsIdMutationError = unknown;
+
+/**
+ * @summary カレンダーアイテムの削除
+ */
+export const useDeleteCalendarItemsRoomIdCalendarItemsId = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
+    TError,
+    {
+      roomId: string;
+      id: string;
+      data: DeleteCalendarItemsRoomIdCalendarItemsIdBody;
+    },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
+  TError,
+  {
+    roomId: string;
+    id: string;
+    data: DeleteCalendarItemsRoomIdCalendarItemsIdBody;
+  },
+  TContext
+> => {
+  const mutationOptions =
+    getDeleteCalendarItemsRoomIdCalendarItemsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
 };
 /**
  * 指定したIDのカレンダーアイテム情報を更新します。
  * @summary カレンダーアイテムの更新
  */
-export const patchCalendarItemsRoomIdCalendarItemsId = <
-  TData = AxiosResponse<CalendarItem>,
->(
+export const patchCalendarItemsRoomIdCalendarItemsId = (
   roomId: string,
   id: string,
   patchCalendarItemRequest: PatchCalendarItemRequest,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.patch(
-    `/calendarItems/${roomId}/calendarItems/${id}`,
-    patchCalendarItemRequest,
+  options?: SecondParameter<typeof axiosInstance>,
+) => {
+  return axiosInstance<CalendarItem>(
+    {
+      url: `/calendarItems/${roomId}/calendarItems/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: patchCalendarItemRequest,
+    },
     options,
   );
 };
-export type GetCalendarItemsRoomIdCalendarItemsResult = AxiosResponse<
-  CalendarItem[]
+
+export const getPatchCalendarItemsRoomIdCalendarItemsIdMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
+    TError,
+    { roomId: string; id: string; data: PatchCalendarItemRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
+  TError,
+  { roomId: string; id: string; data: PatchCalendarItemRequest },
+  TContext
+> => {
+  const mutationKey = ["patchCalendarItemsRoomIdCalendarItemsId"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
+    { roomId: string; id: string; data: PatchCalendarItemRequest }
+  > = (props) => {
+    const { roomId, id, data } = props ?? {};
+
+    return patchCalendarItemsRoomIdCalendarItemsId(
+      roomId,
+      id,
+      data,
+      requestOptions,
+    );
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PatchCalendarItemsRoomIdCalendarItemsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>
 >;
-export type PostCalendarItemsRoomIdCalendarItemsResult =
-  AxiosResponse<CreateCalendarItemResponse>;
-export type DeleteCalendarItemsRoomIdCalendarItemsIdResult =
-  AxiosResponse<void>;
-export type PatchCalendarItemsRoomIdCalendarItemsIdResult =
-  AxiosResponse<CalendarItem>;
+export type PatchCalendarItemsRoomIdCalendarItemsIdMutationBody =
+  PatchCalendarItemRequest;
+export type PatchCalendarItemsRoomIdCalendarItemsIdMutationError = unknown;
+
+/**
+ * @summary カレンダーアイテムの更新
+ */
+export const usePatchCalendarItemsRoomIdCalendarItemsId = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
+    TError,
+    { roomId: string; id: string; data: PatchCalendarItemRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
+  TError,
+  { roomId: string; id: string; data: PatchCalendarItemRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getPatchCalendarItemsRoomIdCalendarItemsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};

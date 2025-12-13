@@ -5,9 +5,17 @@
  * OpenAPI spec version: 1.0.0
  */
 
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import * as axios from "axios";
-
+import type {
+  MutationFunction,
+  QueryFunction,
+  QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "../../axios-instance";
 import type {
   CreateItem,
   CreateItemResponse,
@@ -15,60 +23,346 @@ import type {
   UpdateItem,
 } from "../adventSphereAPI.schemas";
 
+type AwaitedInput<T> = PromiseLike<T> | T;
+
+type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 /**
  * すべてのアイテムを取得します。
  * @summary アイテム一覧の取得
  */
-export const getItems = <TData = AxiosResponse<Item[]>>(
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.get(`/items`, options);
+export const getItems = (
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<Item[]>(
+    { url: `/items`, method: "GET", signal },
+    options,
+  );
 };
+
+export const getGetItemsQueryKey = () => {
+  return [`/items`] as const;
+};
+
+export const getGetItemsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getItems>>,
+  TError = unknown,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>;
+  request?: SecondParameter<typeof axiosInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetItemsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getItems>>> = ({
+    signal,
+  }) => getItems(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getItems>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetItemsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getItems>>
+>;
+export type GetItemsQueryError = unknown;
+
+/**
+ * @summary アイテム一覧の取得
+ */
+
+export function useGetItems<
+  TData = Awaited<ReturnType<typeof getItems>>,
+  TError = unknown,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetItemsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * 新しいアイテムを作成します。
  * @summary アイテムの作成
  */
-export const postItems = <TData = AxiosResponse<CreateItemResponse>>(
+export const postItems = (
   createItem: CreateItem,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
   const formData = new FormData();
   formData.append(`name`, createItem.name);
   formData.append(`description`, createItem.description);
   formData.append(`type`, createItem.type);
   formData.append(`objectFile`, createItem.objectFile);
 
-  return axios.default.post(`/items`, formData, options);
+  return axiosInstance<CreateItemResponse>(
+    {
+      url: `/items`,
+      method: "POST",
+      headers: { "Content-Type": "multipart/form-data" },
+      data: formData,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getPostItemsMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postItems>>,
+    TError,
+    { data: CreateItem },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postItems>>,
+  TError,
+  { data: CreateItem },
+  TContext
+> => {
+  const mutationKey = ["postItems"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postItems>>,
+    { data: CreateItem }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postItems(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostItemsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postItems>>
+>;
+export type PostItemsMutationBody = CreateItem;
+export type PostItemsMutationError = unknown;
+
+/**
+ * @summary アイテムの作成
+ */
+export const usePostItems = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postItems>>,
+    TError,
+    { data: CreateItem },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof postItems>>,
+  TError,
+  { data: CreateItem },
+  TContext
+> => {
+  const mutationOptions = getPostItemsMutationOptions(options);
+
+  return useMutation(mutationOptions);
 };
 /**
  * アイテムIDを指定してアイテムを取得します。
  * @summary アイテムの取得
  */
-export const getItemsId = <TData = AxiosResponse<Item>>(
+export const getItemsId = (
   id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.get(`/items/${id}`, options);
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<Item>(
+    { url: `/items/${id}`, method: "GET", signal },
+    options,
+  );
 };
+
+export const getGetItemsIdQueryKey = (id?: string) => {
+  return [`/items/${id}`] as const;
+};
+
+export const getGetItemsIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getItemsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getItemsId>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetItemsIdQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getItemsId>>> = ({
+    signal,
+  }) => getItemsId(id, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getItemsId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetItemsIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getItemsId>>
+>;
+export type GetItemsIdQueryError = void;
+
+/**
+ * @summary アイテムの取得
+ */
+
+export function useGetItemsId<
+  TData = Awaited<ReturnType<typeof getItemsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getItemsId>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetItemsIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * アイテムIDを指定してアイテムを削除します。
  * @summary アイテムの削除
  */
-export const deleteItemsId = <TData = AxiosResponse<void>>(
+export const deleteItemsId = (
   id: string,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
-  return axios.default.delete(`/items/${id}`, options);
+  options?: SecondParameter<typeof axiosInstance>,
+) => {
+  return axiosInstance<void>(
+    { url: `/items/${id}`, method: "DELETE" },
+    options,
+  );
+};
+
+export const getDeleteItemsIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteItemsId>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteItemsId>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["deleteItemsId"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteItemsId>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteItemsId(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteItemsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteItemsId>>
+>;
+
+export type DeleteItemsIdMutationError = void;
+
+/**
+ * @summary アイテムの削除
+ */
+export const useDeleteItemsId = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteItemsId>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteItemsId>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationOptions = getDeleteItemsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
 };
 /**
  * アイテムIDを指定してアイテム情報を更新します。
  * @summary アイテムの更新
  */
-export const patchItemsId = <TData = AxiosResponse<Item>>(
+export const patchItemsId = (
   id: string,
   updateItem: UpdateItem,
-  options?: AxiosRequestConfig,
-): Promise<TData> => {
+  options?: SecondParameter<typeof axiosInstance>,
+) => {
   const formData = new FormData();
   if (updateItem.name !== undefined) {
     formData.append(`name`, updateItem.name);
@@ -83,10 +377,79 @@ export const patchItemsId = <TData = AxiosResponse<Item>>(
     formData.append(`objectFile`, updateItem.objectFile);
   }
 
-  return axios.default.patch(`/items/${id}`, formData, options);
+  return axiosInstance<Item>(
+    {
+      url: `/items/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "multipart/form-data" },
+      data: formData,
+    },
+    options,
+  );
 };
-export type GetItemsResult = AxiosResponse<Item[]>;
-export type PostItemsResult = AxiosResponse<CreateItemResponse>;
-export type GetItemsIdResult = AxiosResponse<Item>;
-export type DeleteItemsIdResult = AxiosResponse<void>;
-export type PatchItemsIdResult = AxiosResponse<Item>;
+
+export const getPatchItemsIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchItemsId>>,
+    TError,
+    { id: string; data: UpdateItem },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchItemsId>>,
+  TError,
+  { id: string; data: UpdateItem },
+  TContext
+> => {
+  const mutationKey = ["patchItemsId"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchItemsId>>,
+    { id: string; data: UpdateItem }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return patchItemsId(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PatchItemsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchItemsId>>
+>;
+export type PatchItemsIdMutationBody = UpdateItem;
+export type PatchItemsIdMutationError = void;
+
+/**
+ * @summary アイテムの更新
+ */
+export const usePatchItemsId = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchItemsId>>,
+    TError,
+    { id: string; data: UpdateItem },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof patchItemsId>>,
+  TError,
+  { id: string; data: UpdateItem },
+  TContext
+> => {
+  const mutationOptions = getPatchItemsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};

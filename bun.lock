@@ -29,6 +29,7 @@
     "common": {
       "name": "common",
       "dependencies": {
+        "@tanstack/react-query": "^5.90.12",
         "axios": "^1.13.2",
       },
       "devDependencies": {
