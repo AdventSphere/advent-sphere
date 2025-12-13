@@ -1,0 +1,23 @@
+{
+  "name": "common",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "generate-openapi": "tsx scripts/generate-openapi.ts",
+    "generate:api": "bun run generate-openapi && orval"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "orval": "^7.17.0",
+    "tsx": "^4.21.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.12",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3"
+  }
+}

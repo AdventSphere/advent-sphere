@@ -4,7 +4,8 @@
   "private": true,
   "workspaces": [
     "frontend",
-    "backend"
+    "backend",
+    "common"
   ],
   "scripts": {
     "dev": "bun --filter '*' dev",
