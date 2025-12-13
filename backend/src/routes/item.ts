@@ -1,7 +1,8 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { env } from "cloudflare:workers";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
-import { env } from "cloudflare:workers";
 
 const uploadFunction = (object: File, path: string, fileName: string) => {
   const key = `${path}/${fileName}`;
@@ -142,6 +143,18 @@ const createItemRoute = createRoute({
         },
       },
     },
+    500: {
+      description: "アイテムの作成またはファイルのアップロードに失敗しました",
+      content: {
+        "application/json": {
+          schema: z
+            .object({
+              error: z.string(),
+            })
+            .openapi("CreateItemError"),
+        },
+      },
+    },
   },
 });
 
@@ -236,16 +249,28 @@ app.openapi(createItemRoute, async (c) => {
       type,
     })
     .returning();
-  await uploadFunction(
-    objectFile,
-    `item/object/${type}`,
-    `${result[0].id}.${objectFile.name.split(".").pop()}`,
-  );
-  await uploadFunction(
-    objectThumbnail,
-    `item/thumbnail/${type}`,
-    `${result[0].id}.${objectThumbnail.name.split(".").pop()}`,
-  );
+  if (result.length === 0) {
+    return c.json({ error: "アイテムの作成に失敗しました" }, 500);
+  }
+  try {
+    await Promise.all([
+      uploadFunction(
+        objectFile,
+        `item/object/${type}`,
+        `${result[0].id}.${objectFile.name.split(".").pop()}`,
+      ),
+      uploadFunction(
+        objectThumbnail,
+        `item/thumbnail/${type}`,
+        `${result[0].id}.${objectThumbnail.name.split(".").pop()}`,
+      ),
+    ]);
+  } catch (e) {
+    await db
+      .delete(schema.itemTable)
+      .where(eq(schema.itemTable.id, result[0].id));
+    return c.json({ error: `ファイルのアップロードに失敗しました．${e}` }, 500);
+  }
 
   const newItemResponse = {
     id: result[0].id,
