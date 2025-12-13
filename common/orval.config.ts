@@ -2,7 +2,7 @@ import { defineConfig } from "orval";
 
 export default defineConfig({
   "petstore-file": {
-    input: "./generate/openapi.json",
+    input: "./openapi.json",
     output: {
       biome: true,
       target: "./generate",
