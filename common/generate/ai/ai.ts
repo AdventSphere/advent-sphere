@@ -30,14 +30,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * 新しい写真を作成します。
  * @summary 写真の作成
  */
-export const postOtherCreatePhoto = (
+export const postAiCreatePhoto = (
   createPhotoRequest: CreatePhotoRequest,
   options?: SecondParameter<typeof axiosInstance>,
   signal?: AbortSignal,
 ) => {
   return axiosInstance<CreatePhotoResponse>(
     {
-      url: `/other/createPhoto`,
+      url: `/ai/createPhoto`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: createPhotoRequest,
@@ -47,24 +47,24 @@ export const postOtherCreatePhoto = (
   );
 };
 
-export const getPostOtherCreatePhotoMutationOptions = <
+export const getPostAiCreatePhotoMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+    Awaited<ReturnType<typeof postAiCreatePhoto>>,
     TError,
     { data: CreatePhotoRequest },
     TContext
   >;
   request?: SecondParameter<typeof axiosInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+  Awaited<ReturnType<typeof postAiCreatePhoto>>,
   TError,
   { data: CreatePhotoRequest },
   TContext
 > => {
-  const mutationKey = ["postOtherCreatePhoto"];
+  const mutationKey = ["postAiCreatePhoto"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -74,30 +74,30 @@ export const getPostOtherCreatePhotoMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+    Awaited<ReturnType<typeof postAiCreatePhoto>>,
     { data: CreatePhotoRequest }
   > = (props) => {
     const { data } = props ?? {};
 
-    return postOtherCreatePhoto(data, requestOptions);
+    return postAiCreatePhoto(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostOtherCreatePhotoMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postOtherCreatePhoto>>
+export type PostAiCreatePhotoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAiCreatePhoto>>
 >;
-export type PostOtherCreatePhotoMutationBody = CreatePhotoRequest;
-export type PostOtherCreatePhotoMutationError = unknown;
+export type PostAiCreatePhotoMutationBody = CreatePhotoRequest;
+export type PostAiCreatePhotoMutationError = unknown;
 
 /**
  * @summary 写真の作成
  */
-export const usePostOtherCreatePhoto = <TError = unknown, TContext = unknown>(
+export const usePostAiCreatePhoto = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+      Awaited<ReturnType<typeof postAiCreatePhoto>>,
       TError,
       { data: CreatePhotoRequest },
       TContext
@@ -106,12 +106,12 @@ export const usePostOtherCreatePhoto = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+  Awaited<ReturnType<typeof postAiCreatePhoto>>,
   TError,
   { data: CreatePhotoRequest },
   TContext
 > => {
-  const mutationOptions = getPostOtherCreatePhotoMutationOptions(options);
+  const mutationOptions = getPostAiCreatePhotoMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
@@ -119,14 +119,14 @@ export const usePostOtherCreatePhoto = <TError = unknown, TContext = unknown>(
  * AIを用いて写真プロンプトを生成します。
  * @summary AIを用いて写真プロンプトを生成する
  */
-export const postOtherCreatePrompt = (
+export const postAiCreatePrompt = (
   createPromptRequest: CreatePromptRequest,
   options?: SecondParameter<typeof axiosInstance>,
   signal?: AbortSignal,
 ) => {
   return axiosInstance<CreatePromptResponse>(
     {
-      url: `/other/createPrompt`,
+      url: `/ai/createPrompt`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: createPromptRequest,
@@ -136,24 +136,24 @@ export const postOtherCreatePrompt = (
   );
 };
 
-export const getPostOtherCreatePromptMutationOptions = <
+export const getPostAiCreatePromptMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+    Awaited<ReturnType<typeof postAiCreatePrompt>>,
     TError,
     { data: CreatePromptRequest },
     TContext
   >;
   request?: SecondParameter<typeof axiosInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+  Awaited<ReturnType<typeof postAiCreatePrompt>>,
   TError,
   { data: CreatePromptRequest },
   TContext
 > => {
-  const mutationKey = ["postOtherCreatePrompt"];
+  const mutationKey = ["postAiCreatePrompt"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -163,30 +163,30 @@ export const getPostOtherCreatePromptMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+    Awaited<ReturnType<typeof postAiCreatePrompt>>,
     { data: CreatePromptRequest }
   > = (props) => {
     const { data } = props ?? {};
 
-    return postOtherCreatePrompt(data, requestOptions);
+    return postAiCreatePrompt(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostOtherCreatePromptMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postOtherCreatePrompt>>
+export type PostAiCreatePromptMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAiCreatePrompt>>
 >;
-export type PostOtherCreatePromptMutationBody = CreatePromptRequest;
-export type PostOtherCreatePromptMutationError = unknown;
+export type PostAiCreatePromptMutationBody = CreatePromptRequest;
+export type PostAiCreatePromptMutationError = unknown;
 
 /**
  * @summary AIを用いて写真プロンプトを生成する
  */
-export const usePostOtherCreatePrompt = <TError = unknown, TContext = unknown>(
+export const usePostAiCreatePrompt = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+      Awaited<ReturnType<typeof postAiCreatePrompt>>,
       TError,
       { data: CreatePromptRequest },
       TContext
@@ -195,12 +195,12 @@ export const usePostOtherCreatePrompt = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+  Awaited<ReturnType<typeof postAiCreatePrompt>>,
   TError,
   { data: CreatePromptRequest },
   TContext
 > => {
-  const mutationOptions = getPostOtherCreatePromptMutationOptions(options);
+  const mutationOptions = getPostAiCreatePromptMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

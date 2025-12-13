@@ -4,7 +4,7 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 const createPhotoRoute = createRoute({
   method: "post",
   path: "/createPhoto",
-  tags: ["Other"],
+  tags: ["AI"],
   summary: "写真の作成",
   description: "新しい写真を作成します。",
   request: {
@@ -45,7 +45,7 @@ const createPhotoRoute = createRoute({
 const createPromptRoute = createRoute({
   method: "post",
   path: "/createPrompt",
-  tags: ["Other"],
+  tags: ["AI"],
   summary: "AIを用いて写真プロンプトを生成する",
   description: "AIを用いて写真プロンプトを生成します。",
   request: {

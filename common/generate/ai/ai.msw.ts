@@ -13,21 +13,21 @@ import type {
   CreatePromptResponse,
 } from "../adventSphereAPI.schemas";
 
-export const getPostOtherCreatePhotoResponseMock = (
+export const getPostAiCreatePhotoResponseMock = (
   overrideResponse: Partial<CreatePhotoResponse> = {},
 ): CreatePhotoResponse => ({
   imageData: faker.string.alpha({ length: { min: 10, max: 20 } }),
   ...overrideResponse,
 });
 
-export const getPostOtherCreatePromptResponseMock = (
+export const getPostAiCreatePromptResponseMock = (
   overrideResponse: Partial<CreatePromptResponse> = {},
 ): CreatePromptResponse => ({
   prompt: faker.string.alpha({ length: { min: 10, max: 20 } }),
   ...overrideResponse,
 });
 
-export const getPostOtherCreatePhotoMockHandler = (
+export const getPostAiCreatePhotoMockHandler = (
   overrideResponse?:
     | CreatePhotoResponse
     | ((
@@ -36,7 +36,7 @@ export const getPostOtherCreatePhotoMockHandler = (
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
-    "*/other/createPhoto",
+    "*/ai/createPhoto",
     async (info) => {
       await delay(1000);
 
@@ -46,7 +46,7 @@ export const getPostOtherCreatePhotoMockHandler = (
             ? typeof overrideResponse === "function"
               ? await overrideResponse(info)
               : overrideResponse
-            : getPostOtherCreatePhotoResponseMock(),
+            : getPostAiCreatePhotoResponseMock(),
         ),
         { status: 201, headers: { "Content-Type": "application/json" } },
       );
@@ -55,7 +55,7 @@ export const getPostOtherCreatePhotoMockHandler = (
   );
 };
 
-export const getPostOtherCreatePromptMockHandler = (
+export const getPostAiCreatePromptMockHandler = (
   overrideResponse?:
     | CreatePromptResponse
     | ((
@@ -64,7 +64,7 @@ export const getPostOtherCreatePromptMockHandler = (
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
-    "*/other/createPrompt",
+    "*/ai/createPrompt",
     async (info) => {
       await delay(1000);
 
@@ -74,7 +74,7 @@ export const getPostOtherCreatePromptMockHandler = (
             ? typeof overrideResponse === "function"
               ? await overrideResponse(info)
               : overrideResponse
-            : getPostOtherCreatePromptResponseMock(),
+            : getPostAiCreatePromptResponseMock(),
         ),
         { status: 200, headers: { "Content-Type": "application/json" } },
       );
@@ -82,7 +82,7 @@ export const getPostOtherCreatePromptMockHandler = (
     options,
   );
 };
-export const getOtherMock = () => [
-  getPostOtherCreatePhotoMockHandler(),
-  getPostOtherCreatePromptMockHandler(),
+export const getAiMock = () => [
+  getPostAiCreatePhotoMockHandler(),
+  getPostAiCreatePromptMockHandler(),
 ];
