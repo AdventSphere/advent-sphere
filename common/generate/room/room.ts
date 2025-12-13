@@ -6,9 +6,14 @@
  */
 
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -97,15 +102,18 @@ export type PostRoomsMutationError = unknown;
 /**
  * @summary ルームの作成
  */
-export const usePostRooms = <TError = unknown, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postRooms>>,
-    TError,
-    { data: CreateRoom },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+export const usePostRooms = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postRooms>>,
+      TError,
+      { data: CreateRoom },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof postRooms>>,
   TError,
   { data: CreateRoom },
@@ -113,7 +121,7 @@ export const usePostRooms = <TError = unknown, TContext = unknown>(options?: {
 > => {
   const mutationOptions = getPostRoomsMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 /**
  * ルームIDを指定してルーム情報を取得します。
@@ -140,10 +148,8 @@ export const getGetRoomsIdQueryOptions = <
 >(
   id: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRoomsId>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
     >;
     request?: SecondParameter<typeof axiosInstance>;
   },
@@ -165,7 +171,7 @@ export const getGetRoomsIdQueryOptions = <
     Awaited<ReturnType<typeof getRoomsId>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetRoomsIdQueryResult = NonNullable<
@@ -173,6 +179,67 @@ export type GetRoomsIdQueryResult = NonNullable<
 >;
 export type GetRoomsIdQueryError = void;
 
+export function useGetRoomsId<
+  TData = Awaited<ReturnType<typeof getRoomsId>>,
+  TError = void,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRoomsId>>,
+          TError,
+          Awaited<ReturnType<typeof getRoomsId>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetRoomsId<
+  TData = Awaited<ReturnType<typeof getRoomsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRoomsId>>,
+          TError,
+          Awaited<ReturnType<typeof getRoomsId>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetRoomsId<
+  TData = Awaited<ReturnType<typeof getRoomsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary ルーム情報の取得
  */
@@ -183,19 +250,21 @@ export function useGetRoomsId<
 >(
   id: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getRoomsId>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
     >;
     request?: SecondParameter<typeof axiosInstance>;
   },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions = getGetRoomsIdQueryOptions(id, options);
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
@@ -263,15 +332,18 @@ export type DeleteRoomsIdMutationError = void;
 /**
  * @summary ルームの削除
  */
-export const useDeleteRoomsId = <TError = void, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteRoomsId>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+export const useDeleteRoomsId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteRoomsId>>,
+      TError,
+      { id: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof deleteRoomsId>>,
   TError,
   { id: string },
@@ -279,7 +351,7 @@ export const useDeleteRoomsId = <TError = void, TContext = unknown>(options?: {
 > => {
   const mutationOptions = getDeleteRoomsIdMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 /**
  * ルームIDを指定してルーム情報を更新します。
@@ -348,15 +420,18 @@ export type PatchRoomsIdMutationError = void;
 /**
  * @summary ルーム情報の更新
  */
-export const usePatchRoomsId = <TError = void, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchRoomsId>>,
-    TError,
-    { id: string; data: UpdateRoom },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+export const usePatchRoomsId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchRoomsId>>,
+      TError,
+      { id: string; data: UpdateRoom },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof patchRoomsId>>,
   TError,
   { id: string; data: UpdateRoom },
@@ -364,5 +439,5 @@ export const usePatchRoomsId = <TError = void, TContext = unknown>(options?: {
 > => {
   const mutationOptions = getPatchRoomsIdMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };

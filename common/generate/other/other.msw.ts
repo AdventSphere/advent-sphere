@@ -8,12 +8,22 @@ import { faker } from "@faker-js/faker";
 import type { RequestHandlerOptions } from "msw";
 import { delay, HttpResponse, http } from "msw";
 
-import type { CreatePhotoResponse } from "../adventSphereAPI.schemas";
+import type {
+  CreatePhotoResponse,
+  CreatePromptResponse,
+} from "../adventSphereAPI.schemas";
 
 export const getPostOtherCreatePhotoResponseMock = (
   overrideResponse: Partial<CreatePhotoResponse> = {},
 ): CreatePhotoResponse => ({
   imageData: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  ...overrideResponse,
+});
+
+export const getPostOtherCreatePromptResponseMock = (
+  overrideResponse: Partial<CreatePromptResponse> = {},
+): CreatePromptResponse => ({
+  prompt: faker.string.alpha({ length: { min: 10, max: 20 } }),
   ...overrideResponse,
 });
 
@@ -44,4 +54,35 @@ export const getPostOtherCreatePhotoMockHandler = (
     options,
   );
 };
-export const getOtherMock = () => [getPostOtherCreatePhotoMockHandler()];
+
+export const getPostOtherCreatePromptMockHandler = (
+  overrideResponse?:
+    | CreatePromptResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<CreatePromptResponse> | CreatePromptResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    "*/other/createPrompt",
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === "function"
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getPostOtherCreatePromptResponseMock(),
+        ),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+    },
+    options,
+  );
+};
+export const getOtherMock = () => [
+  getPostOtherCreatePhotoMockHandler(),
+  getPostOtherCreatePromptMockHandler(),
+];

@@ -7,6 +7,7 @@
 
 import type {
   MutationFunction,
+  QueryClient,
   UseMutationOptions,
   UseMutationResult,
 } from "@tanstack/react-query";
@@ -15,6 +16,8 @@ import { axiosInstance } from "../../axios-instance";
 import type {
   CreatePhotoRequest,
   CreatePhotoResponse,
+  CreatePromptRequest,
+  CreatePromptResponse,
 } from "../adventSphereAPI.schemas";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -91,18 +94,18 @@ export type PostOtherCreatePhotoMutationError = unknown;
 /**
  * @summary 写真の作成
  */
-export const usePostOtherCreatePhoto = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postOtherCreatePhoto>>,
-    TError,
-    { data: CreatePhotoRequest },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+export const usePostOtherCreatePhoto = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postOtherCreatePhoto>>,
+      TError,
+      { data: CreatePhotoRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof postOtherCreatePhoto>>,
   TError,
   { data: CreatePhotoRequest },
@@ -110,5 +113,94 @@ export const usePostOtherCreatePhoto = <
 > => {
   const mutationOptions = getPostOtherCreatePhotoMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * AIを用いて写真プロンプトを生成します。
+ * @summary AIを用いて写真プロンプトを生成する
+ */
+export const postOtherCreatePrompt = (
+  createPromptRequest: CreatePromptRequest,
+  options?: SecondParameter<typeof axiosInstance>,
+  signal?: AbortSignal,
+) => {
+  return axiosInstance<CreatePromptResponse>(
+    {
+      url: `/other/createPrompt`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createPromptRequest,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getPostOtherCreatePromptMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+    TError,
+    { data: CreatePromptRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof axiosInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+  TError,
+  { data: CreatePromptRequest },
+  TContext
+> => {
+  const mutationKey = ["postOtherCreatePrompt"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+    { data: CreatePromptRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postOtherCreatePrompt(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostOtherCreatePromptMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postOtherCreatePrompt>>
+>;
+export type PostOtherCreatePromptMutationBody = CreatePromptRequest;
+export type PostOtherCreatePromptMutationError = unknown;
+
+/**
+ * @summary AIを用いて写真プロンプトを生成する
+ */
+export const usePostOtherCreatePrompt = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+      TError,
+      { data: CreatePromptRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postOtherCreatePrompt>>,
+  TError,
+  { data: CreatePromptRequest },
+  TContext
+> => {
+  const mutationOptions = getPostOtherCreatePromptMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
 };

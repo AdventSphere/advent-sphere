@@ -188,6 +188,37 @@ export interface CreatePhotoRequest {
   prompt: string;
 }
 
+export interface CreatePromptResponse {
+  /** 生成された写真プロンプト */
+  prompt: string;
+}
+
+/**
+ * 発言者の役割
+ */
+export type CreatePromptRequestHistoryItemRole =
+  (typeof CreatePromptRequestHistoryItemRole)[keyof typeof CreatePromptRequestHistoryItemRole];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreatePromptRequestHistoryItemRole = {
+  user: "user",
+  assistant: "assistant",
+} as const;
+
+export type CreatePromptRequestHistoryItem = {
+  /** 発言者の役割 */
+  role: CreatePromptRequestHistoryItemRole;
+  /** 発言内容 */
+  content: string;
+};
+
+export interface CreatePromptRequest {
+  /** 写真プロンプトのテーマ */
+  prompt: string;
+  /** これまでの会話履歴 */
+  history: CreatePromptRequestHistoryItem[];
+}
+
 export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
   /** ルームの編集ID */
   edit_id: string;
