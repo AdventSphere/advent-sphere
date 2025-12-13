@@ -117,7 +117,7 @@ const createItemRoute = createRoute({
         "application/json": {
           schema: z
             .object({
-              id: z.number().openapi({ example: 3, description: "アイテムID" }),
+              id: z.string().openapi({ example: "item_12345", description: "アイテムID" }),
               name: z
                 .string()
                 .openapi({ example: "アイテム名", description: "アイテム名" }),
@@ -213,7 +213,7 @@ app.openapi(createItemRoute, async (c) => {
   // const file = body.objectFile  // File
 
   const newItemResponse = {
-    id: 3,
+    id: "item_12345",
     name: body.name,
   };
   return c.json(newItemResponse, 201);

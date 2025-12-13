@@ -78,9 +78,14 @@ const CreateCalendarItemResponseSchema = z
   })
   .openapi("CreateCalendarItemResponse");
 
-const PatchCalendarItemRequestSchema = CreateCalendarItemRequestSchema.openapi(
-  "PatchCalendarItemRequest",
-);
+const PatchCalendarItemRequestSchema = z
+  .object({
+    edit_id: z
+      .string()
+      .openapi({ example: "12345", description: "ルームの編集ID" }),
+    calendarItem: CreateCalendarItemSchema.partial(),
+  })
+  .openapi("PatchCalendarItemRequest");
 
 const listCalendarItemsRoute = createRoute({
   method: "get",
@@ -271,12 +276,12 @@ app.openapi(patchCalendarItemRoute, async (c) => {
   const updated: CalendarItemSchema = {
     id,
     room_id,
-    user_id: calendarItem.user_id,
+    user_id: calendarItem.user_id || "user_12345",
     create_at: new Date().toISOString(),
-    open_date: calendarItem.open_date,
+    open_date: calendarItem.open_date || new Date().toISOString(),
     position: calendarItem.position,
     is_opened: false,
-    item_id: calendarItem.item_id,
+    item_id: calendarItem.item_id || "item_12345",
     image_id: calendarItem.image_id,
     rotation: calendarItem.rotation,
   };
