@@ -12,7 +12,8 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
-    "hono": "^4.10.8"
+    "hono": "^4.10.8",
+    "nanoid": "^5.1.6"
   },
   "devDependencies": {
     "@types/node": "^25.0.1",

@@ -1,5 +1,7 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { nanoid } from 'nanoid'
+
 
 export const usersTable = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -10,7 +12,7 @@ export const usersTable = sqliteTable("user", {
 });
 
 export const roomTable = sqliteTable("room", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -29,7 +31,7 @@ export const roomTable = sqliteTable("room", {
 });
 
 export const itemTable = sqliteTable("item", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -39,11 +41,11 @@ export const itemTable = sqliteTable("item", {
 });
 
 export const calendarItemTable = sqliteTable("calendar_item", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
-  roomId: integer("room_id")
+  roomId: text("room_id")
     .notNull()
     .references(() => roomTable.id),
   userId: text("user_id")
