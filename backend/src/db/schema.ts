@@ -53,7 +53,7 @@ export const calendarItemTable = sqliteTable("calendar_item", {
     .references(() => usersTable.id),
   openDate: integer("open_date", { mode: "timestamp" }).notNull(),
   position: text("position"),
-  rotation: integer("rotation"),
+  rotation: text("rotation"),
   isOpened: integer("is_opened", { mode: "boolean" }).notNull().default(false),
   itemId: integer("item_id")
     .notNull()
