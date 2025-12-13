@@ -62,7 +62,7 @@ const createPromptRoute = createRoute({
               history: z
                 .array(
                   z.object({
-                    role: z.enum(["user", "assistant"]).openapi({
+                    role: z.enum(["user", "model"]).openapi({
                       example: "user",
                       description: "発言者の役割",
                     }),
@@ -81,7 +81,7 @@ const createPromptRoute = createRoute({
                         "クリスマスのフォトフレームに使う写真のプロンプトを考えてください。",
                     },
                     {
-                      role: "assistant",
+                      role: "model",
                       content:
                         "雪が降り積もる中、クリスマスのイルミネーションが輝く街並み。暖かい光が窓から漏れ、通りには人々が楽しそうに歩いている様子。",
                     },
@@ -137,7 +137,7 @@ app.openapi(createPromptRoute, async (c) => {
 
   const messages = [
     {
-      role: "model",
+      role: "user",
       parts: [
         {
           text: "You are a prompt generator for image creation. Given a theme from the user, generate a vivid and detailed image generation prompt in English. Output only the prompt text — nothing else. Example: if the user gives 'sunlit cyberpunk street', you might output: 'A sunlit cyberpunk street with glowing neon signs, rainy pavement reflecting light, warm and cool contrasts, ultra-detailed cinematic style.'",
@@ -145,7 +145,7 @@ app.openapi(createPromptRoute, async (c) => {
       ],
     },
     ...history.map((msg) => ({
-      role: msg.role === "assistant" ? "model" : "user",
+      role: msg.role,
       parts: [{ text: msg.content }],
     })),
     {

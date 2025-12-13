@@ -490,7 +490,7 @@
               "properties": {
                 "role": {
                   "type": "string",
-                  "enum": ["user", "assistant"],
+                  "enum": ["user", "model"],
                   "example": "user",
                   "description": "発言者の役割"
                 },
@@ -508,7 +508,7 @@
                 "content": "クリスマスのフォトフレームに使う写真のプロンプトを考えてください。"
               },
               {
-                "role": "assistant",
+                "role": "model",
                 "content": "雪が降り積もる中、クリスマスのイルミネーションが輝く街並み。暖かい光が窓から漏れ、通りには人々が楽しそうに歩いている様子。"
               }
             ],

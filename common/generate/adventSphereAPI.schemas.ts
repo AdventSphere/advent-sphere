@@ -202,7 +202,7 @@ export type CreatePromptRequestHistoryItemRole =
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreatePromptRequestHistoryItemRole = {
   user: "user",
-  assistant: "assistant",
+  model: "model",
 } as const;
 
 export type CreatePromptRequestHistoryItem = {
