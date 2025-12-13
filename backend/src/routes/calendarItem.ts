@@ -85,7 +85,7 @@ const PatchCalendarItemRequestSchema = CreateCalendarItemRequestSchema.openapi(
 const listCalendarItemsRoute = createRoute({
   method: "get",
   path: "/{room_id}/calendarItems",
-  tags: ["カレンダーアイテム"],
+  tags: ["calendar_items"],
   summary: "カレンダーアイテム一覧の取得",
   description: "すべてのカレンダーアイテムを取得します。",
   request: {
@@ -112,7 +112,7 @@ const listCalendarItemsRoute = createRoute({
 const createCalendarItemRoute = createRoute({
   method: "post",
   path: "/{room_id}/calendarItems",
-  tags: ["カレンダーアイテム"],
+  tags: ["calendar_items"],
   summary: "カレンダーアイテムの作成",
   description: "新しいカレンダーアイテムを作成します。",
   request: {
@@ -147,7 +147,7 @@ const createCalendarItemRoute = createRoute({
 const deleteCalendarItemRoute = createRoute({
   method: "delete",
   path: "/{room_id}/calendarItems/{id}",
-  tags: ["カレンダーアイテム"],
+  tags: ["calendar_items"],
   summary: "カレンダーアイテムの削除",
   description: "指定したIDのカレンダーアイテムを削除します。",
   request: {
@@ -182,7 +182,7 @@ const deleteCalendarItemRoute = createRoute({
 const patchCalendarItemRoute = createRoute({
   method: "patch",
   path: "/{room_id}/calendarItems/{id}",
-  tags: ["カレンダーアイテム"],
+  tags: ["calendar_items"],
   summary: "カレンダーアイテムの更新",
   description: "指定したIDのカレンダーアイテム情報を更新します。",
   request: {
