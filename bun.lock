@@ -31,6 +31,7 @@
       "dependencies": {
         "@tanstack/react-query": "^5.90.12",
         "axios": "^1.13.2",
+        "dotenv": "^17.2.3",
       },
       "devDependencies": {
         "@types/bun": "latest",
