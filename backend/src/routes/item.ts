@@ -173,7 +173,7 @@ const patchItemRoute = createRoute({
 });
 
 const app = new OpenAPIHono<{
-  Bindings: { DB: D1Database };
+  Bindings: CloudflareBindings;
 }>();
 
 app.openapi(listItemsRoute, async (c) => {

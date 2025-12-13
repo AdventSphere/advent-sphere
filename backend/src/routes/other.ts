@@ -43,7 +43,7 @@ const createPhotoRoute = createRoute({
 });
 
 const app = new OpenAPIHono<{
-  Bindings: { DB: D1Database };
+  Bindings: CloudflareBindings;
 }>();
 
 app.openapi(createPhotoRoute, async (c) => {

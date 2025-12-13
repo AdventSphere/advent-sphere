@@ -85,7 +85,7 @@ const createUserRoute = createRoute({
 });
 
 const app = new OpenAPIHono<{
-  Bindings: { DB: D1Database };
+  Bindings: CloudflareBindings;
 }>();
 
 app.openapi(getUserRoute, async (c) => {
