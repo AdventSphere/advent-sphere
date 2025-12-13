@@ -26,9 +26,10 @@
     {
       "binding": "DB",
       "database_name": "advent-sphere",
-      "database_id": "55c3cd49-0ef0-467a-9ef0-9211df2d78e2"
+      "database_id": "55c3cd49-0ef0-467a-9ef0-9211df2d78e2",
+      "migrations_dir": "drizzle"
     }
-  ]
+  ],
   // "ai": {
   //   "binding": "AI"
   // },

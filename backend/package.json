@@ -5,7 +5,10 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "upload": "wrangler versions upload",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "drizzle:generate": "drizzle-kit generate",
+    "local:migrate": "wrangler d1 migrations apply advent-sphere --local",
+    "remote:migrate": "wrangler d1 migrations apply advent-sphere"
   },
   "dependencies": {
     "@hono/standard-validator": "^0.2.0",
@@ -13,9 +16,11 @@
     "@scalar/hono-api-reference": "^0.9.28",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
-    "hono": "^4.10.8"
+    "hono": "^4.10.8",
+    "nanoid": "^5.1.6"
   },
   "devDependencies": {
+    "@types/node": "^25.0.1",
     "drizzle-kit": "^0.31.8",
     "tsx": "^4.21.0",
     "wrangler": "^4.54.0"
