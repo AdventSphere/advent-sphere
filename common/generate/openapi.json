@@ -1,0 +1,1139 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "advent-sphere API"
+  },
+  "components": {
+    "schemas": {
+      "CalendarItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "calendarItem_12345",
+            "description": "カレンダーアイテムID"
+          },
+          "user_id": {
+            "type": "string",
+            "example": "user_12345",
+            "description": "ユーザーID"
+          },
+          "room_id": {
+            "type": "string",
+            "example": "room_12345",
+            "description": "ルームID"
+          },
+          "create_at": {
+            "type": "string",
+            "example": "2024-06-01T12:00:00Z",
+            "description": "作成日時"
+          },
+          "open_date": {
+            "type": "string",
+            "example": "2024-07-01T12:00:00Z",
+            "description": "開封可能日時"
+          },
+          "position": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "example": [
+              0,
+              1,
+              2
+            ],
+            "description": "アイテムの位置情報"
+          },
+          "rotation": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "example": [
+              0,
+              0,
+              0
+            ],
+            "description": "アイテムの回転情報"
+          },
+          "is_opened": {
+            "type": "boolean",
+            "example": false,
+            "description": "アイテムが開封されたかどうか"
+          },
+          "item_id": {
+            "type": "string",
+            "example": "item_12345",
+            "description": "関連するアイテムID"
+          },
+          "image_id": {
+            "type": "string",
+            "example": "image_12345",
+            "description": "関連する画像ID"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "room_id",
+          "create_at",
+          "open_date",
+          "is_opened",
+          "item_id"
+        ]
+      },
+      "CreateCalendarItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "calendarItem_12345",
+            "description": "カレンダーアイテムID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "CreateCalendarItem": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "example": "user_12345",
+            "description": "ユーザーID"
+          },
+          "room_id": {
+            "type": "string",
+            "example": "room_12345",
+            "description": "ルームID"
+          },
+          "open_date": {
+            "type": "string",
+            "example": "2024-07-01T12:00:00Z",
+            "description": "開封可能日時"
+          },
+          "position": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "example": [
+              0,
+              1,
+              2
+            ],
+            "description": "アイテムの位置情報"
+          },
+          "rotation": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "example": [
+              0,
+              0,
+              0
+            ],
+            "description": "アイテムの回転情報"
+          },
+          "item_id": {
+            "type": "string",
+            "example": "item_12345",
+            "description": "関連するアイテムID"
+          },
+          "image_id": {
+            "type": "string",
+            "example": "image_12345",
+            "description": "関連する画像ID"
+          }
+        },
+        "required": [
+          "user_id",
+          "room_id",
+          "open_date",
+          "item_id"
+        ]
+      },
+      "CreateCalendarItemRequest": {
+        "type": "object",
+        "properties": {
+          "edit_id": {
+            "type": "string",
+            "example": "12345",
+            "description": "ルームの編集ID"
+          },
+          "calendarItem": {
+            "$ref": "#/components/schemas/CreateCalendarItem"
+          }
+        },
+        "required": [
+          "edit_id",
+          "calendarItem"
+        ]
+      },
+      "PatchCalendarItemRequest": {
+        "type": "object",
+        "properties": {
+          "edit_id": {
+            "type": "string",
+            "example": "12345",
+            "description": "ルームの編集ID"
+          },
+          "calendarItem": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "string",
+                "example": "user_12345",
+                "description": "ユーザーID"
+              },
+              "room_id": {
+                "type": "string",
+                "example": "room_12345",
+                "description": "ルームID"
+              },
+              "open_date": {
+                "type": "string",
+                "example": "2024-07-01T12:00:00Z",
+                "description": "開封可能日時"
+              },
+              "position": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "example": [
+                  0,
+                  1,
+                  2
+                ],
+                "description": "アイテムの位置情報"
+              },
+              "rotation": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "example": [
+                  0,
+                  0,
+                  0
+                ],
+                "description": "アイテムの回転情報"
+              },
+              "item_id": {
+                "type": "string",
+                "example": "item_12345",
+                "description": "関連するアイテムID"
+              },
+              "image_id": {
+                "type": "string",
+                "example": "image_12345",
+                "description": "関連する画像ID"
+              }
+            }
+          }
+        },
+        "required": [
+          "edit_id",
+          "calendarItem"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "user_12345",
+            "description": "ユーザーID"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2021-08-01T12:00:00Z",
+            "description": "ユーザー作成日時のタイムスタンプ"
+          },
+          "name": {
+            "type": "string",
+            "example": "太郎",
+            "description": "ユーザー名"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "name"
+        ]
+      },
+      "CreateUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "user_12345",
+            "description": "ユーザーID"
+          },
+          "name": {
+            "type": "string",
+            "example": "太郎",
+            "description": "ユーザー名"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "item_12345",
+            "description": "アイテムID"
+          },
+          "name": {
+            "type": "string",
+            "example": "アイテム名",
+            "description": "アイテム名"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-06-01T12:00:00Z",
+            "description": "アイテム作成日時"
+          },
+          "description": {
+            "type": "string",
+            "example": "アイテムの説明",
+            "description": "アイテムの説明"
+          },
+          "type": {
+            "type": "string",
+            "example": "photo_frame",
+            "description": "アイテムの種類"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdAt",
+          "description",
+          "type"
+        ]
+      },
+      "CreateItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "item_12345",
+            "description": "アイテムID"
+          },
+          "name": {
+            "type": "string",
+            "example": "アイテム名",
+            "description": "アイテム名"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "CreateItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "アイテム名",
+            "description": "アイテム名"
+          },
+          "description": {
+            "type": "string",
+            "example": "アイテムの説明",
+            "description": "アイテムの説明"
+          },
+          "type": {
+            "type": "string",
+            "example": "photo_frame",
+            "description": "アイテムの種類"
+          },
+          "objectFile": {
+            "type": "string",
+            "format": "binary",
+            "description": "アイテムの3Dモデルファイル",
+            "example": "model.glb"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "type",
+          "objectFile"
+        ]
+      },
+      "UpdateItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "アイテム名",
+            "description": "アイテム名"
+          },
+          "description": {
+            "type": "string",
+            "example": "アイテムの説明",
+            "description": "アイテムの説明"
+          },
+          "type": {
+            "type": "string",
+            "example": "photo_frame",
+            "description": "アイテムの種類"
+          },
+          "objectFile": {
+            "type": "string",
+            "format": "binary",
+            "description": "アイテムの3Dモデルファイル",
+            "example": "model.glb"
+          }
+        }
+      },
+      "CreateRoomResponse": {
+        "type": "object",
+        "properties": {
+          "edit_id": {
+            "type": "string",
+            "example": "12345",
+            "description": "ルームの編集ID"
+          }
+        },
+        "required": [
+          "edit_id"
+        ]
+      },
+      "CreateRoom": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "type": "string",
+            "example": "user_12345",
+            "description": "オーナーのユーザーID"
+          },
+          "item_get_time": {
+            "type": "string",
+            "example": "2024-07-01T12:00:00Z",
+            "description": "アイテム取得日時"
+          },
+          "password": {
+            "type": "string",
+            "example": "securepassword",
+            "description": "ルームのパスワード"
+          },
+          "is_anonymous": {
+            "type": "boolean",
+            "example": false,
+            "description": "匿名モードかどうか"
+          },
+          "start_at": {
+            "type": "string",
+            "example": "2024-07-01T12:00:00Z",
+            "description": "開始日時"
+          }
+        },
+        "required": [
+          "owner_id",
+          "is_anonymous",
+          "start_at"
+        ]
+      },
+      "Room": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateRoom"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "room_12345",
+                "description": "ルームID"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "2024-06-01T12:00:00Z",
+                "description": "ルーム作成日時"
+              },
+              "generate_count": {
+                "type": "number",
+                "example": 0,
+                "description": "生成回数"
+              },
+              "edit_id": {
+                "type": "string",
+                "example": "edit_12345",
+                "description": "ルームの編集ID"
+              }
+            },
+            "required": [
+              "id",
+              "createdAt",
+              "generate_count",
+              "edit_id"
+            ]
+          }
+        ]
+      },
+      "UpdateRoom": {
+        "type": "object",
+        "properties": {
+          "item_get_time": {
+            "type": "string",
+            "example": "2024-07-01T12:00:00Z",
+            "description": "アイテム取得日時"
+          },
+          "password": {
+            "type": "string",
+            "example": "securepassword",
+            "description": "ルームのパスワード"
+          },
+          "is_anonymous": {
+            "type": "boolean",
+            "example": false,
+            "description": "匿名モードかどうか"
+          },
+          "start_at": {
+            "type": "string",
+            "example": "2024-07-01T12:00:00Z",
+            "description": "開始日時"
+          }
+        }
+      },
+      "CreatePhotoResponse": {
+        "type": "object",
+        "properties": {
+          "imageData": {
+            "type": "string",
+            "example": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+            "description": "base64エンコードされた画像データ"
+          }
+        },
+        "required": [
+          "imageData"
+        ]
+      },
+      "CreatePhotoRequest": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "example": "大きな山と湖の風景",
+            "description": "画像生成のためのプロンプト"
+          }
+        },
+        "required": [
+          "prompt"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/calendarItems/{room_id}/calendarItems": {
+      "get": {
+        "tags": [
+          "calendar_items"
+        ],
+        "summary": "カレンダーアイテム一覧の取得",
+        "description": "すべてのカレンダーアイテムを取得します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "room_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CalendarItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "calendar_items"
+        ],
+        "summary": "カレンダーアイテムの作成",
+        "description": "新しいカレンダーアイテムを作成します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "room_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCalendarItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "カレンダーアイテムが正常に作成されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCalendarItemResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calendarItems/{room_id}/calendarItems/{id}": {
+      "delete": {
+        "tags": [
+          "calendar_items"
+        ],
+        "summary": "カレンダーアイテムの削除",
+        "description": "指定したIDのカレンダーアイテムを削除します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "room_id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "calendarItem_12345",
+              "description": "カレンダーアイテムID"
+            },
+            "required": true,
+            "description": "カレンダーアイテムID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "edit_id": {
+                    "type": "string",
+                    "example": "12345",
+                    "description": "ルームの編集ID"
+                  }
+                },
+                "required": [
+                  "edit_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "カレンダーアイテムが正常に削除されました"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "calendar_items"
+        ],
+        "summary": "カレンダーアイテムの更新",
+        "description": "指定したIDのカレンダーアイテム情報を更新します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "room_id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "calendarItem_12345",
+              "description": "カレンダーアイテムID"
+            },
+            "required": true,
+            "description": "カレンダーアイテムID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchCalendarItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "カレンダーアイテムが正常に更新されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "ユーザー情報の取得",
+        "description": "ユーザーIDを指定してユーザー情報を取得します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "example": "user_12345",
+              "description": "ユーザーID"
+            },
+            "required": true,
+            "description": "ユーザーID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ユーザーが見つかりません"
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "ユーザーの作成",
+        "description": "新しいユーザーを作成します。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ユーザーが正常に作成されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items": {
+      "get": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "アイテム一覧の取得",
+        "description": "すべてのアイテムを取得します。",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Item"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "アイテムの作成",
+        "description": "新しいアイテムを作成します。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "アイテムが正常に作成されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateItemResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/{id}": {
+      "get": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "アイテムの取得",
+        "description": "アイテムIDを指定してアイテムを取得します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "item_12345",
+              "description": "アイテムID"
+            },
+            "required": true,
+            "description": "アイテムID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "アイテムが見つかりません"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "アイテムの削除",
+        "description": "アイテムIDを指定してアイテムを削除します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "item_12345",
+              "description": "アイテムID"
+            },
+            "required": true,
+            "description": "アイテムID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "アイテムが正常に削除されました"
+          },
+          "404": {
+            "description": "アイテムが見つかりません"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Item"
+        ],
+        "summary": "アイテムの更新",
+        "description": "アイテムIDを指定してアイテム情報を更新します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "item_12345",
+              "description": "アイテムID"
+            },
+            "required": true,
+            "description": "アイテムID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "アイテムが正常に更新されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "アイテムが見つかりません"
+          }
+        }
+      }
+    },
+    "/rooms": {
+      "post": {
+        "tags": [
+          "Room"
+        ],
+        "summary": "ルームの作成",
+        "description": "新しいルームを作成します。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoom"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ルームが正常に作成されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRoomResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rooms/{id}": {
+      "get": {
+        "tags": [
+          "Room"
+        ],
+        "summary": "ルーム情報の取得",
+        "description": "ルームIDを指定してルーム情報を取得します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ルームが見つかりません"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Room"
+        ],
+        "summary": "ルームの削除",
+        "description": "ルームIDを指定してルームを削除します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "ルームが正常に削除されました"
+          },
+          "404": {
+            "description": "ルームが見つかりません"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Room"
+        ],
+        "summary": "ルーム情報の更新",
+        "description": "ルームIDを指定してルーム情報を更新します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoom"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ルーム情報が正常に更新されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ルームが見つかりません"
+          }
+        }
+      }
+    },
+    "/other/createPhoto": {
+      "post": {
+        "tags": [
+          "Other"
+        ],
+        "summary": "写真の作成",
+        "description": "新しい写真を作成します。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePhotoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "写真が正常に作成されました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePhotoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
