@@ -1,4 +1,16 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "../db/schema";
+import { env } from "cloudflare:workers";
+
+const uploadFunction = (
+  object: File,
+  path: string,
+  fileName: string,
+) => {
+  const key = `${path}/${fileName}`;
+  return env.BUCKET.put(key, object);
+};
 
 export const ItemSchema = z
   .object({
@@ -39,6 +51,12 @@ export const CreateItemSchema = z
       format: "binary",
       description: "アイテムの3Dモデルファイル",
       example: "model.glb",
+    }),
+    objectThumbnail: z.instanceof(File).openapi({
+      type: "string",
+      format: "binary",
+      description: "アイテムのサムネイル画像ファイル",
+      example: "thumbnail.png",
     }),
   })
   .openapi("CreateItem");
@@ -211,12 +229,31 @@ app.openapi(getItemRoute, async (c) => {
 });
 
 app.openapi(createItemRoute, async (c) => {
-  const body = c.req.valid("form");
-  // const file = body.objectFile  // File
+  const { name, description, type, objectFile, objectThumbnail } =
+    c.req.valid("form");
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .insert(schema.itemTable)
+    .values({
+      name,
+      description,
+      type,
+    })
+    .returning();
+  await uploadFunction(
+    objectFile,
+    `item/object/${type}`,
+    `${result[0].id}.${objectFile.name.split(".").pop()}`,
+  );
+  await uploadFunction(
+    objectThumbnail,
+    `item/thumbnail/${type}`,
+    `${result[0].id}.${objectThumbnail.name.split(".").pop()}`,
+  );
 
   const newItemResponse = {
-    id: "item_12345",
-    name: body.name,
+    id: result[0].id,
+    name: result[0].name,
   };
   return c.json(newItemResponse, 201);
 });
