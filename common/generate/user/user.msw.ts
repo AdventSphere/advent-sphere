@@ -14,16 +14,7 @@ export const getGetUsersIdResponseMock = (
   overrideResponse: Partial<User> = {},
 ): User => ({
   id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  ...overrideResponse,
-});
-
-export const getPostUsersResponseMock = (
-  overrideResponse: Partial<User> = {},
-): User => ({
-  id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  createdAt: faker.date.past().toISOString().split("T")[0],
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
   ...overrideResponse,
 });
@@ -58,27 +49,20 @@ export const getGetUsersIdMockHandler = (
 
 export const getPostUsersMockHandler = (
   overrideResponse?:
-    | User
+    | void
     | ((
         info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<User> | User),
+      ) => Promise<void> | void),
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
     "*/users",
     async (info) => {
       await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getPostUsersResponseMock(),
-        ),
-        { status: 201, headers: { "Content-Type": "application/json" } },
-      );
+      if (typeof overrideResponse === "function") {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 201 });
     },
     options,
   );

@@ -1,11 +1,15 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { eq } from "drizzle-orm";
+
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "../db/schema";
 
 export const UserSchema = z
   .object({
     id: z
       .string()
       .openapi({ example: "user_12345", description: "ユーザーID" }),
-    createdAt: z.string().openapi({
+    createdAt: z.date().openapi({
       example: "2021-08-01T12:00:00Z",
       description: "ユーザー作成日時のタイムスタンプ",
     }),
@@ -75,11 +79,6 @@ const createUserRoute = createRoute({
   responses: {
     201: {
       description: "ユーザーが正常に作成されました",
-      content: {
-        "application/json": {
-          schema: UserSchema,
-        },
-      },
     },
   },
 });
@@ -90,22 +89,27 @@ const app = new OpenAPIHono<{
 
 app.openapi(getUserRoute, async (c) => {
   const { id } = c.req.valid("param");
-  const mockUser: UserSchema = {
-    id,
-    createdAt: new Date().toISOString(),
-    name: "太郎",
-  };
-  return c.json(mockUser);
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .select()
+    .from(schema.usersTable)
+    .where(eq(schema.usersTable.id, id));
+  if (result.length === 0) {
+    return c.json({ message: "ユーザーが見つかりません" }, 404);
+  }
+  const userInfo = UserSchema.parse(result[0]);
+
+  return c.json(userInfo, 200);
 });
 
 app.openapi(createUserRoute, async (c) => {
   const body = c.req.valid("json");
-  const newUser: UserSchema = {
+  const db = drizzle(c.env.DB, { schema });
+  await db.insert(schema.usersTable).values({
     id: body.id,
-    createdAt: new Date().toISOString(),
     name: body.name,
-  };
-  return c.json(newUser, 201);
+  });
+  return c.json("ユーザーが正常に作成されました", 201);
 });
 
 export default app;

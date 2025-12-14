@@ -186,7 +186,7 @@ export const postUsers = (
   options?: SecondParameter<typeof axiosInstance>,
   signal?: AbortSignal,
 ) => {
-  return axiosInstance<User>(
+  return axiosInstance<void>(
     {
       url: `/users`,
       method: "POST",
