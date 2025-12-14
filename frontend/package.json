@@ -11,6 +11,7 @@
     "upload": "bun run build && wrangler versions upload"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.2",
     "@tailwindcss/vite": "^4.0.6",
@@ -26,10 +27,12 @@
     "lucide-react": "^0.544.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-hook-form": "^7.68.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.6",
     "three": "^0.182.0",
-    "tw-animate-css": "^1.3.6"
+    "tw-animate-css": "^1.3.6",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.17.1",
