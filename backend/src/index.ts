@@ -1,10 +1,10 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
+import ai from "./routes/ai";
 import calendarItem from "./routes/calendarItem";
-import user from "./routes/user";
 import item from "./routes/item";
 import room from "./routes/room";
-import ai from "./routes/ai";
+import user from "./routes/user";
 
 const app = new OpenAPIHono();
 
