@@ -6,6 +6,8 @@ export const CreateRoomSchema = z
       .string()
       .openapi({ example: "user_12345", description: "オーナーのユーザーID" }),
     itemGetTime: z.date().optional().openapi({
+      type: "string",
+      format: "date-time",
       example: new Date().toISOString(),
       description: "アイテム取得日時",
     }),
@@ -18,13 +20,20 @@ export const CreateRoomSchema = z
       .openapi({ example: false, description: "匿名モードかどうか" }),
     startAt: z
       .date()
-      .openapi({ example: new Date().toISOString(), description: "開始日時" }),
+      .openapi({
+        type: "string",
+        format: "date-time",
+        example: new Date().toISOString(),
+        description: "開始日時",
+      }),
   })
   .openapi("CreateRoom");
 
 export const RoomSchema = CreateRoomSchema.extend({
   id: z.string().openapi({ example: "room_12345", description: "ルームID" }),
   createdAt: z.coerce.date().openapi({
+    type: "string",
+    format: "date-time",
     example: new Date().toISOString(),
     description: "ルーム作成日時",
   }),

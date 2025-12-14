@@ -17,10 +17,7 @@ export const getGetItemsResponseMock = (): Item[] =>
   ).map(() => ({
     id: faker.string.alpha({ length: { min: 10, max: 20 } }),
     name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: faker.helpers.arrayElement([
-      faker.date.past().toISOString().split("T")[0],
-      null,
-    ]),
+    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
     description: faker.string.alpha({ length: { min: 10, max: 20 } }),
     type: faker.string.alpha({ length: { min: 10, max: 20 } }),
   }));
@@ -38,10 +35,7 @@ export const getGetItemsIdResponseMock = (
 ): Item => ({
   id: faker.string.alpha({ length: { min: 10, max: 20 } }),
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: faker.helpers.arrayElement([
-    faker.date.past().toISOString().split("T")[0],
-    null,
-  ]),
+  createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
   description: faker.string.alpha({ length: { min: 10, max: 20 } }),
   type: faker.string.alpha({ length: { min: 10, max: 20 } }),
   ...overrideResponse,
@@ -52,10 +46,7 @@ export const getPatchItemsIdResponseMock = (
 ): Item => ({
   id: faker.string.alpha({ length: { min: 10, max: 20 } }),
   name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: faker.helpers.arrayElement([
-    faker.date.past().toISOString().split("T")[0],
-    null,
-  ]),
+  createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
   description: faker.string.alpha({ length: { min: 10, max: 20 } }),
   type: faker.string.alpha({ length: { min: 10, max: 20 } }),
   ...overrideResponse,

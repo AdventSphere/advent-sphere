@@ -21,7 +21,7 @@ export const getGetRoomsIdResponseMock = (): Room => ({
   ...{
     ownerId: faker.string.alpha({ length: { min: 10, max: 20 } }),
     itemGetTime: faker.helpers.arrayElement([
-      faker.date.past().toISOString().split("T")[0],
+      `${faker.date.past().toISOString().split(".")[0]}Z`,
       undefined,
     ]),
     password: faker.helpers.arrayElement([
@@ -29,14 +29,11 @@ export const getGetRoomsIdResponseMock = (): Room => ({
       undefined,
     ]),
     isAnonymous: faker.datatype.boolean(),
-    startAt: faker.date.past().toISOString().split("T")[0],
+    startAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
   },
   ...{
     id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: faker.helpers.arrayElement([
-      faker.date.past().toISOString().split("T")[0],
-      null,
-    ]),
+    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
     generateCount: faker.number.float({
       min: undefined,
       max: undefined,
@@ -50,7 +47,7 @@ export const getPatchRoomsIdResponseMock = (): Room => ({
   ...{
     ownerId: faker.string.alpha({ length: { min: 10, max: 20 } }),
     itemGetTime: faker.helpers.arrayElement([
-      faker.date.past().toISOString().split("T")[0],
+      `${faker.date.past().toISOString().split(".")[0]}Z`,
       undefined,
     ]),
     password: faker.helpers.arrayElement([
@@ -58,14 +55,11 @@ export const getPatchRoomsIdResponseMock = (): Room => ({
       undefined,
     ]),
     isAnonymous: faker.datatype.boolean(),
-    startAt: faker.date.past().toISOString().split("T")[0],
+    startAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
   },
   ...{
     id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: faker.helpers.arrayElement([
-      faker.date.past().toISOString().split("T")[0],
-      null,
-    ]),
+    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
     generateCount: faker.number.float({
       min: undefined,
       max: undefined,

@@ -22,14 +22,8 @@ export const getGetCalendarItemsRoomIdCalendarItemsResponseMock =
       id: faker.string.alpha({ length: { min: 10, max: 20 } }),
       userId: faker.string.alpha({ length: { min: 10, max: 20 } }),
       roomId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      createdAt: faker.helpers.arrayElement([
-        faker.date.past().toISOString().split("T")[0],
-        null,
-      ]),
-      openDate: faker.helpers.arrayElement([
-        faker.date.past().toISOString().split("T")[0],
-        null,
-      ]),
+      createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
+      openDate: `${faker.date.past().toISOString().split(".")[0]}Z`,
       position: faker.helpers.arrayElement([
         Array.from(
           { length: faker.number.int({ min: 1, max: 10 }) },
@@ -77,14 +71,8 @@ export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (
   id: faker.string.alpha({ length: { min: 10, max: 20 } }),
   userId: faker.string.alpha({ length: { min: 10, max: 20 } }),
   roomId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: faker.helpers.arrayElement([
-    faker.date.past().toISOString().split("T")[0],
-    null,
-  ]),
-  openDate: faker.helpers.arrayElement([
-    faker.date.past().toISOString().split("T")[0],
-    null,
-  ]),
+  createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
+  openDate: `${faker.date.past().toISOString().split(".")[0]}Z`,
   position: faker.helpers.arrayElement([
     Array.from(
       { length: faker.number.int({ min: 1, max: 10 }) },

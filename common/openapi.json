@@ -26,16 +26,14 @@
           },
           "createdAt": {
             "type": "string",
-            "nullable": true,
-            "format": "date",
-            "example": "2025-12-14T14:42:06.726Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.719Z",
             "description": "作成日時"
           },
           "openDate": {
             "type": "string",
-            "nullable": true,
-            "format": "date",
-            "example": "2025-12-14T14:42:06.726Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.719Z",
             "description": "開封可能日時"
           },
           "position": {
@@ -106,9 +104,8 @@
           },
           "openDate": {
             "type": "string",
-            "nullable": true,
-            "format": "date",
-            "example": "2025-12-14T14:42:06.726Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.719Z",
             "description": "開封可能日時"
           },
           "position": {
@@ -177,9 +174,8 @@
               },
               "openDate": {
                 "type": "string",
-                "nullable": true,
-                "format": "date",
-                "example": "2025-12-14T14:42:06.726Z",
+                "format": "date-time",
+                "example": "2025-12-14T15:16:03.719Z",
                 "description": "開封可能日時"
               },
               "position": {
@@ -223,9 +219,8 @@
           },
           "createdAt": {
             "type": "string",
-            "nullable": true,
-            "format": "date",
-            "example": "2025-12-14T14:42:06.729Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.722Z",
             "description": "ユーザー作成日時のタイムスタンプ"
           },
           "name": {
@@ -267,9 +262,8 @@
           },
           "createdAt": {
             "type": "string",
-            "nullable": true,
-            "format": "date",
-            "example": "2025-12-14T14:42:06.728Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.722Z",
             "description": "アイテム作成日時"
           },
           "description": {
@@ -402,8 +396,8 @@
           },
           "itemGetTime": {
             "type": "string",
-            "format": "date",
-            "example": "2025-12-14T14:42:06.728Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.722Z",
             "description": "アイテム取得日時"
           },
           "password": {
@@ -418,8 +412,8 @@
           },
           "startAt": {
             "type": "string",
-            "format": "date",
-            "example": "2025-12-14T14:42:06.728Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.722Z",
             "description": "開始日時"
           }
         },
@@ -440,9 +434,8 @@
               },
               "createdAt": {
                 "type": "string",
-                "nullable": true,
-                "format": "date",
-                "example": "2025-12-14T14:42:06.728Z",
+                "format": "date-time",
+                "example": "2025-12-14T15:16:03.722Z",
                 "description": "ルーム作成日時"
               },
               "generateCount": {
@@ -465,8 +458,8 @@
         "properties": {
           "itemGetTime": {
             "type": "string",
-            "format": "date",
-            "example": "2025-12-14T14:42:06.728Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.722Z",
             "description": "アイテム取得日時"
           },
           "password": {
@@ -481,8 +474,8 @@
           },
           "startAt": {
             "type": "string",
-            "format": "date",
-            "example": "2025-12-14T14:42:06.728Z",
+            "format": "date-time",
+            "example": "2025-12-14T15:16:03.722Z",
             "description": "開始日時"
           }
         }
