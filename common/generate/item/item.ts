@@ -23,6 +23,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../../axios-instance";
 import type {
   CreateItem,
+  CreateItemError,
   CreateItemResponse,
   Item,
   UpdateItem,
@@ -183,6 +184,7 @@ export const postItems = (
   formData.append(`description`, createItem.description);
   formData.append(`type`, createItem.type);
   formData.append(`objectFile`, createItem.objectFile);
+  formData.append(`objectThumbnail`, createItem.objectThumbnail);
 
   return axiosInstance<CreateItemResponse>(
     {
@@ -197,7 +199,7 @@ export const postItems = (
 };
 
 export const getPostItemsMutationOptions = <
-  TError = unknown,
+  TError = CreateItemError,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -238,12 +240,12 @@ export type PostItemsMutationResult = NonNullable<
   Awaited<ReturnType<typeof postItems>>
 >;
 export type PostItemsMutationBody = CreateItem;
-export type PostItemsMutationError = unknown;
+export type PostItemsMutationError = CreateItemError;
 
 /**
  * @summary アイテムの作成
  */
-export const usePostItems = <TError = unknown, TContext = unknown>(
+export const usePostItems = <TError = CreateItemError, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof postItems>>,
@@ -515,6 +517,9 @@ export const patchItemsId = (
   }
   if (updateItem.objectFile !== undefined) {
     formData.append(`objectFile`, updateItem.objectFile);
+  }
+  if (updateItem.objectThumbnail !== undefined) {
+    formData.append(`objectThumbnail`, updateItem.objectThumbnail);
   }
 
   return axiosInstance<Item>(

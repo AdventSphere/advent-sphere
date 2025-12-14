@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate-openapi": "tsx scripts/generate-openapi.ts",
+    "generate-openapi": "bun run scripts/generate-openapi.ts",
     "generate:api": "bun run generate-openapi && orval"
   },
   "devDependencies": {

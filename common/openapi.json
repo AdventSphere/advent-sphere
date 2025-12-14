@@ -215,6 +215,7 @@
           },
           "createdAt": {
             "type": "string",
+            "format": "date",
             "example": "2021-08-01T12:00:00Z",
             "description": "ユーザー作成日時のタイムスタンプ"
           },
@@ -289,6 +290,15 @@
         },
         "required": ["id", "name"]
       },
+      "CreateItemError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": ["error"]
+      },
       "CreateItem": {
         "type": "object",
         "properties": {
@@ -312,9 +322,21 @@
             "format": "binary",
             "description": "アイテムの3Dモデルファイル",
             "example": "model.glb"
+          },
+          "objectThumbnail": {
+            "type": "string",
+            "format": "binary",
+            "description": "アイテムのサムネイル画像ファイル",
+            "example": "thumbnail.png"
           }
         },
-        "required": ["name", "description", "type", "objectFile"]
+        "required": [
+          "name",
+          "description",
+          "type",
+          "objectFile",
+          "objectThumbnail"
+        ]
       },
       "UpdateItem": {
         "type": "object",
@@ -339,6 +361,12 @@
             "format": "binary",
             "description": "アイテムの3Dモデルファイル",
             "example": "model.glb"
+          },
+          "objectThumbnail": {
+            "type": "string",
+            "format": "binary",
+            "description": "アイテムのサムネイル画像ファイル",
+            "example": "thumbnail.png"
           }
         }
       },
@@ -754,14 +782,7 @@
         },
         "responses": {
           "201": {
-            "description": "ユーザーが正常に作成されました",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
+            "description": "ユーザーが正常に作成されました"
           }
         }
       }
@@ -808,6 +829,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateItemResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "アイテムの作成またはファイルのアップロードに失敗しました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateItemError"
                 }
               }
             }
