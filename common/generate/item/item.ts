@@ -6,9 +6,14 @@
  */
 
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -51,7 +56,9 @@ export const getGetItemsQueryOptions = <
   TData = Awaited<ReturnType<typeof getItems>>,
   TError = unknown,
 >(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>;
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>
+  >;
   request?: SecondParameter<typeof axiosInstance>;
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
@@ -66,7 +73,7 @@ export const getGetItemsQueryOptions = <
     Awaited<ReturnType<typeof getItems>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetItemsQueryResult = NonNullable<
@@ -74,6 +81,64 @@ export type GetItemsQueryResult = NonNullable<
 >;
 export type GetItemsQueryError = unknown;
 
+export function useGetItems<
+  TData = Awaited<ReturnType<typeof getItems>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItems>>,
+          TError,
+          Awaited<ReturnType<typeof getItems>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetItems<
+  TData = Awaited<ReturnType<typeof getItems>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItems>>,
+          TError,
+          Awaited<ReturnType<typeof getItems>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetItems<
+  TData = Awaited<ReturnType<typeof getItems>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary アイテム一覧の取得
  */
@@ -81,15 +146,23 @@ export type GetItemsQueryError = unknown;
 export function useGetItems<
   TData = Awaited<ReturnType<typeof getItems>>,
   TError = unknown,
->(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions = getGetItemsQueryOptions(options);
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
@@ -170,15 +243,18 @@ export type PostItemsMutationError = unknown;
 /**
  * @summary アイテムの作成
  */
-export const usePostItems = <TError = unknown, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postItems>>,
-    TError,
-    { data: CreateItem },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+export const usePostItems = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postItems>>,
+      TError,
+      { data: CreateItem },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof postItems>>,
   TError,
   { data: CreateItem },
@@ -186,7 +262,7 @@ export const usePostItems = <TError = unknown, TContext = unknown>(options?: {
 > => {
   const mutationOptions = getPostItemsMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 /**
  * アイテムIDを指定してアイテムを取得します。
@@ -213,10 +289,8 @@ export const getGetItemsIdQueryOptions = <
 >(
   id: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getItemsId>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItemsId>>, TError, TData>
     >;
     request?: SecondParameter<typeof axiosInstance>;
   },
@@ -238,7 +312,7 @@ export const getGetItemsIdQueryOptions = <
     Awaited<ReturnType<typeof getItemsId>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetItemsIdQueryResult = NonNullable<
@@ -246,6 +320,67 @@ export type GetItemsIdQueryResult = NonNullable<
 >;
 export type GetItemsIdQueryError = void;
 
+export function useGetItemsId<
+  TData = Awaited<ReturnType<typeof getItemsId>>,
+  TError = void,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItemsId>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItemsId>>,
+          TError,
+          Awaited<ReturnType<typeof getItemsId>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetItemsId<
+  TData = Awaited<ReturnType<typeof getItemsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItemsId>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getItemsId>>,
+          TError,
+          Awaited<ReturnType<typeof getItemsId>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetItemsId<
+  TData = Awaited<ReturnType<typeof getItemsId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItemsId>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary アイテムの取得
  */
@@ -256,19 +391,21 @@ export function useGetItemsId<
 >(
   id: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getItemsId>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getItemsId>>, TError, TData>
     >;
     request?: SecondParameter<typeof axiosInstance>;
   },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions = getGetItemsIdQueryOptions(id, options);
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
@@ -336,15 +473,18 @@ export type DeleteItemsIdMutationError = void;
 /**
  * @summary アイテムの削除
  */
-export const useDeleteItemsId = <TError = void, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteItemsId>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+export const useDeleteItemsId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteItemsId>>,
+      TError,
+      { id: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof deleteItemsId>>,
   TError,
   { id: string },
@@ -352,7 +492,7 @@ export const useDeleteItemsId = <TError = void, TContext = unknown>(options?: {
 > => {
   const mutationOptions = getDeleteItemsIdMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 /**
  * アイテムIDを指定してアイテム情報を更新します。
@@ -435,15 +575,18 @@ export type PatchItemsIdMutationError = void;
 /**
  * @summary アイテムの更新
  */
-export const usePatchItemsId = <TError = void, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchItemsId>>,
-    TError,
-    { id: string; data: UpdateItem },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+export const usePatchItemsId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchItemsId>>,
+      TError,
+      { id: string; data: UpdateItem },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof patchItemsId>>,
   TError,
   { id: string; data: UpdateItem },
@@ -451,5 +594,5 @@ export const usePatchItemsId = <TError = void, TContext = unknown>(options?: {
 > => {
   const mutationOptions = getPatchItemsIdMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };

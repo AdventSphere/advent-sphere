@@ -31,10 +31,10 @@
       "migrations_dir": "drizzle",
       "preview_database_id": "55c3cd49-0ef0-467a-9ef0-9211df2d78e2"
     }
-  ]
-  // "ai": {
-  //   "binding": "AI"
-  // },
+  ],
+  "ai": {
+    "binding": "AI"
+  }
   // "observability": {
   //   "enabled": true,
   //   "head_sampling_rate": 1

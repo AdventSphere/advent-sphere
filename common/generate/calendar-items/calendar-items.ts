@@ -6,9 +6,14 @@
  */
 
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -57,10 +62,12 @@ export const getGetCalendarItemsRoomIdCalendarItemsQueryOptions = <
 >(
   roomId: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+        TError,
+        TData
+      >
     >;
     request?: SecondParameter<typeof axiosInstance>;
   },
@@ -85,7 +92,7 @@ export const getGetCalendarItemsRoomIdCalendarItemsQueryOptions = <
     Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetCalendarItemsRoomIdCalendarItemsQueryResult = NonNullable<
@@ -93,6 +100,79 @@ export type GetCalendarItemsRoomIdCalendarItemsQueryResult = NonNullable<
 >;
 export type GetCalendarItemsRoomIdCalendarItemsQueryError = unknown;
 
+export function useGetCalendarItemsRoomIdCalendarItems<
+  TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+  TError = unknown,
+>(
+  roomId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+          TError,
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetCalendarItemsRoomIdCalendarItems<
+  TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+  TError = unknown,
+>(
+  roomId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+          TError,
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetCalendarItemsRoomIdCalendarItems<
+  TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+  TError = unknown,
+>(
+  roomId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary カレンダーアイテム一覧の取得
  */
@@ -103,22 +183,28 @@ export function useGetCalendarItemsRoomIdCalendarItems<
 >(
   roomId: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItems>>,
+        TError,
+        TData
+      >
     >;
     request?: SecondParameter<typeof axiosInstance>;
   },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions = getGetCalendarItemsRoomIdCalendarItemsQueryOptions(
     roomId,
     options,
   );
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
@@ -198,15 +284,18 @@ export type PostCalendarItemsRoomIdCalendarItemsMutationError = unknown;
 export const usePostCalendarItemsRoomIdCalendarItems = <
   TError = unknown,
   TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
-    TError,
-    { roomId: string; data: CreateCalendarItemRequest },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
+      TError,
+      { roomId: string; data: CreateCalendarItemRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
   TError,
   { roomId: string; data: CreateCalendarItemRequest },
@@ -215,7 +304,7 @@ export const usePostCalendarItemsRoomIdCalendarItems = <
   const mutationOptions =
     getPostCalendarItemsRoomIdCalendarItemsMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 /**
  * 指定したIDのカレンダーアイテムを削除します。
@@ -307,19 +396,22 @@ export type DeleteCalendarItemsRoomIdCalendarItemsIdMutationError = unknown;
 export const useDeleteCalendarItemsRoomIdCalendarItemsId = <
   TError = unknown,
   TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
-    TError,
-    {
-      roomId: string;
-      id: string;
-      data: DeleteCalendarItemsRoomIdCalendarItemsIdBody;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
+      TError,
+      {
+        roomId: string;
+        id: string;
+        data: DeleteCalendarItemsRoomIdCalendarItemsIdBody;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof deleteCalendarItemsRoomIdCalendarItemsId>>,
   TError,
   {
@@ -332,7 +424,7 @@ export const useDeleteCalendarItemsRoomIdCalendarItemsId = <
   const mutationOptions =
     getDeleteCalendarItemsRoomIdCalendarItemsIdMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 /**
  * 指定したIDのカレンダーアイテム情報を更新します。
@@ -411,15 +503,18 @@ export type PatchCalendarItemsRoomIdCalendarItemsIdMutationError = unknown;
 export const usePatchCalendarItemsRoomIdCalendarItemsId = <
   TError = unknown,
   TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
-    TError,
-    { roomId: string; id: string; data: PatchCalendarItemRequest },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationResult<
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
+      TError,
+      { roomId: string; id: string; data: PatchCalendarItemRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof axiosInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
   TError,
   { roomId: string; id: string; data: PatchCalendarItemRequest },
@@ -428,5 +523,5 @@ export const usePatchCalendarItemsRoomIdCalendarItemsId = <
   const mutationOptions =
     getPatchCalendarItemsRoomIdCalendarItemsIdMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
