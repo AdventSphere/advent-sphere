@@ -8,23 +8,23 @@ export interface CalendarItem {
   /** カレンダーアイテムID */
   id: string;
   /** ユーザーID */
-  user_id: string;
+  userId: string;
   /** ルームID */
-  room_id: string;
+  roomId: string;
   /** 作成日時 */
-  create_at: string;
+  createdAt: string;
   /** 開封可能日時 */
-  open_date: string;
+  openDate: string;
   /** アイテムの位置情報 */
   position?: number[];
   /** アイテムの回転情報 */
   rotation?: number[];
   /** アイテムが開封されたかどうか */
-  is_opened: boolean;
+  isOpened: boolean;
   /** 関連するアイテムID */
-  item_id: string;
+  itemId: string;
   /** 関連する画像ID */
-  image_id?: string;
+  imageId?: string;
 }
 
 export interface CreateCalendarItemResponse {
@@ -34,47 +34,47 @@ export interface CreateCalendarItemResponse {
 
 export interface CreateCalendarItem {
   /** ユーザーID */
-  user_id: string;
+  userId: string;
   /** ルームID */
-  room_id: string;
+  roomId: string;
   /** 開封可能日時 */
-  open_date: string;
+  openDate: string;
   /** アイテムの位置情報 */
   position?: number[];
   /** アイテムの回転情報 */
   rotation?: number[];
   /** 関連するアイテムID */
-  item_id: string;
+  itemId: string;
   /** 関連する画像ID */
-  image_id?: string;
+  imageId?: string;
 }
 
 export interface CreateCalendarItemRequest {
   /** ルームの編集ID */
-  edit_id: string;
+  editId: string;
   calendarItem: CreateCalendarItem;
 }
 
 export type PatchCalendarItemRequestCalendarItem = {
   /** ユーザーID */
-  user_id?: string;
+  userId?: string;
   /** ルームID */
-  room_id?: string;
+  roomId?: string;
   /** 開封可能日時 */
-  open_date?: string;
+  openDate?: string;
   /** アイテムの位置情報 */
   position?: number[];
   /** アイテムの回転情報 */
   rotation?: number[];
   /** 関連するアイテムID */
-  item_id?: string;
+  itemId?: string;
   /** 関連する画像ID */
-  image_id?: string;
+  imageId?: string;
 };
 
 export interface PatchCalendarItemRequest {
   /** ルームの編集ID */
-  edit_id: string;
+  editId: string;
   calendarItem: PatchCalendarItemRequestCalendarItem;
 }
 
@@ -146,20 +146,20 @@ export interface UpdateItem {
 
 export interface CreateRoomResponse {
   /** ルームの編集ID */
-  edit_id: string;
+  editId: string;
 }
 
 export interface CreateRoom {
   /** オーナーのユーザーID */
-  owner_id: string;
+  ownerId: string;
   /** アイテム取得日時 */
-  item_get_time?: string;
+  itemGetTime?: string;
   /** ルームのパスワード */
   password?: string;
   /** 匿名モードかどうか */
-  is_anonymous: boolean;
+  isAnonymous: boolean;
   /** 開始日時 */
-  start_at: string;
+  startAt: string;
 }
 
 export type RoomAllOf = {
@@ -168,22 +168,22 @@ export type RoomAllOf = {
   /** ルーム作成日時 */
   createdAt: string;
   /** 生成回数 */
-  generate_count: number;
+  generateCount: number;
   /** ルームの編集ID */
-  edit_id: string;
+  editId: string;
 };
 
 export type Room = CreateRoom & RoomAllOf;
 
 export interface UpdateRoom {
   /** アイテム取得日時 */
-  item_get_time?: string;
+  itemGetTime?: string;
   /** ルームのパスワード */
   password?: string;
   /** 匿名モードかどうか */
-  is_anonymous?: boolean;
+  isAnonymous?: boolean;
   /** 開始日時 */
-  start_at?: string;
+  startAt?: string;
 }
 
 export interface CreatePhotoResponse {
@@ -229,5 +229,5 @@ export interface CreatePromptRequest {
 
 export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
   /** ルームの編集ID */
-  edit_id: string;
+  editId: string;
 };

@@ -6,17 +6,17 @@ export const CalendarItemSchema = z
       example: "calendarItem_12345",
       description: "カレンダーアイテムID",
     }),
-    user_id: z
+    userId: z
       .string()
       .openapi({ example: "user_12345", description: "ユーザーID" }),
-    room_id: z
+    roomId: z
       .string()
       .openapi({ example: "room_12345", description: "ルームID" }),
-    create_at: z
-      .string()
-      .openapi({ example: "2024-06-01T12:00:00Z", description: "作成日時" }),
-    open_date: z.string().openapi({
-      example: "2024-07-01T12:00:00Z",
+    createdAt: z
+      .date()
+      .openapi({ example: new Date().toISOString(), description: "作成日時" }),
+    openDate: z.date().openapi({
+      example: new Date().toISOString(),
       description: "開封可能日時",
     }),
     position: z
@@ -27,13 +27,13 @@ export const CalendarItemSchema = z
       .array(z.number())
       .optional()
       .openapi({ example: [0, 0, 0], description: "アイテムの回転情報" }),
-    is_opened: z
+    isOpened: z
       .boolean()
       .openapi({ example: false, description: "アイテムが開封されたかどうか" }),
-    item_id: z
+    itemId: z
       .string()
       .openapi({ example: "item_12345", description: "関連するアイテムID" }),
-    image_id: z
+    imageId: z
       .string()
       .optional()
       .openapi({ example: "image_12345", description: "関連する画像ID" }),
@@ -43,26 +43,26 @@ export const CalendarItemSchema = z
 export type CalendarItemSchema = z.infer<typeof CalendarItemSchema>;
 
 export const CreateCalendarItemSchema = CalendarItemSchema.pick({
-  user_id: true,
-  room_id: true,
-  open_date: true,
+  userId: true,
+  roomId: true,
+  openDate: true,
   position: true,
   rotation: true,
-  item_id: true,
-  image_id: true,
+  itemId: true,
+  imageId: true,
 }).openapi("CreateCalendarItem");
 
 export type CreateCalendarItemSchema = z.infer<typeof CreateCalendarItemSchema>;
 
 const EditIdSchema = z.object({
-  edit_id: z
+  editId: z
     .string()
     .openapi({ example: "12345", description: "ルームの編集ID" }),
 });
 
 const CreateCalendarItemRequestSchema = z
   .object({
-    edit_id: z
+    editId: z
       .string()
       .openapi({ example: "12345", description: "ルームの編集ID" }),
     calendarItem: CreateCalendarItemSchema,
@@ -80,7 +80,7 @@ const CreateCalendarItemResponseSchema = z
 
 const PatchCalendarItemRequestSchema = z
   .object({
-    edit_id: z
+    editId: z
       .string()
       .openapi({ example: "12345", description: "ルームの編集ID" }),
     calendarItem: CreateCalendarItemSchema.partial(),
@@ -89,14 +89,14 @@ const PatchCalendarItemRequestSchema = z
 
 const listCalendarItemsRoute = createRoute({
   method: "get",
-  path: "/{room_id}/calendarItems",
+  path: "/{roomId}/calendarItems",
   tags: ["calendar_items"],
   summary: "カレンダーアイテム一覧の取得",
   description: "すべてのカレンダーアイテムを取得します。",
   request: {
     params: z.object({
-      room_id: z.string().openapi({
-        param: { name: "room_id", in: "path" },
+      roomId: z.string().openapi({
+        param: { name: "roomId", in: "path" },
         example: "room_12345",
         description: "ルームID",
       }),
@@ -116,14 +116,14 @@ const listCalendarItemsRoute = createRoute({
 
 const createCalendarItemRoute = createRoute({
   method: "post",
-  path: "/{room_id}/calendarItems",
+  path: "/{roomId}/calendarItems",
   tags: ["calendar_items"],
   summary: "カレンダーアイテムの作成",
   description: "新しいカレンダーアイテムを作成します。",
   request: {
     params: z.object({
-      room_id: z.string().openapi({
-        param: { name: "room_id", in: "path" },
+      roomId: z.string().openapi({
+        param: { name: "roomId", in: "path" },
         example: "room_12345",
         description: "ルームID",
       }),
@@ -151,14 +151,14 @@ const createCalendarItemRoute = createRoute({
 
 const deleteCalendarItemRoute = createRoute({
   method: "delete",
-  path: "/{room_id}/calendarItems/{id}",
+  path: "/{roomId}/calendarItems/{id}",
   tags: ["calendar_items"],
   summary: "カレンダーアイテムの削除",
   description: "指定したIDのカレンダーアイテムを削除します。",
   request: {
     params: z.object({
-      room_id: z.string().openapi({
-        param: { name: "room_id", in: "path" },
+      roomId: z.string().openapi({
+        param: { name: "roomId", in: "path" },
         example: "room_12345",
         description: "ルームID",
       }),
@@ -186,14 +186,14 @@ const deleteCalendarItemRoute = createRoute({
 
 const patchCalendarItemRoute = createRoute({
   method: "patch",
-  path: "/{room_id}/calendarItems/{id}",
+  path: "/{roomId}/calendarItems/{id}",
   tags: ["calendar_items"],
   summary: "カレンダーアイテムの更新",
   description: "指定したIDのカレンダーアイテム情報を更新します。",
   request: {
     params: z.object({
-      room_id: z.string().openapi({
-        param: { name: "room_id", in: "path" },
+      roomId: z.string().openapi({
+        param: { name: "roomId", in: "path" },
         example: "room_12345",
         description: "ルームID",
       }),
@@ -229,19 +229,19 @@ const app = new OpenAPIHono<{
 }>();
 
 app.openapi(listCalendarItemsRoute, async (c) => {
-  const { room_id } = c.req.valid("param");
+  const { roomId } = c.req.valid("param");
 
   const mockCalendarItems: CalendarItemSchema[] = [
     {
       id: "calendarItem_1",
-      user_id: "user_12345",
-      room_id: room_id,
-      create_at: new Date().toISOString(),
-      open_date: new Date().toISOString(),
+      userId: "user_12345",
+      roomId: roomId,
+      createdAt: new Date(),
+      openDate: new Date(),
       position: [0, 1, 2],
-      is_opened: false,
-      item_id: "item_12345",
-      image_id: "image_12345",
+      isOpened: false,
+      itemId: "item_12345",
+      imageId: "image_12345",
       rotation: [0, 0, 0],
     },
   ];
@@ -250,39 +250,39 @@ app.openapi(listCalendarItemsRoute, async (c) => {
 });
 
 app.openapi(createCalendarItemRoute, async (c) => {
-  const { room_id } = c.req.valid("param");
-  const { edit_id, calendarItem } = c.req.valid("json");
+  const { roomId } = c.req.valid("param");
+  const { editId, calendarItem } = c.req.valid("json");
 
   // mock
   const res = {
     id: "calendarItem_12345",
-    // ここで calendarItem と room_id を使ってDB保存する想定
+    // ここで calendarItem と roomId を使ってDB保存する想定
   };
   return c.json(res, 201);
 });
 
 app.openapi(deleteCalendarItemRoute, async (c) => {
-  const { room_id, id } = c.req.valid("param");
-  const { edit_id } = c.req.valid("json");
+  const { roomId, id } = c.req.valid("param");
+  const { editId } = c.req.valid("json");
 
   // mock delete
   return c.body(null, 204);
 });
 
 app.openapi(patchCalendarItemRoute, async (c) => {
-  const { room_id, id } = c.req.valid("param");
-  const { edit_id, calendarItem } = c.req.valid("json");
+  const { roomId, id } = c.req.valid("param");
+  const { editId, calendarItem } = c.req.valid("json");
 
   const updated: CalendarItemSchema = {
     id,
-    room_id,
-    user_id: calendarItem.user_id || "user_12345",
-    create_at: new Date().toISOString(),
-    open_date: calendarItem.open_date || new Date().toISOString(),
+    roomId,
+    userId: calendarItem.userId || "user_12345",
+    createdAt: new Date(),
+    openDate: calendarItem.openDate || new Date(),
     position: calendarItem.position,
-    is_opened: false,
-    item_id: calendarItem.item_id || "item_12345",
-    image_id: calendarItem.image_id,
+    isOpened: false,
+    itemId: calendarItem.itemId || "item_12345",
+    imageId: calendarItem.imageId,
     rotation: calendarItem.rotation,
   };
 

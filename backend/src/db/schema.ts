@@ -27,7 +27,7 @@ export const roomTable = sqliteTable("room", {
     .notNull()
     .default(false),
   startAt: integer("start_at", { mode: "timestamp" }).notNull(),
-
+  itemGetTime: integer("item_get_time", { mode: "timestamp" }),
   generateCount: integer("generate_count").notNull().default(0),
 });
 

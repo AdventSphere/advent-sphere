@@ -10,7 +10,7 @@ export const UserSchema = z
       .string()
       .openapi({ example: "user_12345", description: "ユーザーID" }),
     createdAt: z.date().openapi({
-      example: "2021-08-01T12:00:00Z",
+      example: new Date().toISOString(),
       description: "ユーザー作成日時のタイムスタンプ",
     }),
     name: z.string().openapi({ example: "太郎", description: "ユーザー名" }),

@@ -21,8 +21,8 @@ export const ItemSchema = z
     name: z
       .string()
       .openapi({ example: "アイテム名", description: "アイテム名" }),
-    createdAt: z.string().openapi({
-      example: "2024-06-01T12:00:00Z",
+    createdAt: z.date().openapi({
+      example: new Date().toISOString(),
       description: "アイテム作成日時",
     }),
     description: z
@@ -214,14 +214,14 @@ app.openapi(listItemsRoute, async (c) => {
     {
       id: "item_1",
       name: "アイテム名1",
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       description: "アイテムの説明1",
       type: "photo_frame",
     },
     {
       id: "item_2",
       name: "アイテム名2",
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       description: "アイテムの説明2",
       type: "sticker",
     },
@@ -234,7 +234,7 @@ app.openapi(getItemRoute, async (c) => {
   const mockItem: ItemSchema = {
     id,
     name: `アイテム名${id}`,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     description: `アイテムの説明${id}`,
     type: "photo_frame",
   };
@@ -297,7 +297,7 @@ app.openapi(patchItemRoute, async (c) => {
   const updatedItem: ItemSchema = {
     id,
     name: body.name ?? `アイテム名${id}`,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     description: body.description ?? `アイテムの説明${id}`,
     type: body.type ?? "photo_frame",
   };
