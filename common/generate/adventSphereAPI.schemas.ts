@@ -11,10 +11,16 @@ export interface CalendarItem {
   userId: string;
   /** ルームID */
   roomId: string;
-  /** 作成日時 */
-  createdAt: string;
-  /** 開封可能日時 */
-  openDate: string;
+  /**
+   * 作成日時
+   * @nullable
+   */
+  createdAt: string | null;
+  /**
+   * 開封可能日時
+   * @nullable
+   */
+  openDate: string | null;
   /** アイテムの位置情報 */
   position?: number[];
   /** アイテムの回転情報 */
@@ -37,8 +43,11 @@ export interface CreateCalendarItem {
   userId: string;
   /** ルームID */
   roomId: string;
-  /** 開封可能日時 */
-  openDate: string;
+  /**
+   * 開封可能日時
+   * @nullable
+   */
+  openDate: string | null;
   /** アイテムの位置情報 */
   position?: number[];
   /** アイテムの回転情報 */
@@ -60,8 +69,11 @@ export type PatchCalendarItemRequestCalendarItem = {
   userId?: string;
   /** ルームID */
   roomId?: string;
-  /** 開封可能日時 */
-  openDate?: string;
+  /**
+   * 開封可能日時
+   * @nullable
+   */
+  openDate?: string | null;
   /** アイテムの位置情報 */
   position?: number[];
   /** アイテムの回転情報 */
@@ -81,8 +93,11 @@ export interface PatchCalendarItemRequest {
 export interface User {
   /** ユーザーID */
   id: string;
-  /** ユーザー作成日時のタイムスタンプ */
-  createdAt: string;
+  /**
+   * ユーザー作成日時のタイムスタンプ
+   * @nullable
+   */
+  createdAt: string | null;
   /** ユーザー名 */
   name: string;
 }
@@ -99,8 +114,11 @@ export interface Item {
   id: string;
   /** アイテム名 */
   name: string;
-  /** アイテム作成日時 */
-  createdAt: string;
+  /**
+   * アイテム作成日時
+   * @nullable
+   */
+  createdAt: string | null;
   /** アイテムの説明 */
   description: string;
   /** アイテムの種類 */
@@ -165,8 +183,11 @@ export interface CreateRoom {
 export type RoomAllOf = {
   /** ルームID */
   id: string;
-  /** ルーム作成日時 */
-  createdAt: string;
+  /**
+   * ルーム作成日時
+   * @nullable
+   */
+  createdAt: string | null;
   /** 生成回数 */
   generateCount: number;
   /** ルームの編集ID */

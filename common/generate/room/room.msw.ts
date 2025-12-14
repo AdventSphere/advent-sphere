@@ -33,7 +33,10 @@ export const getGetRoomsIdResponseMock = (): Room => ({
   },
   ...{
     id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: faker.date.past().toISOString().split("T")[0],
+    createdAt: faker.helpers.arrayElement([
+      faker.date.past().toISOString().split("T")[0],
+      null,
+    ]),
     generateCount: faker.number.float({
       min: undefined,
       max: undefined,
@@ -59,7 +62,10 @@ export const getPatchRoomsIdResponseMock = (): Room => ({
   },
   ...{
     id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: faker.date.past().toISOString().split("T")[0],
+    createdAt: faker.helpers.arrayElement([
+      faker.date.past().toISOString().split("T")[0],
+      null,
+    ]),
     generateCount: faker.number.float({
       min: undefined,
       max: undefined,

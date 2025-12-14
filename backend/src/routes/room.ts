@@ -24,7 +24,7 @@ export const CreateRoomSchema = z
 
 export const RoomSchema = CreateRoomSchema.extend({
   id: z.string().openapi({ example: "room_12345", description: "ルームID" }),
-  createdAt: z.date().openapi({
+  createdAt: z.coerce.date().openapi({
     example: new Date().toISOString(),
     description: "ルーム作成日時",
   }),

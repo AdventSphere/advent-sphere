@@ -12,10 +12,10 @@ export const CalendarItemSchema = z
     roomId: z
       .string()
       .openapi({ example: "room_12345", description: "ルームID" }),
-    createdAt: z
+    createdAt: z.coerce
       .date()
       .openapi({ example: new Date().toISOString(), description: "作成日時" }),
-    openDate: z.date().openapi({
+    openDate: z.coerce.date().openapi({
       example: new Date().toISOString(),
       description: "開封可能日時",
     }),
