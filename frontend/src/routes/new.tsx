@@ -80,7 +80,7 @@ function RouteComponent() {
       const apiData = {
         owner_id: "temp_user_id", // TODO: 実際のユーザーIDを取得
         start_at: data.start_at instanceof Date ? data.start_at.toISOString() : data.start_at,
-        item_get_time: data.item_get_time === "" ? undefined : 
+        item_get_time: data.item_get_time === "" ? undefined :
           (data.item_get_time instanceof Date ? data.item_get_time.toISOString() : data.item_get_time),
         password: data.password || undefined,
         is_anonymous: data.is_anonymous as boolean
@@ -90,11 +90,11 @@ function RouteComponent() {
 
       // 実際のAPI呼び出し
       const response = await postRooms(apiData)
-      
+
       setIsSuccess(true)
       setSuccessData({
         editUrl: `https://advent-sphere.com/edit/${response.edit_id}`,
-        password: data.password || "パスワードなし"
+        password: data.password || "<パスワードなし>"
       })
     } catch (error) {
       console.error("エラー:", error)
