@@ -1,12 +1,16 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 
-const uploadFunction = (object: File, path: string, fileName: string) => {
+const uploadFunction = (
+  bucket: R2Bucket,
+  object: File,
+  path: string,
+  fileName: string,
+) => {
   const key = `${path}/${fileName}`;
-  return env.BUCKET.put(key, object);
+  return bucket.put(key, object);
 };
 
 export const ItemSchema = z
@@ -255,11 +259,13 @@ app.openapi(createItemRoute, async (c) => {
   try {
     await Promise.all([
       uploadFunction(
+        c.env.BUCKET,
         objectFile,
         `item/object/${type}`,
         `${result[0].id}.${objectFile.name.split(".").pop()}`,
       ),
       uploadFunction(
+        c.env.BUCKET,
         objectThumbnail,
         `item/thumbnail/${type}`,
         `${result[0].id}.${objectThumbnail.name.split(".").pop()}`,

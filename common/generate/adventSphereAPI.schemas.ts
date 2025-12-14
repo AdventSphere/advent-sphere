@@ -114,6 +114,10 @@ export interface CreateItemResponse {
   name: string;
 }
 
+export interface CreateItemError {
+  error: string;
+}
+
 export interface CreateItem {
   /** アイテム名 */
   name: string;
@@ -123,6 +127,8 @@ export interface CreateItem {
   type: string;
   /** アイテムの3Dモデルファイル */
   objectFile: Blob;
+  /** アイテムのサムネイル画像ファイル */
+  objectThumbnail: Blob;
 }
 
 export interface UpdateItem {
@@ -134,6 +140,8 @@ export interface UpdateItem {
   type?: string;
   /** アイテムの3Dモデルファイル */
   objectFile?: Blob;
+  /** アイテムのサムネイル画像ファイル */
+  objectThumbnail?: Blob;
 }
 
 export interface CreateRoomResponse {
