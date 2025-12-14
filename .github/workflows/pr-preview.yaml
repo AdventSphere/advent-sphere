@@ -95,6 +95,7 @@ jobs:
         working-directory: ${{ matrix.directory }}
         env:
           NODE_ENV: production
+          VITE_MOCKING_ENABLED: ${{ vars.VITE_MOCKING_ENABLED }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
