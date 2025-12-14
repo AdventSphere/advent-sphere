@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useState } from "react"
 import { format } from "date-fns"
+import { postRooms } from "../../../common/generate/room/room"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -25,7 +26,7 @@ const formSchema = z.object({
   start_at: z.union([z.string().min(1, "開始日を選択してください"), z.date()]),
   item_get_time: z.union([z.string(), z.date()]).optional(),
   password: z.string(),
-  is_anonimas: z.union([z.boolean(), z.literal("")]),
+  is_anonymous: z.union([z.boolean(), z.literal("")]),
 }).refine(
   (data) => {
     // start_atが空文字でないことを確認
@@ -65,7 +66,7 @@ function RouteComponent() {
       start_at: new Date(2025, 11, 1), // 2025年12月1日
       item_get_time: "",
       password: "",
-      is_anonimas: true
+      is_anonymous: true
     }
   })
 
@@ -77,25 +78,31 @@ function RouteComponent() {
 
       // APIに送信するデータ形式に変換
       const apiData = {
-        start_at: data.start_at,
-        item_get_time: data.item_get_time === "" ? "" : data.item_get_time,
-        password: data.password,
-        is_anonimas: data.is_anonimas
+        owner_id: "temp_user_id", // TODO: 実際のユーザーIDを取得
+        start_at: data.start_at instanceof Date ? data.start_at.toISOString() : data.start_at,
+        item_get_time: data.item_get_time === "" ? undefined : 
+          (data.item_get_time instanceof Date ? data.item_get_time.toISOString() : data.item_get_time),
+        password: data.password || undefined,
+        is_anonymous: data.is_anonymous as boolean
       }
 
       console.log("API送信データ:", apiData)
 
-      // 成功を模擬
-      setTimeout(() => {
-        setIsSuccess(true)
-        setSuccessData({
-          editUrl: "https://advent-calendar-app.com/edit/" + Math.random().toString(36).substring(7),
-          password: data.password || "winter2025"
-        })
-      }, 1000)
+      // 実際のAPI呼び出し
+      const response = await postRooms(apiData)
+      
+      setIsSuccess(true)
+      setSuccessData({
+        editUrl: `https://advent-sphere.com/edit/${response.edit_id}`,
+        password: data.password || "パスワードなし"
+      })
     } catch (error) {
       console.error("エラー:", error)
-      alert("作成に失敗しました")
+      if (error instanceof Error) {
+        alert(`作成に失敗しました: ${error.message}`)
+      } else {
+        alert("作成に失敗しました")
+      }
     }
   }
 
@@ -325,9 +332,9 @@ function RouteComponent() {
           </div>
           <Switch
             id="show-participant-names"
-            checked={!!watchedValues.is_anonimas}
+            checked={!!watchedValues.is_anonymous}
             onCheckedChange={(checked) => {
-              setValue("is_anonimas", checked)
+              setValue("is_anonymous", checked)
             }}
           />
         </div>
