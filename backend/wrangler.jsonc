@@ -16,18 +16,20 @@
   //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   //   }
   // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "advent-sphere",
+      "preview_bucket_name": "advent-sphere"
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "advent-sphere",
       "database_id": "55c3cd49-0ef0-467a-9ef0-9211df2d78e2",
-      "migrations_dir": "drizzle"
+      "migrations_dir": "drizzle",
+      "preview_database_id": "55c3cd49-0ef0-467a-9ef0-9211df2d78e2"
     }
   ],
   "ai": {

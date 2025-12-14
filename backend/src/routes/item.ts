@@ -1,4 +1,13 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { env } from "cloudflare:workers";
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "../db/schema";
+
+const uploadFunction = (object: File, path: string, fileName: string) => {
+  const key = `${path}/${fileName}`;
+  return env.BUCKET.put(key, object);
+};
 
 export const ItemSchema = z
   .object({
@@ -39,6 +48,12 @@ export const CreateItemSchema = z
       format: "binary",
       description: "アイテムの3Dモデルファイル",
       example: "model.glb",
+    }),
+    objectThumbnail: z.instanceof(File).openapi({
+      type: "string",
+      format: "binary",
+      description: "アイテムのサムネイル画像ファイル",
+      example: "thumbnail.png",
     }),
   })
   .openapi("CreateItem");
@@ -128,6 +143,18 @@ const createItemRoute = createRoute({
         },
       },
     },
+    500: {
+      description: "アイテムの作成またはファイルのアップロードに失敗しました",
+      content: {
+        "application/json": {
+          schema: z
+            .object({
+              error: z.string(),
+            })
+            .openapi("CreateItemError"),
+        },
+      },
+    },
   },
 });
 
@@ -211,12 +238,43 @@ app.openapi(getItemRoute, async (c) => {
 });
 
 app.openapi(createItemRoute, async (c) => {
-  const body = c.req.valid("form");
-  // const file = body.objectFile  // File
+  const { name, description, type, objectFile, objectThumbnail } =
+    c.req.valid("form");
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .insert(schema.itemTable)
+    .values({
+      name,
+      description,
+      type,
+    })
+    .returning();
+  if (result.length === 0) {
+    return c.json({ error: "アイテムの作成に失敗しました" }, 500);
+  }
+  try {
+    await Promise.all([
+      uploadFunction(
+        objectFile,
+        `item/object/${type}`,
+        `${result[0].id}.${objectFile.name.split(".").pop()}`,
+      ),
+      uploadFunction(
+        objectThumbnail,
+        `item/thumbnail/${type}`,
+        `${result[0].id}.${objectThumbnail.name.split(".").pop()}`,
+      ),
+    ]);
+  } catch (e) {
+    await db
+      .delete(schema.itemTable)
+      .where(eq(schema.itemTable.id, result[0].id));
+    return c.json({ error: `ファイルのアップロードに失敗しました．${e}` }, 500);
+  }
 
   const newItemResponse = {
-    id: "item_12345",
-    name: body.name,
+    id: result[0].id,
+    name: result[0].name,
   };
   return c.json(newItemResponse, 201);
 });
