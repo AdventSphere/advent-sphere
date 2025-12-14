@@ -60,8 +60,8 @@ export const calendarItemTable = sqliteTable("calendar_item", {
   position: text("position"),
   rotation: text("rotation"),
   isOpened: integer("is_opened", { mode: "boolean" }).notNull().default(false),
-  itemId: integer("item_id")
+  itemId: text("item_id")
     .notNull()
     .references(() => itemTable.id),
-  imageId: integer("image_id"),
+  imageId: text("image_id"),
 });
