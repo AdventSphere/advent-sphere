@@ -19,13 +19,6 @@
     "check:fix": "biome check . --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.8",
-    "@faker-js/faker": "^10.1.0",
-    "msw": "^2.12.4"
-  },
-  "msw": {
-    "workerDirectory": [
-      "frontend\\public"
-    ]
+    "@biomejs/biome": "2.3.8"
   }
 }

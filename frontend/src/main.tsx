@@ -1,14 +1,13 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { enableMocking } from './mocks/setup'
-
 import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provider.tsx";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen.ts";
 
 import "./styles.css";
+import { MswProvider } from "@/components/MswProvider.tsx";
 import reportWebVitals from "./reportWebVitals.ts";
 
 // Create a new router instance
@@ -36,17 +35,16 @@ declare module "@tanstack/react-router" {
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
-  
-  // Enable MSW in development mode
-  enableMocking().then(() => {
-    root.render(
-      <StrictMode>
+
+  root.render(
+    <StrictMode>
+      <MswProvider>
         <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
           <RouterProvider router={router} />
         </TanStackQueryProvider.Provider>
-      </StrictMode>,
-    );
-  });
+      </MswProvider>
+    </StrictMode>,
+  );
 }
 
 // If you want to start measuring performance in your app, pass a function

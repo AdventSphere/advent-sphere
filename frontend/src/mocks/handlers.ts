@@ -1,5 +1,6 @@
-import { getRoomMock } from "../../../common/generate/room/room.msw";
+import * as mocks from "common/generate/index.msw.ts";
+import type { RequestHandler } from "msw";
 
-export const handlers = [
-  ...getRoomMock()
-];
+export const handlers: RequestHandler[] = Object.entries(mocks).flatMap(
+  ([, getMock]) => getMock(),
+);
