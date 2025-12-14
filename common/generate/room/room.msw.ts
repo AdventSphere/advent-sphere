@@ -13,59 +13,59 @@ import type { CreateRoomResponse, Room } from "../adventSphereAPI.schemas";
 export const getPostRoomsResponseMock = (
   overrideResponse: Partial<CreateRoomResponse> = {},
 ): CreateRoomResponse => ({
-  edit_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  editId: faker.string.alpha({ length: { min: 10, max: 20 } }),
   ...overrideResponse,
 });
 
 export const getGetRoomsIdResponseMock = (): Room => ({
   ...{
-    owner_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    item_get_time: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+    ownerId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    itemGetTime: faker.helpers.arrayElement([
+      `${faker.date.past().toISOString().split(".")[0]}Z`,
       undefined,
     ]),
     password: faker.helpers.arrayElement([
       faker.string.alpha({ length: { min: 10, max: 20 } }),
       undefined,
     ]),
-    is_anonymous: faker.datatype.boolean(),
-    start_at: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    isAnonymous: faker.datatype.boolean(),
+    startAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
   },
   ...{
     id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    generate_count: faker.number.float({
+    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
+    generateCount: faker.number.float({
       min: undefined,
       max: undefined,
       fractionDigits: 2,
     }),
-    edit_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    editId: faker.string.alpha({ length: { min: 10, max: 20 } }),
   },
 });
 
 export const getPatchRoomsIdResponseMock = (): Room => ({
   ...{
-    owner_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    item_get_time: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
+    ownerId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    itemGetTime: faker.helpers.arrayElement([
+      `${faker.date.past().toISOString().split(".")[0]}Z`,
       undefined,
     ]),
     password: faker.helpers.arrayElement([
       faker.string.alpha({ length: { min: 10, max: 20 } }),
       undefined,
     ]),
-    is_anonymous: faker.datatype.boolean(),
-    start_at: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    isAnonymous: faker.datatype.boolean(),
+    startAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
   },
   ...{
     id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    generate_count: faker.number.float({
+    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
+    generateCount: faker.number.float({
       min: undefined,
       max: undefined,
       fractionDigits: 2,
     }),
-    edit_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
+    editId: faker.string.alpha({ length: { min: 10, max: 20 } }),
   },
 });
 

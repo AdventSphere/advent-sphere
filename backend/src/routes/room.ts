@@ -2,34 +2,43 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 
 export const CreateRoomSchema = z
   .object({
-    owner_id: z
+    ownerId: z
       .string()
       .openapi({ example: "user_12345", description: "オーナーのユーザーID" }),
-    item_get_time: z.string().optional().openapi({
-      example: "2024-07-01T12:00:00Z",
+    itemGetTime: z.date().optional().openapi({
+      type: "string",
+      format: "date-time",
+      example: new Date().toISOString(),
       description: "アイテム取得日時",
     }),
     password: z.string().optional().openapi({
       example: "securepassword",
       description: "ルームのパスワード",
     }),
-    is_anonymous: z
+    isAnonymous: z
       .boolean()
       .openapi({ example: false, description: "匿名モードかどうか" }),
-    start_at: z
-      .string()
-      .openapi({ example: "2024-07-01T12:00:00Z", description: "開始日時" }),
+    startAt: z
+      .date()
+      .openapi({
+        type: "string",
+        format: "date-time",
+        example: new Date().toISOString(),
+        description: "開始日時",
+      }),
   })
   .openapi("CreateRoom");
 
 export const RoomSchema = CreateRoomSchema.extend({
   id: z.string().openapi({ example: "room_12345", description: "ルームID" }),
-  createdAt: z.string().openapi({
-    example: "2024-06-01T12:00:00Z",
+  createdAt: z.coerce.date().openapi({
+    type: "string",
+    format: "date-time",
+    example: new Date().toISOString(),
     description: "ルーム作成日時",
   }),
-  generate_count: z.number().openapi({ example: 0, description: "生成回数" }),
-  edit_id: z
+  generateCount: z.number().openapi({ example: 0, description: "生成回数" }),
+  editId: z
     .string()
     .openapi({ example: "edit_12345", description: "ルームの編集ID" }),
 }).openapi("Room");
@@ -37,10 +46,10 @@ export const RoomSchema = CreateRoomSchema.extend({
 export type RoomSchema = z.infer<typeof RoomSchema>;
 
 export const UpdateRoomSchema = CreateRoomSchema.pick({
-  item_get_time: true,
+  itemGetTime: true,
   password: true,
-  is_anonymous: true,
-  start_at: true,
+  isAnonymous: true,
+  startAt: true,
 })
   .partial()
   .openapi("UpdateRoom");
@@ -66,7 +75,7 @@ const createRoomRoute = createRoute({
         "application/json": {
           schema: z
             .object({
-              edit_id: z
+              editId: z
                 .string()
                 .openapi({ example: "12345", description: "ルームの編集ID" }),
             })
@@ -163,7 +172,7 @@ const app = new OpenAPIHono<{
 app.openapi(createRoomRoute, async (c) => {
   const body = c.req.valid("json");
   // ここでルーム作成のロジックを実装（mock）
-  const mockResponse = { edit_id: "12345" };
+  const mockResponse = { editId: "12345" };
   return c.json(mockResponse, 201);
 });
 
@@ -171,14 +180,14 @@ app.openapi(getRoomRoute, async (c) => {
   const { id } = c.req.valid("param");
   const mockRoom: RoomSchema = {
     id,
-    createdAt: new Date().toISOString(),
-    owner_id: "user_12345",
-    item_get_time: new Date().toISOString(),
+    createdAt: new Date(),
+    ownerId: "user_12345",
+    itemGetTime: new Date(),
     password: "securepassword",
-    is_anonymous: false,
-    start_at: new Date().toISOString(),
-    generate_count: 0,
-    edit_id: "edit_12345",
+    isAnonymous: false,
+    startAt: new Date(),
+    generateCount: 0,
+    editId: "edit_12345",
   };
   return c.json(mockRoom);
 });
@@ -195,14 +204,14 @@ app.openapi(patchRoomRoute, async (c) => {
 
   const updatedRoom: RoomSchema = {
     id,
-    createdAt: new Date().toISOString(),
-    owner_id: "user_12345",
-    item_get_time: body.item_get_time ?? new Date().toISOString(),
+    createdAt: new Date(),
+    ownerId: "user_12345",
+    itemGetTime: body.itemGetTime ?? new Date(),
     password: body.password ?? "securepassword",
-    is_anonymous: body.is_anonymous ?? false,
-    start_at: body.start_at ?? new Date().toISOString(),
-    generate_count: 0,
-    edit_id: "edit_12345",
+    isAnonymous: body.isAnonymous ?? false,
+    startAt: body.startAt ?? new Date(),
+    generateCount: 0,
+    editId: "edit_12345",
   };
 
   return c.json(updatedRoom);

@@ -20,10 +20,10 @@ export const getGetCalendarItemsRoomIdCalendarItemsResponseMock =
       (_, i) => i + 1,
     ).map(() => ({
       id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      user_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      room_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      create_at: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      open_date: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      userId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      roomId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
+      openDate: `${faker.date.past().toISOString().split(".")[0]}Z`,
       position: faker.helpers.arrayElement([
         Array.from(
           { length: faker.number.int({ min: 1, max: 10 }) },
@@ -50,9 +50,9 @@ export const getGetCalendarItemsRoomIdCalendarItemsResponseMock =
         ),
         undefined,
       ]),
-      is_opened: faker.datatype.boolean(),
-      item_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      image_id: faker.helpers.arrayElement([
+      isOpened: faker.datatype.boolean(),
+      itemId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+      imageId: faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         undefined,
       ]),
@@ -69,10 +69,10 @@ export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (
   overrideResponse: Partial<CalendarItem> = {},
 ): CalendarItem => ({
   id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  user_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  room_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  create_at: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  open_date: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  userId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  roomId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
+  openDate: `${faker.date.past().toISOString().split(".")[0]}Z`,
   position: faker.helpers.arrayElement([
     Array.from(
       { length: faker.number.int({ min: 1, max: 10 }) },
@@ -91,9 +91,9 @@ export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (
     ),
     undefined,
   ]),
-  is_opened: faker.datatype.boolean(),
-  item_id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  image_id: faker.helpers.arrayElement([
+  isOpened: faker.datatype.boolean(),
+  itemId: faker.string.alpha({ length: { min: 10, max: 20 } }),
+  imageId: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
     undefined,
   ]),

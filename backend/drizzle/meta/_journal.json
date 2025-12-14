@@ -15,6 +15,20 @@
       "when": 1765605057478,
       "tag": "0001_colossal_madripoor",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1765720516626,
+      "tag": "0002_strange_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1765722977778,
+      "tag": "0003_marvelous_pet_avengers",
+      "breakpoints": true
     }
   ]
 }

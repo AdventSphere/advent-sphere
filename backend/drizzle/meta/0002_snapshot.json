@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f529fb6a-e0b1-4dea-bbbb-1d42f7196ef3",
-  "prevId": "0e8e4d3c-e2cb-40dc-825d-01682fca457c",
+  "id": "92a5bfbf-e9ea-4117-8d3e-68b45cf486f7",
+  "prevId": "f529fb6a-e0b1-4dea-bbbb-1d42f7196ef3",
   "tables": {
     "calendar_item": {
       "name": "calendar_item",
@@ -52,7 +52,7 @@
         },
         "rotation": {
           "name": "rotation",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -205,6 +205,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "item_get_time": {
+          "name": "item_get_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "generate_count": {
