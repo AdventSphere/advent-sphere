@@ -182,7 +182,7 @@ function RouteComponent() {
 
           <Button
             className="w-full bg-[color:var(--primary)] hover:bg-green-700 text-white"
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.open(successData.editUrl, '_blank')}
           >
             編集へ
           </Button>
