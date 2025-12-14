@@ -7,5 +7,8 @@
     "not_found_handling": "single-page-application"
   },
   "preview_urls": true,
-  "workers_dev": true
+  "workers_dev": true,
+  "vars": {
+    "NODE_ENV": "production"
+  }
 }
