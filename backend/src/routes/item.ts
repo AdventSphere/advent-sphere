@@ -13,6 +13,13 @@ const uploadFunction = (
   return bucket.put(key, object);
 };
 
+const deleteFunction =(
+  bucket: R2Bucket,
+  path:string,  
+) => {
+  return bucket.delete(path);
+}
+
 export const ItemSchema = z
   .object({
     id: z
@@ -285,6 +292,10 @@ app.openapi(deleteItemRoute, async (c) => {
   if (result.length === 0) {
     return c.json({ error: "アイテムが見つかりません" }, 404);
   }
+  await deleteFunction (
+    c.env.BUCKET,
+    `item/object/${result[0].type}/${result[0].id}`,
+  )
   return c.body(null, 204);
 });
 
