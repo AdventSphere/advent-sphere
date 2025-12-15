@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+// import { Link } from "@tanstack/react-router";
 import { usePostRooms } from "common/generate/room/room";
 import { format } from "date-fns";
 import {
@@ -91,19 +92,19 @@ function RouteComponent() {
 
       // APIに送信するデータ形式に変換
       const apiData = {
-        owner_id: "temp_user_id", // TODO: 実際のユーザーIDを取得
-        start_at:
+        ownerId: "temp_user_id", // TODO: 実際のユーザーIDを取得
+        startAt:
           data.start_at instanceof Date
             ? data.start_at.toISOString()
             : data.start_at,
-        item_get_time:
+        itemGetTime:
           data.item_get_time === ""
             ? undefined
             : data.item_get_time instanceof Date
               ? data.item_get_time.toISOString()
               : data.item_get_time,
         password: data.password || undefined,
-        is_anonymous: data.is_anonymous as boolean,
+        isAnonymous: data.is_anonymous as boolean,
       };
 
       console.log("API送信データ:", apiData);
@@ -113,7 +114,7 @@ function RouteComponent() {
 
       setIsSuccess(true);
       setSuccessData({
-        editUrl: `https://advent-sphere.com/edit/${response.edit_id}`,
+        editUrl: `https://advent-sphere.com/edit/${response.editId}`,
         password: data.password || "<パスワードなし>",
       });
     } catch (error) {
