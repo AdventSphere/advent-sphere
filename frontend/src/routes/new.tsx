@@ -241,14 +241,17 @@ function RouteComponent() {
                 )}
               >
                 <CalendarIcon className="h-4 w-4" />
-                {displayDate() ? (
-                  <>
-                    {format(displayDate()?.from, "yyyy/MM/dd")} ～{" "}
-                    {format(displayDate()?.to, "yyyy/MM/dd")}
-                  </>
-                ) : (
-                  <span>期間を選択</span>
-                )}
+                {(() => {
+                  const dates = displayDate();
+                  return dates ? (
+                    <>
+                      {format(dates.from, "yyyy/MM/dd")} ～{" "}
+                      {format(dates.to, "yyyy/MM/dd")}
+                    </>
+                  ) : (
+                    <span>期間を選択</span>
+                  );
+                })()}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
