@@ -20,6 +20,7 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.2",
+    "@sparkjsdev/spark": "^0.1.10",
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/react-devtools": "^0.7.0",
     "@tanstack/react-query": "^5.66.5",
