@@ -94,9 +94,13 @@ jobs:
         id: preview
         working-directory: ${{ matrix.directory }}
         env:
+          NODE_ENV: production
+          VITE_MOCKING_ENABLED: ${{ vars.VITE_MOCKING_ENABLED }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        shell: bash
         run: |
+          set -euxo pipefail
           # 1. ブランチ名からエイリアス（タグ）を生成
           branch_name="${{ github.head_ref }}"
           # Cloudflareのタグ仕様に合わせてサニタイズ（英数字とハイフンのみ、63文字以内）
@@ -116,7 +120,10 @@ jobs:
           echo "Deploying version with preview-alias: $alias"
           
           # 3. バージョンのアップロード (--preview-alias を指定することでプレビューURLが有効化される)
-          output=$(bun run --filter ${{ matrix.name }} upload --preview-alias "$alias" --message "PR #${{ github.event.pull_request.number }} - ${{ matrix.name }}")
+          set -o pipefail
+          output=$(bun run --filter ${{ matrix.name }} upload \
+            --preview-alias "$alias" \
+            --message "PR #${{ github.event.pull_request.number }} - ${{ matrix.name }}" 2>&1)
           echo "$output"
           
           # 4. バージョンID抽出
