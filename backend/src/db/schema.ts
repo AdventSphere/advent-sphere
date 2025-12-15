@@ -14,6 +14,9 @@ export const roomTable = sqliteTable("room", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => nanoid()),
+  editId: text("edit_id")
+    .$defaultFn(() => nanoid())
+    .notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

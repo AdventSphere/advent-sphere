@@ -24,7 +24,7 @@ export const ItemSchema = z
     createdAt: z.coerce.date().openapi({
       type: "string",
       format: "date-time",
-      example: new Date().toISOString(),
+      example: "2024-01-01T00:00:00Z",
       description: "アイテム作成日時",
     }),
     description: z

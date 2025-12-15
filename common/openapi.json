@@ -27,13 +27,13 @@
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.719Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "作成日時"
           },
           "openDate": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.719Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開封可能日時"
           },
           "position": {
@@ -105,7 +105,7 @@
           "openDate": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.719Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開封可能日時"
           },
           "position": {
@@ -175,7 +175,7 @@
               "openDate": {
                 "type": "string",
                 "format": "date-time",
-                "example": "2025-12-14T15:16:03.719Z",
+                "example": "2024-01-01T00:00:00Z",
                 "description": "開封可能日時"
               },
               "position": {
@@ -220,7 +220,7 @@
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.722Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "ユーザー作成日時のタイムスタンプ"
           },
           "name": {
@@ -263,7 +263,7 @@
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.722Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "アイテム作成日時"
           },
           "description": {
@@ -378,13 +378,18 @@
       "CreateRoomResponse": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "example": "room_12345",
+            "description": "ルームID"
+          },
           "editId": {
             "type": "string",
             "example": "12345",
             "description": "ルームの編集ID"
           }
         },
-        "required": ["editId"]
+        "required": ["id", "editId"]
       },
       "CreateRoom": {
         "type": "object",
@@ -397,7 +402,7 @@
           "itemGetTime": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.722Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "アイテム取得日時"
           },
           "password": {
@@ -413,44 +418,75 @@
           "startAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.722Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開始日時"
           }
         },
         "required": ["ownerId", "isAnonymous", "startAt"]
       },
       "Room": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/CreateRoom"
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "room_12345",
+            "description": "ルームID"
           },
-          {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "example": "room_12345",
-                "description": "ルームID"
-              },
-              "createdAt": {
-                "type": "string",
-                "format": "date-time",
-                "example": "2025-12-14T15:16:03.722Z",
-                "description": "ルーム作成日時"
-              },
-              "generateCount": {
-                "type": "number",
-                "example": 0,
-                "description": "生成回数"
-              },
-              "editId": {
-                "type": "string",
-                "example": "edit_12345",
-                "description": "ルームの編集ID"
-              }
-            },
-            "required": ["id", "createdAt", "generateCount", "editId"]
+          "ownerId": {
+            "type": "string",
+            "example": "user_12345",
+            "description": "オーナーのユーザーID"
+          },
+          "itemGetTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
+            "description": "アイテム取得日時"
+          },
+          "password": {
+            "type": "string",
+            "nullable": true,
+            "example": "securepassword",
+            "description": "ルームのパスワード"
+          },
+          "isAnonymous": {
+            "type": "boolean",
+            "example": false,
+            "description": "匿名モードかどうか"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
+            "description": "開始日時"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
+            "description": "ルーム作成日時"
+          },
+          "generateCount": {
+            "type": "number",
+            "example": 0,
+            "description": "生成回数"
+          },
+          "editId": {
+            "type": "string",
+            "example": "edit_12345",
+            "description": "ルームの編集ID"
           }
+        },
+        "required": [
+          "id",
+          "ownerId",
+          "itemGetTime",
+          "password",
+          "isAnonymous",
+          "startAt",
+          "createdAt",
+          "generateCount",
+          "editId"
         ]
       },
       "UpdateRoom": {
@@ -459,7 +495,7 @@
           "itemGetTime": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.722Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "アイテム取得日時"
           },
           "password": {
@@ -475,7 +511,7 @@
           "startAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-12-14T15:16:03.722Z",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開始日時"
           }
         }

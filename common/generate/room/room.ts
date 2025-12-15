@@ -4,7 +4,10 @@
  * advent-sphere API
  * OpenAPI spec version: 1.0.0
  */
-
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -17,427 +20,310 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "../../axios-instance";
+  UseQueryResult
+} from '@tanstack/react-query';
+
 import type {
   CreateRoom,
   CreateRoomResponse,
   Room,
-  UpdateRoom,
-} from "../adventSphereAPI.schemas";
+  UpdateRoom
+} from '../adventSphereAPI.schemas';
+
+import { axiosInstance } from '../../axios-instance';
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
-type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+      type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
 
 /**
  * 新しいルームを作成します。
  * @summary ルームの作成
  */
 export const postRooms = (
-  createRoom: CreateRoom,
-  options?: SecondParameter<typeof axiosInstance>,
-  signal?: AbortSignal,
+    createRoom: CreateRoom,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
 ) => {
-  return axiosInstance<CreateRoomResponse>(
-    {
-      url: `/rooms`,
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: createRoom,
-      signal,
+      
+      
+      return axiosInstance<CreateRoomResponse>(
+      {url: `/rooms`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createRoom, signal
     },
-    options,
-  );
-};
+      options);
+    }
+  
 
-export const getPostRoomsMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postRooms>>,
-    TError,
-    { data: CreateRoom },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postRooms>>,
-  TError,
-  { data: CreateRoom },
-  TContext
-> => {
-  const mutationKey = ["postRooms"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postRooms>>,
-    { data: CreateRoom }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPostRoomsMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postRooms>>, TError,{data: CreateRoom}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postRooms>>, TError,{data: CreateRoom}, TContext> => {
 
-    return postRooms(data, requestOptions);
-  };
+const mutationKey = ['postRooms'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostRoomsMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postRooms>>
->;
-export type PostRoomsMutationBody = CreateRoom;
-export type PostRoomsMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postRooms>>, {data: CreateRoom}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postRooms(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostRoomsMutationResult = NonNullable<Awaited<ReturnType<typeof postRooms>>>
+    export type PostRoomsMutationBody = CreateRoom
+    export type PostRoomsMutationError = unknown
+
+    /**
  * @summary ルームの作成
  */
-export const usePostRooms = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postRooms>>,
-      TError,
-      { data: CreateRoom },
-      TContext
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postRooms>>,
-  TError,
-  { data: CreateRoom },
-  TContext
-> => {
-  const mutationOptions = getPostRoomsMutationOptions(options);
+export const usePostRooms = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postRooms>>, TError,{data: CreateRoom}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postRooms>>,
+        TError,
+        {data: CreateRoom},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostRoomsMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * ルームIDを指定してルーム情報を取得します。
  * @summary ルーム情報の取得
  */
 export const getRoomsId = (
-  id: string,
-  options?: SecondParameter<typeof axiosInstance>,
-  signal?: AbortSignal,
+    id: string,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
 ) => {
-  return axiosInstance<Room>(
-    { url: `/rooms/${id}`, method: "GET", signal },
-    options,
-  );
-};
+      
+      
+      return axiosInstance<Room>(
+      {url: `/rooms/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+  
 
-export const getGetRoomsIdQueryKey = (id?: string) => {
-  return [`/rooms/${id}`] as const;
-};
 
-export const getGetRoomsIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRoomsId>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
+
+export const getGetRoomsIdQueryKey = (id?: string,) => {
+    return [
+    `/rooms/${id}`
+    ] as const;
+    }
+
+    
+export const getGetRoomsIdQueryOptions = <TData = Awaited<ReturnType<typeof getRoomsId>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRoomsIdQueryKey(id);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRoomsId>>> = ({
-    signal,
-  }) => getRoomsId(id, requestOptions, signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetRoomsIdQueryKey(id);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRoomsId>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetRoomsIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRoomsId>>
->;
-export type GetRoomsIdQueryError = void;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRoomsId>>> = ({ signal }) => getRoomsId(id, requestOptions, signal);
 
-export function useGetRoomsId<
-  TData = Awaited<ReturnType<typeof getRoomsId>>,
-  TError = void,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRoomsIdQueryResult = NonNullable<Awaited<ReturnType<typeof getRoomsId>>>
+export type GetRoomsIdQueryError = void
+
+
+export function useGetRoomsId<TData = Awaited<ReturnType<typeof getRoomsId>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRoomsId>>,
           TError,
           Awaited<ReturnType<typeof getRoomsId>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRoomsId<
-  TData = Awaited<ReturnType<typeof getRoomsId>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRoomsId<TData = Awaited<ReturnType<typeof getRoomsId>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRoomsId>>,
           TError,
           Awaited<ReturnType<typeof getRoomsId>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRoomsId<
-  TData = Awaited<ReturnType<typeof getRoomsId>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRoomsId<TData = Awaited<ReturnType<typeof getRoomsId>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary ルーム情報の取得
  */
 
-export function useGetRoomsId<
-  TData = Awaited<ReturnType<typeof getRoomsId>>,
-  TError = void,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetRoomsIdQueryOptions(id, options);
+export function useGetRoomsId<TData = Awaited<ReturnType<typeof getRoomsId>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetRoomsIdQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+
 
 /**
  * ルームIDを指定してルームを削除します。
  * @summary ルームの削除
  */
 export const deleteRoomsId = (
-  id: string,
-  options?: SecondParameter<typeof axiosInstance>,
-) => {
-  return axiosInstance<void>(
-    { url: `/rooms/${id}`, method: "DELETE" },
-    options,
-  );
-};
+    id: string,
+ options?: SecondParameter<typeof axiosInstance>,) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/rooms/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
 
-export const getDeleteRoomsIdMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteRoomsId>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteRoomsId>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationKey = ["deleteRoomsId"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteRoomsId>>,
-    { id: string }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getDeleteRoomsIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRoomsId>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteRoomsId>>, TError,{id: string}, TContext> => {
 
-    return deleteRoomsId(id, requestOptions);
-  };
+const mutationKey = ['deleteRoomsId'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type DeleteRoomsIdMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteRoomsId>>
->;
 
-export type DeleteRoomsIdMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRoomsId>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  deleteRoomsId(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteRoomsIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteRoomsId>>>
+    
+    export type DeleteRoomsIdMutationError = void
+
+    /**
  * @summary ルームの削除
  */
-export const useDeleteRoomsId = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteRoomsId>>,
-      TError,
-      { id: string },
-      TContext
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteRoomsId>>,
-  TError,
-  { id: string },
-  TContext
-> => {
-  const mutationOptions = getDeleteRoomsIdMutationOptions(options);
+export const useDeleteRoomsId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRoomsId>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteRoomsId>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getDeleteRoomsIdMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * ルームIDを指定してルーム情報を更新します。
  * @summary ルーム情報の更新
  */
 export const patchRoomsId = (
-  id: string,
-  updateRoom: UpdateRoom,
-  options?: SecondParameter<typeof axiosInstance>,
-) => {
-  return axiosInstance<Room>(
-    {
-      url: `/rooms/${id}`,
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      data: updateRoom,
+    id: string,
+    updateRoom: UpdateRoom,
+ options?: SecondParameter<typeof axiosInstance>,) => {
+      
+      
+      return axiosInstance<Room>(
+      {url: `/rooms/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateRoom
     },
-    options,
-  );
-};
+      options);
+    }
+  
 
-export const getPatchRoomsIdMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchRoomsId>>,
-    TError,
-    { id: string; data: UpdateRoom },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof patchRoomsId>>,
-  TError,
-  { id: string; data: UpdateRoom },
-  TContext
-> => {
-  const mutationKey = ["patchRoomsId"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof patchRoomsId>>,
-    { id: string; data: UpdateRoom }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getPatchRoomsIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchRoomsId>>, TError,{id: string;data: UpdateRoom}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof patchRoomsId>>, TError,{id: string;data: UpdateRoom}, TContext> => {
 
-    return patchRoomsId(id, data, requestOptions);
-  };
+const mutationKey = ['patchRoomsId'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PatchRoomsIdMutationResult = NonNullable<
-  Awaited<ReturnType<typeof patchRoomsId>>
->;
-export type PatchRoomsIdMutationBody = UpdateRoom;
-export type PatchRoomsIdMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchRoomsId>>, {id: string;data: UpdateRoom}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  patchRoomsId(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchRoomsIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchRoomsId>>>
+    export type PatchRoomsIdMutationBody = UpdateRoom
+    export type PatchRoomsIdMutationError = void
+
+    /**
  * @summary ルーム情報の更新
  */
-export const usePatchRoomsId = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof patchRoomsId>>,
-      TError,
-      { id: string; data: UpdateRoom },
-      TContext
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof patchRoomsId>>,
-  TError,
-  { id: string; data: UpdateRoom },
-  TContext
-> => {
-  const mutationOptions = getPatchRoomsIdMutationOptions(options);
+export const usePatchRoomsId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchRoomsId>>, TError,{id: string;data: UpdateRoom}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchRoomsId>>,
+        TError,
+        {id: string;data: UpdateRoom},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getPatchRoomsIdMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    

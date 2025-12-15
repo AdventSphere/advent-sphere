@@ -4,190 +4,95 @@
  * advent-sphere API
  * OpenAPI spec version: 1.0.0
  */
-import { faker } from "@faker-js/faker";
-import type { RequestHandlerOptions } from "msw";
-import { delay, HttpResponse, http } from "msw";
+import {
+  faker
+} from '@faker-js/faker';
 
-import type { CreateItemResponse, Item } from "../adventSphereAPI.schemas";
+import {
+  HttpResponse,
+  delay,
+  http
+} from 'msw';
+import type {
+  RequestHandlerOptions
+} from 'msw';
 
-export const getGetItemsResponseMock = (): Item[] =>
-  Array.from(
-    { length: faker.number.int({ min: 1, max: 10 }) },
-    (_, i) => i + 1,
-  ).map(() => ({
-    id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-    description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    type: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  }));
+import type {
+  CreateItemResponse,
+  Item
+} from '../adventSphereAPI.schemas';
 
-export const getPostItemsResponseMock = (
-  overrideResponse: Partial<CreateItemResponse> = {},
-): CreateItemResponse => ({
-  id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  ...overrideResponse,
-});
 
-export const getGetItemsIdResponseMock = (
-  overrideResponse: Partial<Item> = {},
-): Item => ({
-  id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-  description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  type: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  ...overrideResponse,
-});
+export const getGetItemsResponseMock = (): Item[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, description: faker.string.alpha({length: {min: 10, max: 20}}), type: faker.string.alpha({length: {min: 10, max: 20}})})))
 
-export const getPatchItemsIdResponseMock = (
-  overrideResponse: Partial<Item> = {},
-): Item => ({
-  id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-  description: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  type: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  ...overrideResponse,
-});
+export const getPostItemsResponseMock = (overrideResponse: Partial< CreateItemResponse > = {}): CreateItemResponse => ({id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getGetItemsMockHandler = (
-  overrideResponse?:
-    | Item[]
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<Item[]> | Item[]),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    "*/items",
-    async (info) => {
-      await delay(1000);
+export const getGetItemsIdResponseMock = (overrideResponse: Partial< Item > = {}): Item => ({id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, description: faker.string.alpha({length: {min: 10, max: 20}}), type: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetItemsResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getPatchItemsIdResponseMock = (overrideResponse: Partial< Item > = {}): Item => ({id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, description: faker.string.alpha({length: {min: 10, max: 20}}), type: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getPostItemsMockHandler = (
-  overrideResponse?:
-    | CreateItemResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<CreateItemResponse> | CreateItemResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    "*/items",
-    async (info) => {
-      await delay(1000);
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getPostItemsResponseMock(),
-        ),
-        { status: 201, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getGetItemsMockHandler = (overrideResponse?: Item[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Item[]> | Item[]), options?: RequestHandlerOptions) => {
+  return http.get('*/items', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetItemsResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 
-export const getGetItemsIdMockHandler = (
-  overrideResponse?:
-    | Item
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<Item> | Item),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    "*/items/:id",
-    async (info) => {
-      await delay(1000);
+export const getPostItemsMockHandler = (overrideResponse?: CreateItemResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CreateItemResponse> | CreateItemResponse), options?: RequestHandlerOptions) => {
+  return http.post('*/items', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostItemsResponseMock()),
+      { status: 201,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetItemsIdResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getGetItemsIdMockHandler = (overrideResponse?: Item | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Item> | Item), options?: RequestHandlerOptions) => {
+  return http.get('*/items/:id', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetItemsIdResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 
-export const getDeleteItemsIdMockHandler = (
-  overrideResponse?:
-    | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0],
-      ) => Promise<void> | void),
-  options?: RequestHandlerOptions,
-) => {
-  return http.delete(
-    "*/items/:id",
-    async (info) => {
-      await delay(1000);
-      if (typeof overrideResponse === "function") {
-        await overrideResponse(info);
-      }
-      return new HttpResponse(null, { status: 204 });
-    },
-    options,
-  );
-};
+export const getDeleteItemsIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.delete('*/items/:id', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 204,
+        
+      })
+  }, options)
+}
 
-export const getPatchItemsIdMockHandler = (
-  overrideResponse?:
-    | Item
-    | ((
-        info: Parameters<Parameters<typeof http.patch>[1]>[0],
-      ) => Promise<Item> | Item),
-  options?: RequestHandlerOptions,
-) => {
-  return http.patch(
-    "*/items/:id",
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getPatchItemsIdResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getPatchItemsIdMockHandler = (overrideResponse?: Item | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<Item> | Item), options?: RequestHandlerOptions) => {
+  return http.patch('*/items/:id', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPatchItemsIdResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 export const getItemMock = () => [
   getGetItemsMockHandler(),
   getPostItemsMockHandler(),
   getGetItemsIdMockHandler(),
   getDeleteItemsIdMockHandler(),
-  getPatchItemsIdMockHandler(),
-];
+  getPatchItemsIdMockHandler()
+]

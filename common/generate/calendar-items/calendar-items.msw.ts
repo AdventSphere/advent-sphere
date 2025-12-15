@@ -4,209 +4,80 @@
  * advent-sphere API
  * OpenAPI spec version: 1.0.0
  */
-import { faker } from "@faker-js/faker";
-import type { RequestHandlerOptions } from "msw";
-import { delay, HttpResponse, http } from "msw";
+import {
+  faker
+} from '@faker-js/faker';
+
+import {
+  HttpResponse,
+  delay,
+  http
+} from 'msw';
+import type {
+  RequestHandlerOptions
+} from 'msw';
 
 import type {
   CalendarItem,
-  CreateCalendarItemResponse,
-} from "../adventSphereAPI.schemas";
+  CreateCalendarItemResponse
+} from '../adventSphereAPI.schemas';
 
-export const getGetCalendarItemsRoomIdCalendarItemsResponseMock =
-  (): CalendarItem[] =>
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1,
-    ).map(() => ({
-      id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      userId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      roomId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-      openDate: `${faker.date.past().toISOString().split(".")[0]}Z`,
-      position: faker.helpers.arrayElement([
-        Array.from(
-          { length: faker.number.int({ min: 1, max: 10 }) },
-          (_, i) => i + 1,
-        ).map(() =>
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-        ),
-        undefined,
-      ]),
-      rotation: faker.helpers.arrayElement([
-        Array.from(
-          { length: faker.number.int({ min: 1, max: 10 }) },
-          (_, i) => i + 1,
-        ).map(() =>
-          faker.number.float({
-            min: undefined,
-            max: undefined,
-            fractionDigits: 2,
-          }),
-        ),
-        undefined,
-      ]),
-      isOpened: faker.datatype.boolean(),
-      itemId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-      imageId: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        undefined,
-      ]),
-    }));
 
-export const getPostCalendarItemsRoomIdCalendarItemsResponseMock = (
-  overrideResponse: Partial<CreateCalendarItemResponse> = {},
-): CreateCalendarItemResponse => ({
-  id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  ...overrideResponse,
-});
+export const getGetCalendarItemsRoomIdCalendarItemsResponseMock = (): CalendarItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), rotation: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
 
-export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (
-  overrideResponse: Partial<CalendarItem> = {},
-): CalendarItem => ({
-  id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  userId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  roomId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-  openDate: `${faker.date.past().toISOString().split(".")[0]}Z`,
-  position: faker.helpers.arrayElement([
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1,
-    ).map(() =>
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-    ),
-    undefined,
-  ]),
-  rotation: faker.helpers.arrayElement([
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1,
-    ).map(() =>
-      faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-    ),
-    undefined,
-  ]),
-  isOpened: faker.datatype.boolean(),
-  itemId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  imageId: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getPostCalendarItemsRoomIdCalendarItemsResponseMock = (overrideResponse: Partial< CreateCalendarItemResponse > = {}): CreateCalendarItemResponse => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getGetCalendarItemsRoomIdCalendarItemsMockHandler = (
-  overrideResponse?:
-    | CalendarItem[]
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<CalendarItem[]> | CalendarItem[]),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    "*/calendarItems/:roomId/calendarItems",
-    async (info) => {
-      await delay(1000);
+export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (overrideResponse: Partial< CalendarItem > = {}): CalendarItem => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), rotation: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetCalendarItemsRoomIdCalendarItemsResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
 
-export const getPostCalendarItemsRoomIdCalendarItemsMockHandler = (
-  overrideResponse?:
-    | CreateCalendarItemResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<CreateCalendarItemResponse> | CreateCalendarItemResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    "*/calendarItems/:roomId/calendarItems",
-    async (info) => {
-      await delay(1000);
+export const getGetCalendarItemsRoomIdCalendarItemsMockHandler = (overrideResponse?: CalendarItem[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CalendarItem[]> | CalendarItem[]), options?: RequestHandlerOptions) => {
+  return http.get('*/calendarItems/:roomId/calendarItems', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetCalendarItemsRoomIdCalendarItemsResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getPostCalendarItemsRoomIdCalendarItemsResponseMock(),
-        ),
-        { status: 201, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getPostCalendarItemsRoomIdCalendarItemsMockHandler = (overrideResponse?: CreateCalendarItemResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CreateCalendarItemResponse> | CreateCalendarItemResponse), options?: RequestHandlerOptions) => {
+  return http.post('*/calendarItems/:roomId/calendarItems', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostCalendarItemsRoomIdCalendarItemsResponseMock()),
+      { status: 201,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 
-export const getDeleteCalendarItemsRoomIdCalendarItemsIdMockHandler = (
-  overrideResponse?:
-    | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0],
-      ) => Promise<void> | void),
-  options?: RequestHandlerOptions,
-) => {
-  return http.delete(
-    "*/calendarItems/:roomId/calendarItems/:id",
-    async (info) => {
-      await delay(1000);
-      if (typeof overrideResponse === "function") {
-        await overrideResponse(info);
-      }
-      return new HttpResponse(null, { status: 204 });
-    },
-    options,
-  );
-};
+export const getDeleteCalendarItemsRoomIdCalendarItemsIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.delete('*/calendarItems/:roomId/calendarItems/:id', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 204,
+        
+      })
+  }, options)
+}
 
-export const getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler = (
-  overrideResponse?:
-    | CalendarItem
-    | ((
-        info: Parameters<Parameters<typeof http.patch>[1]>[0],
-      ) => Promise<CalendarItem> | CalendarItem),
-  options?: RequestHandlerOptions,
-) => {
-  return http.patch(
-    "*/calendarItems/:roomId/calendarItems/:id",
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler = (overrideResponse?: CalendarItem | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<CalendarItem> | CalendarItem), options?: RequestHandlerOptions) => {
+  return http.patch('*/calendarItems/:roomId/calendarItems/:id', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 export const getCalendarItemsMock = () => [
   getGetCalendarItemsRoomIdCalendarItemsMockHandler(),
   getPostCalendarItemsRoomIdCalendarItemsMockHandler(),
   getDeleteCalendarItemsRoomIdCalendarItemsIdMockHandler(),
-  getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler(),
-];
+  getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler()
+]

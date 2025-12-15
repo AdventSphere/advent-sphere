@@ -1,14 +1,18 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { eq } from "drizzle-orm";
+
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "../db/schema";
 
 export const CreateRoomSchema = z
   .object({
     ownerId: z
       .string()
       .openapi({ example: "user_12345", description: "オーナーのユーザーID" }),
-    itemGetTime: z.date().optional().openapi({
+    itemGetTime: z.coerce.date().optional().openapi({
       type: "string",
       format: "date-time",
-      example: new Date().toISOString(),
+      example: "2024-01-01T00:00:00Z",
       description: "アイテム取得日時",
     }),
     password: z.string().optional().openapi({
@@ -18,30 +22,52 @@ export const CreateRoomSchema = z
     isAnonymous: z
       .boolean()
       .openapi({ example: false, description: "匿名モードかどうか" }),
-    startAt: z
-      .date()
-      .openapi({
-        type: "string",
-        format: "date-time",
-        example: new Date().toISOString(),
-        description: "開始日時",
-      }),
+    startAt: z.coerce.date().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "開始日時",
+    }),
   })
   .openapi("CreateRoom");
 
-export const RoomSchema = CreateRoomSchema.extend({
-  id: z.string().openapi({ example: "room_12345", description: "ルームID" }),
-  createdAt: z.coerce.date().openapi({
-    type: "string",
-    format: "date-time",
-    example: new Date().toISOString(),
-    description: "ルーム作成日時",
-  }),
-  generateCount: z.number().openapi({ example: 0, description: "生成回数" }),
-  editId: z
-    .string()
-    .openapi({ example: "edit_12345", description: "ルームの編集ID" }),
-}).openapi("Room");
+export const RoomSchema = z
+  .object({
+    id: z.string().openapi({ example: "room_12345", description: "ルームID" }),
+    ownerId: z
+      .string()
+      .openapi({ example: "user_12345", description: "オーナーのユーザーID" }),
+    itemGetTime: z.coerce.date().nullable().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "アイテム取得日時",
+    }),
+    password: z.string().nullable().openapi({
+      example: "securepassword",
+      description: "ルームのパスワード",
+    }),
+    isAnonymous: z
+      .boolean()
+      .openapi({ example: false, description: "匿名モードかどうか" }),
+    startAt: z.coerce.date().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "開始日時",
+    }),
+    createdAt: z.coerce.date().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "ルーム作成日時",
+    }),
+    generateCount: z.number().openapi({ example: 0, description: "生成回数" }),
+    editId: z
+      .string()
+      .openapi({ example: "edit_12345", description: "ルームの編集ID" }),
+  })
+  .openapi("Room");
 
 export type RoomSchema = z.infer<typeof RoomSchema>;
 
@@ -75,6 +101,9 @@ const createRoomRoute = createRoute({
         "application/json": {
           schema: z
             .object({
+              id: z
+                .string()
+                .openapi({ example: "room_12345", description: "ルームID" }),
               editId: z
                 .string()
                 .openapi({ example: "12345", description: "ルームの編集ID" }),
@@ -171,50 +200,56 @@ const app = new OpenAPIHono<{
 
 app.openapi(createRoomRoute, async (c) => {
   const body = c.req.valid("json");
-  // ここでルーム作成のロジックを実装（mock）
-  const mockResponse = { editId: "12345" };
-  return c.json(mockResponse, 201);
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db.insert(schema.roomTable).values(body).returning();
+
+  return c.json({ editId: result[0].editId, id: result[0].id }, 201);
 });
 
 app.openapi(getRoomRoute, async (c) => {
   const { id } = c.req.valid("param");
-  const mockRoom: RoomSchema = {
-    id,
-    createdAt: new Date(),
-    ownerId: "user_12345",
-    itemGetTime: new Date(),
-    password: "securepassword",
-    isAnonymous: false,
-    startAt: new Date(),
-    generateCount: 0,
-    editId: "edit_12345",
-  };
-  return c.json(mockRoom);
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .select()
+    .from(schema.roomTable)
+    .where(eq(schema.roomTable.id, id));
+  if (result.length === 0) {
+    return c.json({ message: "ルームが見つかりません" }, 404);
+  }
+  const roomInfo = RoomSchema.parse(result[0]);
+
+  return c.json(roomInfo, 200);
 });
 
 app.openapi(deleteRoomRoute, async (c) => {
   const { id } = c.req.valid("param");
-  // mock delete
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .delete(schema.roomTable)
+    .where(eq(schema.roomTable.id, id))
+    .returning();
+  if (result.length === 0) {
+    return c.json({ message: "ルームが見つかりません" }, 404);
+  }
+
   return c.body(null, 204);
 });
 
 app.openapi(patchRoomRoute, async (c) => {
   const { id } = c.req.valid("param");
   const body = c.req.valid("json");
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .update(schema.roomTable)
+    .set(body)
+    .where(eq(schema.roomTable.id, id))
+    .returning();
+  if (result.length === 0) {
+    return c.json({ message: "ルームが見つかりません" }, 404);
+  }
+  const updatedRoom = RoomSchema.parse(result[0]);
 
-  const updatedRoom: RoomSchema = {
-    id,
-    createdAt: new Date(),
-    ownerId: "user_12345",
-    itemGetTime: body.itemGetTime ?? new Date(),
-    password: body.password ?? "securepassword",
-    isAnonymous: body.isAnonymous ?? false,
-    startAt: body.startAt ?? new Date(),
-    generateCount: 0,
-    editId: "edit_12345",
-  };
-
-  return c.json(updatedRoom);
+  return c.json(updatedRoom, 200);
 });
 
 export default app;

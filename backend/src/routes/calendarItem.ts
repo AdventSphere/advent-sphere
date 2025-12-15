@@ -12,18 +12,16 @@ export const CalendarItemSchema = z
     roomId: z
       .string()
       .openapi({ example: "room_12345", description: "ルームID" }),
-    createdAt: z.coerce
-      .date()
-      .openapi({
-        type: "string",
-        format: "date-time",
-        example: new Date().toISOString(),
-        description: "作成日時",
-      }),
+    createdAt: z.coerce.date().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "作成日時",
+    }),
     openDate: z.coerce.date().openapi({
       type: "string",
       format: "date-time",
-      example: new Date().toISOString(),
+      example: "2024-01-01T00:00:00Z",
       description: "開封可能日時",
     }),
     position: z

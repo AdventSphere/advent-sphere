@@ -145,6 +145,8 @@ export interface UpdateItem {
 }
 
 export interface CreateRoomResponse {
+  /** ルームID */
+  id: string;
   /** ルームの編集ID */
   editId: string;
 }
@@ -162,18 +164,29 @@ export interface CreateRoom {
   startAt: string;
 }
 
-export type RoomAllOf = {
+export interface Room {
   /** ルームID */
   id: string;
+  /** オーナーのユーザーID */
+  ownerId: string;
+  /** アイテム取得日時 */
+  itemGetTime: string;
+  /**
+   * ルームのパスワード
+   * @nullable
+   */
+  password: string | null;
+  /** 匿名モードかどうか */
+  isAnonymous: boolean;
+  /** 開始日時 */
+  startAt: string;
   /** ルーム作成日時 */
   createdAt: string;
   /** 生成回数 */
   generateCount: number;
   /** ルームの編集ID */
   editId: string;
-};
-
-export type Room = CreateRoom & RoomAllOf;
+}
 
 export interface UpdateRoom {
   /** アイテム取得日時 */
@@ -204,13 +217,13 @@ export interface CreatePromptResponse {
 /**
  * 発言者の役割
  */
-export type CreatePromptRequestHistoryItemRole =
-  (typeof CreatePromptRequestHistoryItemRole)[keyof typeof CreatePromptRequestHistoryItemRole];
+export type CreatePromptRequestHistoryItemRole = typeof CreatePromptRequestHistoryItemRole[keyof typeof CreatePromptRequestHistoryItemRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreatePromptRequestHistoryItemRole = {
-  user: "user",
-  model: "model",
+  user: 'user',
+  model: 'model',
 } as const;
 
 export type CreatePromptRequestHistoryItem = {
@@ -231,3 +244,4 @@ export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
   /** ルームの編集ID */
   editId: string;
 };
+

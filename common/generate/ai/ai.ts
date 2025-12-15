@@ -4,203 +4,162 @@
  * advent-sphere API
  * OpenAPI spec version: 1.0.0
  */
-
+import {
+  useMutation
+} from '@tanstack/react-query';
 import type {
   MutationFunction,
   QueryClient,
   UseMutationOptions,
-  UseMutationResult,
-} from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "../../axios-instance";
+  UseMutationResult
+} from '@tanstack/react-query';
+
 import type {
   CreatePhotoRequest,
   CreatePhotoResponse,
   CreatePromptRequest,
-  CreatePromptResponse,
-} from "../adventSphereAPI.schemas";
+  CreatePromptResponse
+} from '../adventSphereAPI.schemas';
+
+import { axiosInstance } from '../../axios-instance';
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
-type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+      type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
 
 /**
  * 新しい写真を作成します。
  * @summary 写真の作成
  */
 export const postAiCreatePhoto = (
-  createPhotoRequest: CreatePhotoRequest,
-  options?: SecondParameter<typeof axiosInstance>,
-  signal?: AbortSignal,
+    createPhotoRequest: CreatePhotoRequest,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
 ) => {
-  return axiosInstance<CreatePhotoResponse>(
-    {
-      url: `/ai/createPhoto`,
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: createPhotoRequest,
-      signal,
+      
+      
+      return axiosInstance<CreatePhotoResponse>(
+      {url: `/ai/createPhoto`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPhotoRequest, signal
     },
-    options,
-  );
-};
+      options);
+    }
+  
 
-export const getPostAiCreatePhotoMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postAiCreatePhoto>>,
-    TError,
-    { data: CreatePhotoRequest },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postAiCreatePhoto>>,
-  TError,
-  { data: CreatePhotoRequest },
-  TContext
-> => {
-  const mutationKey = ["postAiCreatePhoto"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postAiCreatePhoto>>,
-    { data: CreatePhotoRequest }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPostAiCreatePhotoMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePhoto>>, TError,{data: CreatePhotoRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePhoto>>, TError,{data: CreatePhotoRequest}, TContext> => {
 
-    return postAiCreatePhoto(data, requestOptions);
-  };
+const mutationKey = ['postAiCreatePhoto'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostAiCreatePhotoMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postAiCreatePhoto>>
->;
-export type PostAiCreatePhotoMutationBody = CreatePhotoRequest;
-export type PostAiCreatePhotoMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAiCreatePhoto>>, {data: CreatePhotoRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postAiCreatePhoto(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostAiCreatePhotoMutationResult = NonNullable<Awaited<ReturnType<typeof postAiCreatePhoto>>>
+    export type PostAiCreatePhotoMutationBody = CreatePhotoRequest
+    export type PostAiCreatePhotoMutationError = unknown
+
+    /**
  * @summary 写真の作成
  */
-export const usePostAiCreatePhoto = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postAiCreatePhoto>>,
-      TError,
-      { data: CreatePhotoRequest },
-      TContext
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postAiCreatePhoto>>,
-  TError,
-  { data: CreatePhotoRequest },
-  TContext
-> => {
-  const mutationOptions = getPostAiCreatePhotoMutationOptions(options);
+export const usePostAiCreatePhoto = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePhoto>>, TError,{data: CreatePhotoRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postAiCreatePhoto>>,
+        TError,
+        {data: CreatePhotoRequest},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostAiCreatePhotoMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * AIを用いて写真プロンプトを生成します。
  * @summary AIを用いて写真プロンプトを生成する
  */
 export const postAiCreatePrompt = (
-  createPromptRequest: CreatePromptRequest,
-  options?: SecondParameter<typeof axiosInstance>,
-  signal?: AbortSignal,
+    createPromptRequest: CreatePromptRequest,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
 ) => {
-  return axiosInstance<CreatePromptResponse>(
-    {
-      url: `/ai/createPrompt`,
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: createPromptRequest,
-      signal,
+      
+      
+      return axiosInstance<CreatePromptResponse>(
+      {url: `/ai/createPrompt`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPromptRequest, signal
     },
-    options,
-  );
-};
+      options);
+    }
+  
 
-export const getPostAiCreatePromptMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postAiCreatePrompt>>,
-    TError,
-    { data: CreatePromptRequest },
-    TContext
-  >;
-  request?: SecondParameter<typeof axiosInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postAiCreatePrompt>>,
-  TError,
-  { data: CreatePromptRequest },
-  TContext
-> => {
-  const mutationKey = ["postAiCreatePrompt"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postAiCreatePrompt>>,
-    { data: CreatePromptRequest }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPostAiCreatePromptMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePrompt>>, TError,{data: CreatePromptRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePrompt>>, TError,{data: CreatePromptRequest}, TContext> => {
 
-    return postAiCreatePrompt(data, requestOptions);
-  };
+const mutationKey = ['postAiCreatePrompt'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostAiCreatePromptMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postAiCreatePrompt>>
->;
-export type PostAiCreatePromptMutationBody = CreatePromptRequest;
-export type PostAiCreatePromptMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAiCreatePrompt>>, {data: CreatePromptRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postAiCreatePrompt(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostAiCreatePromptMutationResult = NonNullable<Awaited<ReturnType<typeof postAiCreatePrompt>>>
+    export type PostAiCreatePromptMutationBody = CreatePromptRequest
+    export type PostAiCreatePromptMutationError = unknown
+
+    /**
  * @summary AIを用いて写真プロンプトを生成する
  */
-export const usePostAiCreatePrompt = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postAiCreatePrompt>>,
-      TError,
-      { data: CreatePromptRequest },
-      TContext
-    >;
-    request?: SecondParameter<typeof axiosInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postAiCreatePrompt>>,
-  TError,
-  { data: CreatePromptRequest },
-  TContext
-> => {
-  const mutationOptions = getPostAiCreatePromptMutationOptions(options);
+export const usePostAiCreatePrompt = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePrompt>>, TError,{data: CreatePromptRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postAiCreatePrompt>>,
+        TError,
+        {data: CreatePromptRequest},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getPostAiCreatePromptMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    

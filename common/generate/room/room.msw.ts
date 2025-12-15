@@ -4,178 +4,80 @@
  * advent-sphere API
  * OpenAPI spec version: 1.0.0
  */
-import { faker } from "@faker-js/faker";
-import type { RequestHandlerOptions } from "msw";
-import { delay, HttpResponse, http } from "msw";
+import {
+  faker
+} from '@faker-js/faker';
 
-import type { CreateRoomResponse, Room } from "../adventSphereAPI.schemas";
+import {
+  HttpResponse,
+  delay,
+  http
+} from 'msw';
+import type {
+  RequestHandlerOptions
+} from 'msw';
 
-export const getPostRoomsResponseMock = (
-  overrideResponse: Partial<CreateRoomResponse> = {},
-): CreateRoomResponse => ({
-  editId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  ...overrideResponse,
-});
+import type {
+  CreateRoomResponse,
+  Room
+} from '../adventSphereAPI.schemas';
 
-export const getGetRoomsIdResponseMock = (): Room => ({
-  ...{
-    ownerId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    itemGetTime: faker.helpers.arrayElement([
-      `${faker.date.past().toISOString().split(".")[0]}Z`,
-      undefined,
-    ]),
-    password: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      undefined,
-    ]),
-    isAnonymous: faker.datatype.boolean(),
-    startAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-  },
-  ...{
-    id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-    generateCount: faker.number.float({
-      min: undefined,
-      max: undefined,
-      fractionDigits: 2,
-    }),
-    editId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  },
-});
 
-export const getPatchRoomsIdResponseMock = (): Room => ({
-  ...{
-    ownerId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    itemGetTime: faker.helpers.arrayElement([
-      `${faker.date.past().toISOString().split(".")[0]}Z`,
-      undefined,
-    ]),
-    password: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      undefined,
-    ]),
-    isAnonymous: faker.datatype.boolean(),
-    startAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-  },
-  ...{
-    id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-    createdAt: `${faker.date.past().toISOString().split(".")[0]}Z`,
-    generateCount: faker.number.float({
-      min: undefined,
-      max: undefined,
-      fractionDigits: 2,
-    }),
-    editId: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  },
-});
+export const getPostRoomsResponseMock = (overrideResponse: Partial< CreateRoomResponse > = {}): CreateRoomResponse => ({id: faker.string.alpha({length: {min: 10, max: 20}}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getPostRoomsMockHandler = (
-  overrideResponse?:
-    | CreateRoomResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<CreateRoomResponse> | CreateRoomResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    "*/rooms",
-    async (info) => {
-      await delay(1000);
+export const getGetRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, password: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getPostRoomsResponseMock(),
-        ),
-        { status: 201, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getPatchRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, password: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getGetRoomsIdMockHandler = (
-  overrideResponse?:
-    | Room
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<Room> | Room),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    "*/rooms/:id",
-    async (info) => {
-      await delay(1000);
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetRoomsIdResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getPostRoomsMockHandler = (overrideResponse?: CreateRoomResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CreateRoomResponse> | CreateRoomResponse), options?: RequestHandlerOptions) => {
+  return http.post('*/rooms', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostRoomsResponseMock()),
+      { status: 201,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 
-export const getDeleteRoomsIdMockHandler = (
-  overrideResponse?:
-    | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0],
-      ) => Promise<void> | void),
-  options?: RequestHandlerOptions,
-) => {
-  return http.delete(
-    "*/rooms/:id",
-    async (info) => {
-      await delay(1000);
-      if (typeof overrideResponse === "function") {
-        await overrideResponse(info);
-      }
-      return new HttpResponse(null, { status: 204 });
-    },
-    options,
-  );
-};
+export const getGetRoomsIdMockHandler = (overrideResponse?: Room | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<Room> | Room), options?: RequestHandlerOptions) => {
+  return http.get('*/rooms/:id', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetRoomsIdResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 
-export const getPatchRoomsIdMockHandler = (
-  overrideResponse?:
-    | Room
-    | ((
-        info: Parameters<Parameters<typeof http.patch>[1]>[0],
-      ) => Promise<Room> | Room),
-  options?: RequestHandlerOptions,
-) => {
-  return http.patch(
-    "*/rooms/:id",
-    async (info) => {
-      await delay(1000);
+export const getDeleteRoomsIdMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.delete('*/rooms/:id', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 204,
+        
+      })
+  }, options)
+}
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getPatchRoomsIdResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getPatchRoomsIdMockHandler = (overrideResponse?: Room | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<Room> | Room), options?: RequestHandlerOptions) => {
+  return http.patch('*/rooms/:id', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPatchRoomsIdResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 export const getRoomMock = () => [
   getPostRoomsMockHandler(),
   getGetRoomsIdMockHandler(),
   getDeleteRoomsIdMockHandler(),
-  getPatchRoomsIdMockHandler(),
-];
+  getPatchRoomsIdMockHandler()
+]
