@@ -208,7 +208,7 @@ app.openapi(deleteRoomRoute, async (c) => {
     return c.json({ message: "ルームが見つかりません" }, 404);
   }
 
-  return c.json({ message: "ルームが正常に削除されました" }, 200);
+  return c.body(null, 204);
 });
 
 app.openapi(patchRoomRoute, async (c) => {
