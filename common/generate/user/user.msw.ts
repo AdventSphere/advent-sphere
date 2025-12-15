@@ -4,70 +4,49 @@
  * advent-sphere API
  * OpenAPI spec version: 1.0.0
  */
-import { faker } from "@faker-js/faker";
-import type { RequestHandlerOptions } from "msw";
-import { delay, HttpResponse, http } from "msw";
+import {
+  faker
+} from '@faker-js/faker';
 
-import type { User } from "../adventSphereAPI.schemas";
+import {
+  HttpResponse,
+  delay,
+  http
+} from 'msw';
+import type {
+  RequestHandlerOptions
+} from 'msw';
 
-export const getGetUsersIdResponseMock = (
-  overrideResponse: Partial<User> = {},
-): User => ({
-  id: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  createdAt: faker.date.past().toISOString().split("T")[0],
-  name: faker.string.alpha({ length: { min: 10, max: 20 } }),
-  ...overrideResponse,
-});
+import type {
+  User
+} from '../adventSphereAPI.schemas';
 
-export const getGetUsersIdMockHandler = (
-  overrideResponse?:
-    | User
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<User> | User),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    "*/users/:id",
-    async (info) => {
-      await delay(1000);
 
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === "function"
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetUsersIdResponseMock(),
-        ),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
-    },
-    options,
-  );
-};
+export const getGetUsersIdResponseMock = (overrideResponse: Partial< User > = {}): User => ({id: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, name: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getPostUsersMockHandler = (
-  overrideResponse?:
-    | void
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<void> | void),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    "*/users",
-    async (info) => {
-      await delay(1000);
-      if (typeof overrideResponse === "function") {
-        await overrideResponse(info);
-      }
-      return new HttpResponse(null, { status: 201 });
-    },
-    options,
-  );
-};
+
+export const getGetUsersIdMockHandler = (overrideResponse?: User | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<User> | User), options?: RequestHandlerOptions) => {
+  return http.get('*/users/:id', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetUsersIdResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
+
+export const getPostUsersMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.post('*/users', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 201,
+        
+      })
+  }, options)
+}
 export const getUserMock = () => [
   getGetUsersIdMockHandler(),
-  getPostUsersMockHandler(),
-];
+  getPostUsersMockHandler()
+]

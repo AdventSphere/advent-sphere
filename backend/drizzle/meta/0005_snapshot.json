@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f529fb6a-e0b1-4dea-bbbb-1d42f7196ef3",
-  "prevId": "0e8e4d3c-e2cb-40dc-825d-01682fca457c",
+  "id": "be50fd4a-01be-4bbc-a297-4a202832b3a0",
+  "prevId": "f84c99b3-bbfd-454b-87df-c5f698b4189e",
   "tables": {
     "calendar_item": {
       "name": "calendar_item",
@@ -52,7 +52,7 @@
         },
         "rotation": {
           "name": "rotation",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -67,14 +67,14 @@
         },
         "item_id": {
           "name": "item_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "image_id": {
           "name": "image_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -86,8 +86,12 @@
           "name": "calendar_item_room_id_room_id_fk",
           "tableFrom": "calendar_item",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -95,8 +99,12 @@
           "name": "calendar_item_user_id_user_id_fk",
           "tableFrom": "calendar_item",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -104,8 +112,12 @@
           "name": "calendar_item_item_id_item_id_fk",
           "tableFrom": "calendar_item",
           "tableTo": "item",
-          "columnsFrom": ["item_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -170,6 +182,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "edit_id": {
+          "name": "edit_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -207,6 +226,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "item_get_time": {
+          "name": "item_get_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "generate_count": {
           "name": "generate_count",
           "type": "integer",
@@ -222,8 +248,12 @@
           "name": "room_owner_id_user_id_fk",
           "tableFrom": "room",
           "tableTo": "user",
-          "columnsFrom": ["owner_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

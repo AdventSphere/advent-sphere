@@ -14,24 +14,26 @@
             "example": "calendarItem_12345",
             "description": "カレンダーアイテムID"
           },
-          "user_id": {
+          "userId": {
             "type": "string",
             "example": "user_12345",
             "description": "ユーザーID"
           },
-          "room_id": {
+          "roomId": {
             "type": "string",
             "example": "room_12345",
             "description": "ルームID"
           },
-          "create_at": {
+          "createdAt": {
             "type": "string",
-            "example": "2024-06-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "作成日時"
           },
-          "open_date": {
+          "openDate": {
             "type": "string",
-            "example": "2024-07-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開封可能日時"
           },
           "position": {
@@ -50,17 +52,17 @@
             "example": [0, 0, 0],
             "description": "アイテムの回転情報"
           },
-          "is_opened": {
+          "isOpened": {
             "type": "boolean",
             "example": false,
             "description": "アイテムが開封されたかどうか"
           },
-          "item_id": {
+          "itemId": {
             "type": "string",
             "example": "item_12345",
             "description": "関連するアイテムID"
           },
-          "image_id": {
+          "imageId": {
             "type": "string",
             "example": "image_12345",
             "description": "関連する画像ID"
@@ -68,12 +70,12 @@
         },
         "required": [
           "id",
-          "user_id",
-          "room_id",
-          "create_at",
-          "open_date",
-          "is_opened",
-          "item_id"
+          "userId",
+          "roomId",
+          "createdAt",
+          "openDate",
+          "isOpened",
+          "itemId"
         ]
       },
       "CreateCalendarItemResponse": {
@@ -90,19 +92,20 @@
       "CreateCalendarItem": {
         "type": "object",
         "properties": {
-          "user_id": {
+          "userId": {
             "type": "string",
             "example": "user_12345",
             "description": "ユーザーID"
           },
-          "room_id": {
+          "roomId": {
             "type": "string",
             "example": "room_12345",
             "description": "ルームID"
           },
-          "open_date": {
+          "openDate": {
             "type": "string",
-            "example": "2024-07-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開封可能日時"
           },
           "position": {
@@ -121,23 +124,23 @@
             "example": [0, 0, 0],
             "description": "アイテムの回転情報"
           },
-          "item_id": {
+          "itemId": {
             "type": "string",
             "example": "item_12345",
             "description": "関連するアイテムID"
           },
-          "image_id": {
+          "imageId": {
             "type": "string",
             "example": "image_12345",
             "description": "関連する画像ID"
           }
         },
-        "required": ["user_id", "room_id", "open_date", "item_id"]
+        "required": ["userId", "roomId", "openDate", "itemId"]
       },
       "CreateCalendarItemRequest": {
         "type": "object",
         "properties": {
-          "edit_id": {
+          "editId": {
             "type": "string",
             "example": "12345",
             "description": "ルームの編集ID"
@@ -146,12 +149,12 @@
             "$ref": "#/components/schemas/CreateCalendarItem"
           }
         },
-        "required": ["edit_id", "calendarItem"]
+        "required": ["editId", "calendarItem"]
       },
       "PatchCalendarItemRequest": {
         "type": "object",
         "properties": {
-          "edit_id": {
+          "editId": {
             "type": "string",
             "example": "12345",
             "description": "ルームの編集ID"
@@ -159,19 +162,20 @@
           "calendarItem": {
             "type": "object",
             "properties": {
-              "user_id": {
+              "userId": {
                 "type": "string",
                 "example": "user_12345",
                 "description": "ユーザーID"
               },
-              "room_id": {
+              "roomId": {
                 "type": "string",
                 "example": "room_12345",
                 "description": "ルームID"
               },
-              "open_date": {
+              "openDate": {
                 "type": "string",
-                "example": "2024-07-01T12:00:00Z",
+                "format": "date-time",
+                "example": "2024-01-01T00:00:00Z",
                 "description": "開封可能日時"
               },
               "position": {
@@ -190,12 +194,12 @@
                 "example": [0, 0, 0],
                 "description": "アイテムの回転情報"
               },
-              "item_id": {
+              "itemId": {
                 "type": "string",
                 "example": "item_12345",
                 "description": "関連するアイテムID"
               },
-              "image_id": {
+              "imageId": {
                 "type": "string",
                 "example": "image_12345",
                 "description": "関連する画像ID"
@@ -203,7 +207,7 @@
             }
           }
         },
-        "required": ["edit_id", "calendarItem"]
+        "required": ["editId", "calendarItem"]
       },
       "User": {
         "type": "object",
@@ -215,8 +219,8 @@
           },
           "createdAt": {
             "type": "string",
-            "format": "date",
-            "example": "2021-08-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "ユーザー作成日時のタイムスタンプ"
           },
           "name": {
@@ -258,7 +262,8 @@
           },
           "createdAt": {
             "type": "string",
-            "example": "2024-06-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "アイテム作成日時"
           },
           "description": {
@@ -373,25 +378,31 @@
       "CreateRoomResponse": {
         "type": "object",
         "properties": {
-          "edit_id": {
+          "id": {
+            "type": "string",
+            "example": "room_12345",
+            "description": "ルームID"
+          },
+          "editId": {
             "type": "string",
             "example": "12345",
             "description": "ルームの編集ID"
           }
         },
-        "required": ["edit_id"]
+        "required": ["id", "editId"]
       },
       "CreateRoom": {
         "type": "object",
         "properties": {
-          "owner_id": {
+          "ownerId": {
             "type": "string",
             "example": "user_12345",
             "description": "オーナーのユーザーID"
           },
-          "item_get_time": {
+          "itemGetTime": {
             "type": "string",
-            "example": "2024-07-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "アイテム取得日時"
           },
           "password": {
@@ -399,58 +410,92 @@
             "example": "securepassword",
             "description": "ルームのパスワード"
           },
-          "is_anonymous": {
+          "isAnonymous": {
             "type": "boolean",
             "example": false,
             "description": "匿名モードかどうか"
           },
-          "start_at": {
+          "startAt": {
             "type": "string",
-            "example": "2024-07-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開始日時"
           }
         },
-        "required": ["owner_id", "is_anonymous", "start_at"]
+        "required": ["ownerId", "isAnonymous", "startAt"]
       },
       "Room": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/CreateRoom"
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "room_12345",
+            "description": "ルームID"
           },
-          {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "example": "room_12345",
-                "description": "ルームID"
-              },
-              "createdAt": {
-                "type": "string",
-                "example": "2024-06-01T12:00:00Z",
-                "description": "ルーム作成日時"
-              },
-              "generate_count": {
-                "type": "number",
-                "example": 0,
-                "description": "生成回数"
-              },
-              "edit_id": {
-                "type": "string",
-                "example": "edit_12345",
-                "description": "ルームの編集ID"
-              }
-            },
-            "required": ["id", "createdAt", "generate_count", "edit_id"]
+          "ownerId": {
+            "type": "string",
+            "example": "user_12345",
+            "description": "オーナーのユーザーID"
+          },
+          "itemGetTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
+            "description": "アイテム取得日時"
+          },
+          "password": {
+            "type": "string",
+            "nullable": true,
+            "example": "securepassword",
+            "description": "ルームのパスワード"
+          },
+          "isAnonymous": {
+            "type": "boolean",
+            "example": false,
+            "description": "匿名モードかどうか"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
+            "description": "開始日時"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
+            "description": "ルーム作成日時"
+          },
+          "generateCount": {
+            "type": "number",
+            "example": 0,
+            "description": "生成回数"
+          },
+          "editId": {
+            "type": "string",
+            "example": "edit_12345",
+            "description": "ルームの編集ID"
           }
+        },
+        "required": [
+          "id",
+          "ownerId",
+          "itemGetTime",
+          "password",
+          "isAnonymous",
+          "startAt",
+          "createdAt",
+          "generateCount",
+          "editId"
         ]
       },
       "UpdateRoom": {
         "type": "object",
         "properties": {
-          "item_get_time": {
+          "itemGetTime": {
             "type": "string",
-            "example": "2024-07-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "アイテム取得日時"
           },
           "password": {
@@ -458,14 +503,15 @@
             "example": "securepassword",
             "description": "ルームのパスワード"
           },
-          "is_anonymous": {
+          "isAnonymous": {
             "type": "boolean",
             "example": false,
             "description": "匿名モードかどうか"
           },
-          "start_at": {
+          "startAt": {
             "type": "string",
-            "example": "2024-07-01T12:00:00Z",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
             "description": "開始日時"
           }
         }
@@ -549,7 +595,7 @@
     "parameters": {}
   },
   "paths": {
-    "/calendarItems/{room_id}/calendarItems": {
+    "/calendarItems/{roomId}/calendarItems": {
       "get": {
         "tags": ["calendar_items"],
         "summary": "カレンダーアイテム一覧の取得",
@@ -563,7 +609,7 @@
             },
             "required": true,
             "description": "ルームID",
-            "name": "room_id",
+            "name": "roomId",
             "in": "path"
           }
         ],
@@ -596,7 +642,7 @@
             },
             "required": true,
             "description": "ルームID",
-            "name": "room_id",
+            "name": "roomId",
             "in": "path"
           }
         ],
@@ -624,7 +670,7 @@
         }
       }
     },
-    "/calendarItems/{room_id}/calendarItems/{id}": {
+    "/calendarItems/{roomId}/calendarItems/{id}": {
       "delete": {
         "tags": ["calendar_items"],
         "summary": "カレンダーアイテムの削除",
@@ -638,7 +684,7 @@
             },
             "required": true,
             "description": "ルームID",
-            "name": "room_id",
+            "name": "roomId",
             "in": "path"
           },
           {
@@ -660,13 +706,13 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "edit_id": {
+                  "editId": {
                     "type": "string",
                     "example": "12345",
                     "description": "ルームの編集ID"
                   }
                 },
-                "required": ["edit_id"]
+                "required": ["editId"]
               }
             }
           }
@@ -690,7 +736,7 @@
             },
             "required": true,
             "description": "ルームID",
-            "name": "room_id",
+            "name": "roomId",
             "in": "path"
           },
           {
