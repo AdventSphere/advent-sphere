@@ -212,35 +212,23 @@ const app = new OpenAPIHono<{
 }>();
 
 app.openapi(listItemsRoute, async (c) => {
-  const mockItems: ItemSchema[] = [
-    {
-      id: "item_1",
-      name: "アイテム名1",
-      createdAt: new Date(),
-      description: "アイテムの説明1",
-      type: "photo_frame",
-    },
-    {
-      id: "item_2",
-      name: "アイテム名2",
-      createdAt: new Date(),
-      description: "アイテムの説明2",
-      type: "sticker",
-    },
-  ];
-  return c.json(mockItems);
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db.select().from(schema.itemTable);
+
+  return c.json(result, 200);
 });
 
 app.openapi(getItemRoute, async (c) => {
   const { id } = c.req.valid("param");
-  const mockItem: ItemSchema = {
-    id,
-    name: `アイテム名${id}`,
-    createdAt: new Date(),
-    description: `アイテムの説明${id}`,
-    type: "photo_frame",
-  };
-  return c.json(mockItem);
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .select()
+    .from(schema.itemTable)
+    .where(eq(schema.itemTable.id, id));
+  if (result.length === 0) {
+    return c.json({ error: "アイテムが見つかりません" }, 404);
+  }
+  return c.json(result[0], 200);
 });
 
 app.openapi(createItemRoute, async (c) => {
@@ -288,22 +276,35 @@ app.openapi(createItemRoute, async (c) => {
 });
 
 app.openapi(deleteItemRoute, async (c) => {
-  // const { id } = c.req.valid('param')
+  const { id } = c.req.valid("param");
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .delete(schema.itemTable)
+    .where(eq(schema.itemTable.id, id))
+    .returning();
+  if (result.length === 0) {
+    return c.json({ error: "アイテムが見つかりません" }, 404);
+  }
   return c.body(null, 204);
 });
 
 app.openapi(patchItemRoute, async (c) => {
   const { id } = c.req.valid("param");
   const body = c.req.valid("form");
-
-  const updatedItem: ItemSchema = {
-    id,
-    name: body.name ?? `アイテム名${id}`,
-    createdAt: new Date(),
-    description: body.description ?? `アイテムの説明${id}`,
-    type: body.type ?? "photo_frame",
-  };
-  return c.json(updatedItem);
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .update(schema.itemTable)
+    .set({
+      name: body.name,
+      description: body.description,
+      type: body.type,
+    })
+    .where(eq(schema.itemTable.id, id))
+    .returning();
+  if (result.length === 0) {
+    return c.json({ error: "アイテムが見つかりません" }, 404);
+  }
+  return c.json(result[0], 200);
 });
 
 export default app;
