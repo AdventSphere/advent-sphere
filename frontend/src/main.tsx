@@ -1,7 +1,7 @@
-import { MswProvider } from "@/components/MswProvider.tsx";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+import { MswProvider } from "@/components/MswProvider.tsx";
 import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provider.tsx";
 import reportWebVitals from "./reportWebVitals.ts";
 // Import the generated route tree
