@@ -31,19 +31,43 @@ export const CreateRoomSchema = z
   })
   .openapi("CreateRoom");
 
-export const RoomSchema = CreateRoomSchema.extend({
-  id: z.string().openapi({ example: "room_12345", description: "ルームID" }),
-  createdAt: z.coerce.date().openapi({
-    type: "string",
-    format: "date-time",
-    example: "2024-01-01T00:00:00Z",
-    description: "ルーム作成日時",
-  }),
-  generateCount: z.number().openapi({ example: 0, description: "生成回数" }),
-  editId: z
-    .string()
-    .openapi({ example: "edit_12345", description: "ルームの編集ID" }),
-}).openapi("Room");
+export const RoomSchema = z
+  .object({
+    id: z.string().openapi({ example: "room_12345", description: "ルームID" }),
+    ownerId: z
+      .string()
+      .openapi({ example: "user_12345", description: "オーナーのユーザーID" }),
+    itemGetTime: z.coerce.date().nullable().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "アイテム取得日時",
+    }),
+    password: z.string().nullable().openapi({
+      example: "securepassword",
+      description: "ルームのパスワード",
+    }),
+    isAnonymous: z
+      .boolean()
+      .openapi({ example: false, description: "匿名モードかどうか" }),
+    startAt: z.coerce.date().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "開始日時",
+    }),
+    createdAt: z.coerce.date().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "ルーム作成日時",
+    }),
+    generateCount: z.number().openapi({ example: 0, description: "生成回数" }),
+    editId: z
+      .string()
+      .openapi({ example: "edit_12345", description: "ルームの編集ID" }),
+  })
+  .openapi("Room");
 
 export type RoomSchema = z.infer<typeof RoomSchema>;
 

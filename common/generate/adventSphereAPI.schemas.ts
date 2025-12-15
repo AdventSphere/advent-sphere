@@ -164,18 +164,29 @@ export interface CreateRoom {
   startAt: string;
 }
 
-export type RoomAllOf = {
+export interface Room {
   /** ルームID */
   id: string;
+  /** オーナーのユーザーID */
+  ownerId: string;
+  /** アイテム取得日時 */
+  itemGetTime: string;
+  /**
+   * ルームのパスワード
+   * @nullable
+   */
+  password: string | null;
+  /** 匿名モードかどうか */
+  isAnonymous: boolean;
+  /** 開始日時 */
+  startAt: string;
   /** ルーム作成日時 */
   createdAt: string;
   /** 生成回数 */
   generateCount: number;
   /** ルームの編集ID */
   editId: string;
-};
-
-export type Room = CreateRoom & RoomAllOf;
+}
 
 export interface UpdateRoom {
   /** アイテム取得日時 */
