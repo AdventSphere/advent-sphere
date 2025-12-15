@@ -255,8 +255,8 @@ app.openapi(listCalendarItemsRoute, async (c) => {
 });
 
 app.openapi(createCalendarItemRoute, async (c) => {
-  const { roomId } = c.req.valid("param");
-  const { editId, calendarItem } = c.req.valid("json");
+  const { roomId: _roomId } = c.req.valid("param");
+  const { editId: _editId, calendarItem: _calendarItem } = c.req.valid("json");
 
   // mock
   const res = {
@@ -267,8 +267,8 @@ app.openapi(createCalendarItemRoute, async (c) => {
 });
 
 app.openapi(deleteCalendarItemRoute, async (c) => {
-  const { roomId, id } = c.req.valid("param");
-  const { editId } = c.req.valid("json");
+  const { roomId: _roomId, id: _id } = c.req.valid("param");
+  const { editId: _editId } = c.req.valid("json");
 
   // mock delete
   return c.body(null, 204);
@@ -276,7 +276,7 @@ app.openapi(deleteCalendarItemRoute, async (c) => {
 
 app.openapi(patchCalendarItemRoute, async (c) => {
   const { roomId, id } = c.req.valid("param");
-  const { editId, calendarItem } = c.req.valid("json");
+  const { editId: _editId, calendarItem } = c.req.valid("json");
 
   const updated: CalendarItemSchema = {
     id,
