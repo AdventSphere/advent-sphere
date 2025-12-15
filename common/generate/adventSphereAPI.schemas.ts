@@ -145,6 +145,8 @@ export interface UpdateItem {
 }
 
 export interface CreateRoomResponse {
+  /** ルームID */
+  id: string;
   /** ルームの編集ID */
   editId: string;
 }
@@ -204,13 +206,13 @@ export interface CreatePromptResponse {
 /**
  * 発言者の役割
  */
-export type CreatePromptRequestHistoryItemRole =
-  (typeof CreatePromptRequestHistoryItemRole)[keyof typeof CreatePromptRequestHistoryItemRole];
+export type CreatePromptRequestHistoryItemRole = typeof CreatePromptRequestHistoryItemRole[keyof typeof CreatePromptRequestHistoryItemRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreatePromptRequestHistoryItemRole = {
-  user: "user",
-  model: "model",
+  user: 'user',
+  model: 'model',
 } as const;
 
 export type CreatePromptRequestHistoryItem = {
@@ -231,3 +233,4 @@ export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
   /** ルームの編集ID */
   editId: string;
 };
+
