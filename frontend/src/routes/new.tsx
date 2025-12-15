@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { usePostRooms } from "common/generate/room/room";
 import { format } from "date-fns";
 import {
@@ -8,7 +8,7 @@ import {
   Copy,
   Gift,
   Info,
-  Link,
+  LinkIcon,
   Lock,
   UsersRound,
 } from "lucide-react";
@@ -149,16 +149,16 @@ function RouteComponent() {
     !watchedValues.item_get_time || watchedValues.item_get_time === "";
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-[color:var(--secondary)] p-4">
-        <div className="w-full max-w-md bg-white rounded-lg flex flex-col px-4 py-8 gap-6 text-center">
-          <h1 className="w-full text-lg sm:text-xl font-bold mb-4">
+      <div className="min-h-screen flex justify-center items-center bg-secondary p-4">
+        <div className="w-full max-w-md bg-white rounded-lg flex flex-col px-4 py-8 space-y-6 text-center">
+          <h1 className="w-full text-lg sm:text-xl font-bold">
             アドベントカレンダーが作成されました！
           </h1>
 
           <div className="space-y-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Link className="text-[color:var(--primary)]" />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <LinkIcon className="text-primary" />
                 <span className="text-sm font-semibold">編集リンク</span>
               </div>
               <div className="flex items-center gap-2 p-2 border rounded">
@@ -172,16 +172,16 @@ function RouteComponent() {
                   size="sm"
                   variant="outline"
                   onClick={() => copyToClipboard(successData.editUrl)}
-                  className="w-8 h-8 p-0 bg-[color:var(--primary)]  hover:bg-green-700 text-white"
+                  className="w-8 h-8 p-0 bg-primary hover:bg-green-700 text-white"
                 >
                   <Copy className="w-4 h-4  text-white" />
                 </Button>
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Lock className="text-[color:var(--primary)]" />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Lock className="text-primary" />
                 <span className="text-sm font-semibold">編集用合言葉</span>
               </div>
               <div className="flex items-center gap-2 p-2 border rounded">
@@ -195,7 +195,7 @@ function RouteComponent() {
                   size="sm"
                   variant="outline"
                   onClick={() => copyToClipboard(successData.password)}
-                  className="w-8 h-8 p-0 bg-[color:var(--primary)]  hover:bg-green-700 text-white"
+                  className="w-8 h-8 p-0 bg-primary hover:bg-green-700 text-white"
                 >
                   <Copy className="w-4 h-4  text-white" />
                 </Button>
@@ -203,11 +203,10 @@ function RouteComponent() {
             </div>
           </div>
 
-          <Button
-            className="w-full bg-[color:var(--primary)] hover:bg-green-700 text-white"
-            onClick={() => window.open(successData.editUrl, "_blank")}
-          >
+          <Button>
+            {/*<Link to="/">*/}
             編集へ
+            {/*</Link>*/}
           </Button>
         </div>
       </div>
@@ -215,17 +214,17 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-[color:var(--secondary)] p-4">
+    <div className="min-h-screen flex justify-center items-center bg-secondary p-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-2xl bg-white rounded-lg flex flex-col px-4 sm:px-8 md:px-16 lg:px-24 gap-4 sm:gap-6 justify-center py-6 sm:py-8"
+        className="w-full max-w-2xl bg-white rounded-lg flex flex-col px-4 sm:px-8 md:px-16 lg:px-24 space-y-6 justify-center py-6 sm:py-8"
       >
         <h1 className="text-xl sm:text-2xl font-bold text-center">
           アドベントカレンダーを作ろう！
         </h1>
         <div>
           <div className="flex gap-2 items-center">
-            <CalendarDays className="text-[color:var(--primary)]" />
+            <CalendarDays className="text-primary" />
             <h2 className="text-base sm:text-lg font-semibold">
               期間（25日間固定）
             </h2>
@@ -236,11 +235,11 @@ function RouteComponent() {
                 type="button"
                 variant="outline"
                 className={cn(
-                  "w-full sm:w-[380px] justify-start text-left font-normal mt-2",
-                  !displayDate() && "text-muted-foreground",
+                  "w-full sm:w-[380px] justify-start text-left font-normal",
+                  !watchedValues.start_at && "text-muted-foreground",
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
+                <CalendarIcon className="h-4 w-4" />
                 {displayDate() ? (
                   <>
                     {format(displayDate()!.from, "yyyy/MM/dd")} ～{" "}
@@ -274,14 +273,12 @@ function RouteComponent() {
             </PopoverContent>
           </Popover>
           {errors.start_at && (
-            <p className="text-sm text-red-500 mt-1">
-              {errors.start_at.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.start_at.message}</p>
           )}
         </div>
-        <div>
-          <div className="flex gap-2 items-center mb-3">
-            <Gift className="text-[color:var(--primary)]" />
+        <div className="space-y-3">
+          <div className="flex gap-2 items-center">
+            <Gift className="text-primary" />
             <h2 className="text-base sm:text-lg font-semibold">
               アイテムゲット時間
             </h2>
@@ -297,64 +294,69 @@ function RouteComponent() {
             }}
             className="space-y-2"
           >
-            <div
-              className={`flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all ${
-                isRandomTime
-                  ? "border-2 border-[color:var(--primary)] bg-[color:#F0FBF3]"
-                  : "bg-[color:var(--muted)]"
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                <RadioGroupItem value="random" id="random" />
-                <div>
-                  <Label htmlFor="random">ランダム</Label>
-                  <div className="text-sm text-muted-foreground">
-                    毎日違う時間にサプライズ
+            <Label htmlFor="random" className="cursor-pointer">
+              <div
+                className={`flex w-full flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 ${
+                  isRandomTime
+                    ? "border-2 border-primary bg-green-50"
+                    : "bg-muted"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="random" id="random" />
+                  <div>
+                    <div className="text-base font-normal">ランダム</div>
+                    <div className="text-sm text-muted-foreground">
+                      毎日違う時間にサプライズ
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="bg-[color:var(--primary)] rounded text-white px-2 py-1 text-xs sm:text-sm self-start">
-                おすすめ
-              </div>
-            </div>
-            <div
-              className={`flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all ${
-                !isRandomTime
-                  ? "border-2 border-[color:var(--primary)] bg-[color:var(--primary)]/10"
-                  : "bg-[color:var(--muted)]"
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                <RadioGroupItem value="specialized" id="specialized" />
-                <div>
-                  <Label htmlFor="specialized">指定した時間</Label>
-                  <div className="text-sm text-muted-foreground">
-                    毎日同じ時間にお届け
-                  </div>
+                <div className="bg-primary rounded text-white px-2 py-1 text-xs sm:text-sm self-start">
+                  おすすめ
                 </div>
               </div>
-              <Input
-                type="time"
-                id="time-picker"
-                defaultValue="10:30"
-                onChange={(e) => {
-                  if (!isRandomTime && e.target.value) {
-                    const timeDate = new Date(
-                      `2024-01-01T${e.target.value}:00`,
-                    );
-                    setValue("item_get_time", timeDate);
-                  }
-                }}
-                className="w-20 text-center font-mono bg-white self-start"
-                disabled={isRandomTime}
-              />
-            </div>
+            </Label>
+            <Label htmlFor="specialized" className="cursor-pointer">
+              <div
+                className={`flex flex-col w-full sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 ${
+                  !isRandomTime
+                    ? "border-2 border-primary bg-primary/10"
+                    : "bg-muted"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="specialized" id="specialized" />
+                  <div>
+                    <div className="text-base font-normal">指定した時間</div>
+                    <div className="text-sm text-muted-foreground">
+                      毎日同じ時間にお届け
+                    </div>
+                  </div>
+                </div>
+                <Input
+                  type="time"
+                  id="time-picker"
+                  defaultValue="10:30"
+                  onChange={(e) => {
+                    if (!isRandomTime && e.target.value) {
+                      const timeDate = new Date(
+                        `2024-01-01T${e.target.value}:00`,
+                      );
+                      setValue("item_get_time", timeDate);
+                    }
+                  }}
+                  className="w-20 text-center font-mono bg-white self-start"
+                  disabled={isRandomTime}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </Label>
           </RadioGroup>
         </div>
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
             <div className="flex gap-2 items-center">
-              <Lock className="text-[color:var(--primary)]" />
+              <Lock className="text-primary" />
               <h2 className="text-base sm:text-lg font-semibold">
                 編集用合言葉を使う
               </h2>
@@ -368,24 +370,24 @@ function RouteComponent() {
             />
           </div>
           {watchedValues.password !== "" && (
-            <>
+            <div className="space-y-1">
               <Input
                 type="text"
                 placeholder="合言葉を入力してください"
                 {...register("password")}
-                className="w-full sm:w-[300px] mt-2"
+                className="w-full sm:w-[300px]"
               />
               {errors.password && (
-                <p className="text-sm text-red-500 mt-1">
+                <p className="text-sm text-red-500">
                   {errors.password.message}
                 </p>
               )}
-            </>
+            </div>
           )}
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
           <div className="flex gap-2 items-center">
-            <UsersRound className="text-[color:var(--primary)]" />
+            <UsersRound className="text-primary" />
             <h2 className="text-base sm:text-lg font-semibold">
               参加者の名前を公開する
             </h2>
@@ -398,9 +400,9 @@ function RouteComponent() {
             }}
           />
         </div>
-        <div className="flex gap-2 bg-[color:#FDFBE0] p-3 sm:p-4 rounded-lg">
-          <Info className="text-[color:#854D0E] flex-shrink-0 mt-0.5" />
-          <p className="text-xs sm:text-sm text-[color:#854D0E]">
+        <div className="flex gap-2 bg-[color:#FDFBE0] p-3 sm:p-4 rounded-lg  text-[color:#854D0E]">
+          <Info className="flex-shrink-0 mt-0.5" />
+          <p className="text-xs sm:text-sm">
             このカレンダーは期間終了後90日でデータが削除されます
           </p>
         </div>
