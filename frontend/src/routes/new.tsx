@@ -61,10 +61,10 @@ export const Route = createFileRoute("/new")({
 });
 
 function RouteComponent() {
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [usePassword, setUsePassword] = useState(false);
   const [successData, setSuccessData] = useState({
-    editUrl: "https://advent-calendar-app.com/edit/abc123xyz",
-    password: "winter2025",
+    editUrl: "",
+    password: "",
   });
   const { mutateAsync: postRooms } = usePostRooms();
 
@@ -112,10 +112,9 @@ function RouteComponent() {
       // 実際のAPI呼び出し
       const response = await postRooms({ data: apiData });
 
-      setIsSuccess(true);
       setSuccessData({
         editUrl: `https://advent-sphere.com/edit/${response.editId}`,
-        password: data.password || "<パスワードなし>",
+        password: data.password || "",
       });
     } catch (error) {
       console.error("エラー:", error);
@@ -148,26 +147,27 @@ function RouteComponent() {
   // アイテム取得時間の計算
   const isRandomTime =
     !watchedValues.item_get_time || watchedValues.item_get_time === "";
-  if (isSuccess) {
+
+  if (successData.editUrl) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-secondary p-4">
-        <div className="w-full max-w-md bg-white rounded-lg flex flex-col px-4 py-8 space-y-6 text-center">
+        <div className="w-full max-w-md bg-white rounded-lg flex flex-col px-4 py-8 gap-6 text-center">
           <h1 className="w-full text-lg sm:text-xl font-bold">
             アドベントカレンダーが作成されました！
           </h1>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <LinkIcon className="text-primary" />
                 <span className="text-sm font-semibold">編集リンク</span>
               </div>
-              <div className="flex items-center gap-2 p-2 border rounded">
-                <input
+              <div className="flex items-center gap-2">
+                <Input
                   type="text"
                   value={successData.editUrl}
                   readOnly
-                  className="flex-1 text-sm bg-transparent outline-none"
+                  className="flex-1 text-sm p-2 h-auto focus-visible:ring-0"
                 />
                 <Button
                   size="sm"
@@ -180,28 +180,30 @@ function RouteComponent() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Lock className="text-primary" />
-                <span className="text-sm font-semibold">編集用合言葉</span>
+            {successData.password && (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <Lock className="text-primary" />
+                  <span className="text-sm font-semibold">編集用合言葉</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    value={successData.password}
+                    readOnly
+                    className="flex-1 text-sm p-2 h-auto focus-visible:ring-0"
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => copyToClipboard(successData.password)}
+                    className="w-8 h-8 p-0 bg-primary hover:bg-green-700 text-white"
+                  >
+                    <Copy className="w-4 h-4  text-white" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center gap-2 p-2 border rounded">
-                <input
-                  type="text"
-                  value={successData.password}
-                  readOnly
-                  className="flex-1 text-sm bg-transparent outline-none"
-                />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => copyToClipboard(successData.password)}
-                  className="w-8 h-8 p-0 bg-primary hover:bg-green-700 text-white"
-                >
-                  <Copy className="w-4 h-4  text-white" />
-                </Button>
-              </div>
-            </div>
+            )}
           </div>
 
           <Button>
@@ -218,12 +220,12 @@ function RouteComponent() {
     <div className="min-h-screen flex justify-center items-center bg-secondary p-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-2xl bg-white rounded-lg flex flex-col px-4 sm:px-8 md:px-16 lg:px-24 space-y-6 justify-center py-6 sm:py-8"
+        className="w-full max-w-2xl bg-white rounded-lg flex flex-col px-4 sm:px-8 md:px-16 lg:px-24 gap-6 justify-center py-6 sm:py-8"
       >
         <h1 className="text-xl sm:text-2xl font-bold text-center">
           アドベントカレンダーを作ろう！
         </h1>
-        <div>
+        <div className="flex flex-col gap-2">
           <div className="flex gap-2 items-center">
             <CalendarDays className="text-primary" />
             <h2 className="text-base sm:text-lg font-semibold">
@@ -236,7 +238,7 @@ function RouteComponent() {
                 type="button"
                 variant="outline"
                 className={cn(
-                  "w-full sm:w-[380px] justify-start text-left font-normal",
+                  "w-full sm:w-95 justify-start text-left font-normal",
                   !watchedValues.start_at && "text-muted-foreground",
                 )}
               >
@@ -280,7 +282,7 @@ function RouteComponent() {
             <p className="text-sm text-red-500">{errors.start_at.message}</p>
           )}
         </div>
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           <div className="flex gap-2 items-center">
             <Gift className="text-primary" />
             <h2 className="text-base sm:text-lg font-semibold">
@@ -296,14 +298,14 @@ function RouteComponent() {
                 setValue("item_get_time", new Date(`2024-01-01T10:30:00`));
               }
             }}
-            className="space-y-2"
+            className="flex flex-col gap-2"
           >
             <Label htmlFor="random" className="cursor-pointer">
               <div
-                className={`flex w-full flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 ${
+                className={`flex w-full flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 border-2 ${
                   isRandomTime
-                    ? "border-2 border-primary bg-green-50"
-                    : "bg-muted"
+                    ? "border-primary bg-green-50"
+                    : "border-transparent bg-muted"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -315,17 +317,17 @@ function RouteComponent() {
                     </div>
                   </div>
                 </div>
-                <div className="bg-primary rounded text-white px-2 py-1 text-xs sm:text-sm self-start">
+                <div className="bg-primary rounded text-white px-2 py-1 text-xs sm:text-sm self-center text-center min-w-20">
                   おすすめ
                 </div>
               </div>
             </Label>
             <Label htmlFor="specialized" className="cursor-pointer">
               <div
-                className={`flex flex-col w-full sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 ${
+                className={`flex flex-col w-full sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 border-2 ${
                   !isRandomTime
-                    ? "border-2 border-primary bg-primary/10"
-                    : "bg-muted"
+                    ? "border-primary bg-primary/10"
+                    : "border-transparent bg-muted"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -349,15 +351,17 @@ function RouteComponent() {
                       setValue("item_get_time", timeDate);
                     }
                   }}
-                  className="w-20 text-center font-mono bg-white self-start"
-                  disabled={isRandomTime}
+                  className={`w-28 text-right font-mono bg-white self-center min-w-22 px-3 ${
+                    isRandomTime ? "opacity-50 pointer-events-none" : ""
+                  }`}
+                  readOnly={isRandomTime}
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
             </Label>
           </RadioGroup>
         </div>
-        <div>
+        <div className="flex flex-col gap-2">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
             <div className="flex gap-2 items-center">
               <Lock className="text-primary" />
@@ -367,19 +371,22 @@ function RouteComponent() {
             </div>
             <Switch
               id="use-passphrase"
-              checked={watchedValues.password !== ""}
+              checked={usePassword}
               onCheckedChange={(checked) => {
-                setValue("password", checked ? "password" : "");
+                setUsePassword(checked);
+                if (!checked) {
+                  setValue("password", "");
+                }
               }}
             />
           </div>
-          {watchedValues.password !== "" && (
-            <div className="space-y-1">
+          {usePassword && (
+            <div className="flex flex-col gap-1">
               <Input
                 type="text"
                 placeholder="合言葉を入力してください"
                 {...register("password")}
-                className="w-full sm:w-[300px]"
+                className="w-full sm:w-75"
               />
               {errors.password && (
                 <p className="text-sm text-red-500">
@@ -404,8 +411,8 @@ function RouteComponent() {
             }}
           />
         </div>
-        <div className="flex gap-2 bg-[color:#FDFBE0] p-3 sm:p-4 rounded-lg  text-[color:#854D0E]">
-          <Info className="flex-shrink-0 mt-0.5" />
+        <div className="flex gap-2 items-center bg-yellow-50 p-3 sm:p-4 rounded-lg  text-yellow-800">
+          <Info className="shrink-0 mt-0.5" />
           <p className="text-xs sm:text-sm">
             このカレンダーは期間終了後90日でデータが削除されます
           </p>
@@ -416,7 +423,7 @@ function RouteComponent() {
             className="w-full sm:w-36"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "作成中..." : "登録"}
+            {isSubmitting ? "作成中..." : "作成"}
           </Button>
         </div>
       </form>
