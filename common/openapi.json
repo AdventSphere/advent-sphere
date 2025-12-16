@@ -42,11 +42,7 @@
             "items": {
               "type": "number"
             },
-            "example": [
-              0,
-              1,
-              2
-            ],
+            "example": [0, 1, 2],
             "description": "アイテムの位置情報"
           },
           "rotation": {
@@ -55,11 +51,7 @@
             "items": {
               "type": "number"
             },
-            "example": [
-              0,
-              0,
-              0
-            ],
+            "example": [0, 0, 0],
             "description": "アイテムの回転情報"
           },
           "isOpened": {
@@ -97,9 +89,7 @@
             "description": "カレンダーアイテムID"
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "CreateCalendarItem": {
         "type": "object",
@@ -126,11 +116,7 @@
             "items": {
               "type": "number"
             },
-            "example": [
-              0,
-              1,
-              2
-            ],
+            "example": [0, 1, 2],
             "description": "アイテムの位置情報"
           },
           "rotation": {
@@ -139,11 +125,7 @@
             "items": {
               "type": "number"
             },
-            "example": [
-              0,
-              0,
-              0
-            ],
+            "example": [0, 0, 0],
             "description": "アイテムの回転情報"
           },
           "itemId": {
@@ -163,12 +145,7 @@
             "description": "アイテムが開封されたかどうか"
           }
         },
-        "required": [
-          "userId",
-          "roomId",
-          "openDate",
-          "itemId"
-        ]
+        "required": ["userId", "roomId", "openDate", "itemId"]
       },
       "CreateCalendarItemRequest": {
         "type": "object",
@@ -182,10 +159,7 @@
             "$ref": "#/components/schemas/CreateCalendarItem"
           }
         },
-        "required": [
-          "editId",
-          "calendarItem"
-        ]
+        "required": ["editId", "calendarItem"]
       },
       "PatchCalendarItemRequest": {
         "type": "object",
@@ -220,11 +194,7 @@
                 "items": {
                   "type": "number"
                 },
-                "example": [
-                  0,
-                  1,
-                  2
-                ],
+                "example": [0, 1, 2],
                 "description": "アイテムの位置情報"
               },
               "rotation": {
@@ -233,11 +203,7 @@
                 "items": {
                   "type": "number"
                 },
-                "example": [
-                  0,
-                  0,
-                  0
-                ],
+                "example": [0, 0, 0],
                 "description": "アイテムの回転情報"
               },
               "itemId": {
@@ -259,9 +225,7 @@
             }
           }
         },
-        "required": [
-          "calendarItem"
-        ]
+        "required": ["calendarItem"]
       },
       "User": {
         "type": "object",
@@ -283,11 +247,7 @@
             "description": "ユーザー名"
           }
         },
-        "required": [
-          "id",
-          "createdAt",
-          "name"
-        ]
+        "required": ["id", "createdAt", "name"]
       },
       "CreateUser": {
         "type": "object",
@@ -303,10 +263,7 @@
             "description": "ユーザー名"
           }
         },
-        "required": [
-          "id",
-          "name"
-        ]
+        "required": ["id", "name"]
       },
       "Item": {
         "type": "object",
@@ -338,13 +295,7 @@
             "description": "アイテムの種類"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "createdAt",
-          "description",
-          "type"
-        ]
+        "required": ["id", "name", "createdAt", "description", "type"]
       },
       "CreateItemResponse": {
         "type": "object",
@@ -360,10 +311,7 @@
             "description": "アイテム名"
           }
         },
-        "required": [
-          "id",
-          "name"
-        ]
+        "required": ["id", "name"]
       },
       "CreateItemError": {
         "type": "object",
@@ -372,9 +320,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "error"
-        ]
+        "required": ["error"]
       },
       "CreateItem": {
         "type": "object",
@@ -461,10 +407,7 @@
             "description": "ルームの編集ID"
           }
         },
-        "required": [
-          "id",
-          "editId"
-        ]
+        "required": ["id", "editId"]
       },
       "CreateRoom": {
         "type": "object",
@@ -497,11 +440,7 @@
             "description": "開始日時"
           }
         },
-        "required": [
-          "ownerId",
-          "isAnonymous",
-          "startAt"
-        ]
+        "required": ["ownerId", "isAnonymous", "startAt"]
       },
       "Room": {
         "type": "object",
@@ -597,9 +536,7 @@
             "description": "base64エンコードされた画像データ"
           }
         },
-        "required": [
-          "imageData"
-        ]
+        "required": ["imageData"]
       },
       "CreatePhotoRequest": {
         "type": "object",
@@ -610,9 +547,7 @@
             "description": "画像生成のためのプロンプト"
           }
         },
-        "required": [
-          "prompt"
-        ]
+        "required": ["prompt"]
       },
       "CreatePromptResponse": {
         "type": "object",
@@ -623,9 +558,7 @@
             "description": "生成された写真プロンプト"
           }
         },
-        "required": [
-          "prompt"
-        ]
+        "required": ["prompt"]
       },
       "CreatePromptRequest": {
         "type": "object",
@@ -642,10 +575,7 @@
               "properties": {
                 "role": {
                   "type": "string",
-                  "enum": [
-                    "user",
-                    "model"
-                  ],
+                  "enum": ["user", "model"],
                   "example": "user",
                   "description": "発言者の役割"
                 },
@@ -655,10 +585,7 @@
                   "description": "発言内容"
                 }
               },
-              "required": [
-                "role",
-                "content"
-              ]
+              "required": ["role", "content"]
             },
             "example": [
               {
@@ -673,10 +600,7 @@
             "description": "これまでの会話履歴"
           }
         },
-        "required": [
-          "prompt",
-          "history"
-        ]
+        "required": ["prompt", "history"]
       }
     },
     "parameters": {}
@@ -684,9 +608,7 @@
   "paths": {
     "/calendarItems/{roomId}/calendarItems": {
       "get": {
-        "tags": [
-          "calendar_items"
-        ],
+        "tags": ["calendar_items"],
         "summary": "カレンダーアイテム一覧の取得",
         "description": "すべてのカレンダーアイテムを取得します。",
         "parameters": [
@@ -755,9 +677,7 @@
         }
       },
       "post": {
-        "tags": [
-          "calendar_items"
-        ],
+        "tags": ["calendar_items"],
         "summary": "カレンダーアイテムの作成",
         "description": "新しいカレンダーアイテムを作成します。",
         "parameters": [
@@ -802,9 +722,7 @@
     },
     "/calendarItems/{roomId}/calendarItems/{id}": {
       "delete": {
-        "tags": [
-          "calendar_items"
-        ],
+        "tags": ["calendar_items"],
         "summary": "カレンダーアイテムの削除",
         "description": "指定したIDのカレンダーアイテムを削除します。",
         "parameters": [
@@ -844,9 +762,7 @@
                     "description": "ルームの編集ID"
                   }
                 },
-                "required": [
-                  "editId"
-                ]
+                "required": ["editId"]
               }
             }
           }
@@ -858,9 +774,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "calendar_items"
-        ],
+        "tags": ["calendar_items"],
         "summary": "カレンダーアイテムの更新",
         "description": "指定したIDのカレンダーアイテム情報を更新します。",
         "parameters": [
@@ -919,9 +833,7 @@
     },
     "/calendarItems/{roomId}/calendarItems/inventory": {
       "get": {
-        "tags": [
-          "calendar_items"
-        ],
+        "tags": ["calendar_items"],
         "summary": "インベントリーに入っているアイテムの取得",
         "description": "インベントリーに入っているアイテムを取得します。",
         "parameters": [
@@ -956,9 +868,7 @@
     },
     "/calendarItems/{roomId}/calendarItems/room": {
       "get": {
-        "tags": [
-          "calendar_items"
-        ],
+        "tags": ["calendar_items"],
         "summary": "部屋に配置されているアイテムの取得",
         "description": "部屋に配置されているアイテムを取得します。",
         "parameters": [
@@ -993,9 +903,7 @@
     },
     "/users/{id}": {
       "get": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "summary": "ユーザー情報の取得",
         "description": "ユーザーIDを指定してユーザー情報を取得します。",
         "parameters": [
@@ -1031,9 +939,7 @@
     },
     "/users": {
       "post": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "summary": "ユーザーの作成",
         "description": "新しいユーザーを作成します。",
         "requestBody": {
@@ -1055,9 +961,7 @@
     },
     "/items": {
       "get": {
-        "tags": [
-          "Item"
-        ],
+        "tags": ["Item"],
         "summary": "アイテム一覧の取得",
         "description": "すべてのアイテムを取得します。",
         "responses": {
@@ -1077,9 +981,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Item"
-        ],
+        "tags": ["Item"],
         "summary": "アイテムの作成",
         "description": "新しいアイテムを作成します。",
         "requestBody": {
@@ -1118,9 +1020,7 @@
     },
     "/items/{id}": {
       "get": {
-        "tags": [
-          "Item"
-        ],
+        "tags": ["Item"],
         "summary": "アイテムの取得",
         "description": "アイテムIDを指定してアイテムを取得します。",
         "parameters": [
@@ -1153,9 +1053,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Item"
-        ],
+        "tags": ["Item"],
         "summary": "アイテムの削除",
         "description": "アイテムIDを指定してアイテムを削除します。",
         "parameters": [
@@ -1181,9 +1079,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Item"
-        ],
+        "tags": ["Item"],
         "summary": "アイテムの更新",
         "description": "アイテムIDを指定してアイテム情報を更新します。",
         "parameters": [
@@ -1228,9 +1124,7 @@
     },
     "/rooms": {
       "post": {
-        "tags": [
-          "Room"
-        ],
+        "tags": ["Room"],
         "summary": "ルームの作成",
         "description": "新しいルームを作成します。",
         "requestBody": {
@@ -1259,9 +1153,7 @@
     },
     "/rooms/{id}": {
       "get": {
-        "tags": [
-          "Room"
-        ],
+        "tags": ["Room"],
         "summary": "ルーム情報の取得",
         "description": "ルームIDを指定してルーム情報を取得します。",
         "parameters": [
@@ -1294,9 +1186,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Room"
-        ],
+        "tags": ["Room"],
         "summary": "ルームの削除",
         "description": "ルームIDを指定してルームを削除します。",
         "parameters": [
@@ -1322,9 +1212,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Room"
-        ],
+        "tags": ["Room"],
         "summary": "ルーム情報の更新",
         "description": "ルームIDを指定してルーム情報を更新します。",
         "parameters": [
@@ -1369,9 +1257,7 @@
     },
     "/rooms/{id}/verifyPassword": {
       "post": {
-        "tags": [
-          "Room"
-        ],
+        "tags": ["Room"],
         "summary": "ルームのパスワード確認",
         "description": "ルームIDとパスワードを指定してパスワードが正しいか確認します。",
         "parameters": [
@@ -1400,9 +1286,7 @@
                     "description": "ルームのパスワード"
                   }
                 },
-                "required": [
-                  "password"
-                ]
+                "required": ["password"]
               }
             }
           }
@@ -1422,9 +1306,7 @@
     },
     "/rooms/{id}/isPasswordProtected": {
       "get": {
-        "tags": [
-          "Room"
-        ],
+        "tags": ["Room"],
         "summary": "ルームのパスワード保護確認",
         "description": "ルームIDを指定してそのルームがパスワード保護されているか確認します.",
         "parameters": [
@@ -1454,9 +1336,7 @@
                       "description": "ルームがパスワード保護されているかどうか"
                     }
                   },
-                  "required": [
-                    "isPasswordProtected"
-                  ]
+                  "required": ["isPasswordProtected"]
                 }
               }
             }
@@ -1469,9 +1349,7 @@
     },
     "/ai/createPhoto": {
       "post": {
-        "tags": [
-          "AI"
-        ],
+        "tags": ["AI"],
         "summary": "写真の作成",
         "description": "新しい写真を作成します。",
         "requestBody": {
@@ -1500,9 +1378,7 @@
     },
     "/ai/createPrompt": {
       "post": {
-        "tags": [
-          "AI"
-        ],
+        "tags": ["AI"],
         "summary": "AIを用いて写真プロンプトを生成する",
         "description": "AIを用いて写真プロンプトを生成します。",
         "requestBody": {
