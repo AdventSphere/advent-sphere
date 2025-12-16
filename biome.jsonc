@@ -14,7 +14,8 @@
       "!**/mockServiceWorker.js",
       "!**/routeTree.gen.ts",
       "!**/generate",
-      "!**/drizzle"
+      "!**/drizzle",
+      "!**/openapi"
     ]
   },
   "formatter": {

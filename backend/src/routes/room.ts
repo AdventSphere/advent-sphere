@@ -43,10 +43,6 @@ export const RoomSchema = z
       example: "2024-01-01T00:00:00Z",
       description: "アイテム取得日時",
     }),
-    password: z.string().nullable().openapi({
-      example: "securepassword",
-      description: "ルームのパスワード",
-    }),
     isAnonymous: z
       .boolean()
       .openapi({ example: false, description: "匿名モードかどうか" }),
@@ -194,6 +190,75 @@ const patchRoomRoute = createRoute({
   },
 });
 
+const verifyPasswordRoute = createRoute({
+  method: "post",
+  path: "/{id}/verifyPassword",
+  tags: ["Room"],
+  summary: "ルームのパスワード確認",
+  description: "ルームIDとパスワードを指定してパスワードが正しいか確認します。",
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        param: { name: "id", in: "path" },
+        example: "room_12345",
+        description: "ルームID",
+      }),
+    }),
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: z.object({
+            password: z.string().openapi({
+              example: "securepassword",
+              description: "ルームのパスワード",
+            }),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: { description: "認証に成功しました" },
+    401: { description: "認証に失敗しました" },
+    404: { description: "ルームが見つかりません" },
+  },
+});
+
+const isPasswordProtectedRoute = createRoute({
+  method: "get",
+  path: "/{id}/isPasswordProtected",
+  tags: ["Room"],
+  summary: "ルームのパスワード保護確認",
+  description:
+    "ルームIDを指定してそのルームがパスワード保護されているか確認します.",
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        param: { name: "id", in: "path" },
+        example: "room_12345",
+        description: "ルームID",
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: "ルームのパスワード保護状態",
+      content: {
+        "application/json": {
+          schema: z.object({
+            isPasswordProtected: z.boolean().openapi({
+              example: true,
+              description: "ルームがパスワード保護されているかどうか",
+            }),
+          }),
+        },
+      },
+    },
+    404: { description: "ルームが見つかりません" },
+  },
+});
+
 const app = new OpenAPIHono<{
   Bindings: CloudflareBindings;
 }>();
@@ -250,6 +315,44 @@ app.openapi(patchRoomRoute, async (c) => {
   const updatedRoom = RoomSchema.parse(result[0]);
 
   return c.json(updatedRoom, 200);
+});
+
+app.openapi(verifyPasswordRoute, async (c) => {
+  const { id } = c.req.valid("param");
+  const { password } = c.req.valid("json");
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .select()
+    .from(schema.roomTable)
+    .where(eq(schema.roomTable.id, id));
+
+  if (result.length === 0) {
+    return c.json({ message: "ルームが見つかりません" }, 404);
+  }
+
+  if (result[0].password !== password) {
+    return c.json({ message: "認証に失敗しました" }, 401);
+  }
+
+  return c.json({ message: "認証に成功しました" }, 200);
+});
+
+app.openapi(isPasswordProtectedRoute, async (c) => {
+  const { id } = c.req.valid("param");
+  const db = drizzle(c.env.DB, { schema });
+  const result = await db
+    .select()
+    .from(schema.roomTable)
+    .where(eq(schema.roomTable.id, id));
+
+  if (result.length === 0) {
+    return c.json({ message: "ルームが見つかりません" }, 404);
+  }
+
+  const isPasswordProtected =
+    result[0].password !== null && result[0].password !== "";
+
+  return c.json({ isPasswordProtected }, 200);
 });
 
 export default app;
