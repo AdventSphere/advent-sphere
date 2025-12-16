@@ -19,21 +19,21 @@ export interface CalendarItem {
    * アイテムの位置情報
    * @nullable
    */
-  position: number[] | null;
+  position?: number[] | null;
   /**
    * アイテムの回転情報
    * @nullable
    */
-  rotation: number[] | null;
+  rotation?: number[] | null;
   /** アイテムが開封されたかどうか */
-  isOpened: boolean;
+  isOpened?: boolean;
   /** 関連するアイテムID */
   itemId: string;
   /**
    * 関連する画像ID
    * @nullable
    */
-  imageId: string | null;
+  imageId?: string | null;
 }
 
 export interface CreateCalendarItemResponse {
@@ -52,21 +52,21 @@ export interface CreateCalendarItem {
    * アイテムの位置情報
    * @nullable
    */
-  position: number[] | null;
+  position?: number[] | null;
   /**
    * アイテムの回転情報
    * @nullable
    */
-  rotation: number[] | null;
+  rotation?: number[] | null;
   /** 関連するアイテムID */
   itemId: string;
   /**
    * 関連する画像ID
    * @nullable
    */
-  imageId: string | null;
+  imageId?: string | null;
   /** アイテムが開封されたかどうか */
-  isOpened: boolean;
+  isOpened?: boolean;
 }
 
 export interface CreateCalendarItemRequest {
@@ -202,11 +202,6 @@ export interface Room {
   ownerId: string;
   /** アイテム取得日時 */
   itemGetTime: string;
-  /**
-   * ルームのパスワード
-   * @nullable
-   */
-  password: string | null;
   /** 匿名モードかどうか */
   isAnonymous: boolean;
   /** 開始日時 */
@@ -271,8 +266,31 @@ export interface CreatePromptRequest {
   history: CreatePromptRequestHistoryItem[];
 }
 
+export type GetCalendarItemsRoomIdCalendarItemsParams = {
+/**
+ * 取得数
+ * @minimum 1
+ */
+limit?: number;
+/**
+ * オフセット
+ * @minimum 0
+ * @nullable
+ */
+offset?: number | null;
+/**
+ * アイテムの種類
+ */
+type?: string;
+};
+
 export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
   /** ルームの編集ID */
   editId: string;
+};
+
+export type PostRoomsIdVerifyPasswordBody = {
+  /** ルームのパスワード */
+  password: string;
 };
 

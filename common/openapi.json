@@ -77,11 +77,7 @@
           "roomId",
           "createdAt",
           "openDate",
-          "position",
-          "rotation",
-          "isOpened",
-          "itemId",
-          "imageId"
+          "itemId"
         ]
       },
       "CreateCalendarItemResponse": {
@@ -149,16 +145,7 @@
             "description": "アイテムが開封されたかどうか"
           }
         },
-        "required": [
-          "userId",
-          "roomId",
-          "openDate",
-          "position",
-          "rotation",
-          "itemId",
-          "imageId",
-          "isOpened"
-        ]
+        "required": ["userId", "roomId", "openDate", "itemId"]
       },
       "CreateCalendarItemRequest": {
         "type": "object",
@@ -474,12 +461,6 @@
             "example": "2024-01-01T00:00:00Z",
             "description": "アイテム取得日時"
           },
-          "password": {
-            "type": "string",
-            "nullable": true,
-            "example": "securepassword",
-            "description": "ルームのパスワード"
-          },
           "isAnonymous": {
             "type": "boolean",
             "example": false,
@@ -512,7 +493,6 @@
           "id",
           "ownerId",
           "itemGetTime",
-          "password",
           "isAnonymous",
           "startAt",
           "createdAt",
@@ -642,6 +622,42 @@
             "description": "ルームID",
             "name": "roomId",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "example": 10,
+              "description": "取得数"
+            },
+            "required": false,
+            "description": "取得数",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "nullable": true,
+              "minimum": 0,
+              "example": 0,
+              "description": "オフセット"
+            },
+            "required": false,
+            "description": "オフセット",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "photo_frame",
+              "description": "アイテムの種類"
+            },
+            "required": false,
+            "description": "アイテムの種類",
+            "name": "type",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1232,6 +1248,55 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "ルームが見つかりません"
+          }
+        }
+      }
+    },
+    "/rooms/{id}/verify-password": {
+      "post": {
+        "tags": ["Room"],
+        "summary": "ルームのパスワード確認",
+        "description": "ルームIDとパスワードを指定してパスワードが正しいか確認します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "securepassword",
+                    "description": "ルームのパスワード"
+                  }
+                },
+                "required": ["password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "認証に成功しました"
+          },
+          "401": {
+            "description": "認証に失敗しました"
           },
           "404": {
             "description": "ルームが見つかりません"

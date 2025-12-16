@@ -26,6 +26,7 @@ import type {
 import type {
   CreateRoom,
   CreateRoomResponse,
+  PostRoomsIdVerifyPasswordBody,
   Room,
   UpdateRoom
 } from '../adventSphereAPI.schemas';
@@ -323,6 +324,72 @@ export const usePatchRoomsId = <TError = void,
       > => {
 
       const mutationOptions = getPatchRoomsIdMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * ルームIDとパスワードを指定してパスワードが正しいか確認します。
+ * @summary ルームのパスワード確認
+ */
+export const postRoomsIdVerifyPassword = (
+    id: string,
+    postRoomsIdVerifyPasswordBody: PostRoomsIdVerifyPasswordBody,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<void>(
+      {url: `/rooms/${id}/verify-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: postRoomsIdVerifyPasswordBody, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostRoomsIdVerifyPasswordMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postRoomsIdVerifyPassword>>, TError,{id: string;data: PostRoomsIdVerifyPasswordBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postRoomsIdVerifyPassword>>, TError,{id: string;data: PostRoomsIdVerifyPasswordBody}, TContext> => {
+
+const mutationKey = ['postRoomsIdVerifyPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postRoomsIdVerifyPassword>>, {id: string;data: PostRoomsIdVerifyPasswordBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  postRoomsIdVerifyPassword(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostRoomsIdVerifyPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof postRoomsIdVerifyPassword>>>
+    export type PostRoomsIdVerifyPasswordMutationBody = PostRoomsIdVerifyPasswordBody
+    export type PostRoomsIdVerifyPasswordMutationError = void
+
+    /**
+ * @summary ルームのパスワード確認
+ */
+export const usePostRoomsIdVerifyPassword = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postRoomsIdVerifyPassword>>, TError,{id: string;data: PostRoomsIdVerifyPasswordBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postRoomsIdVerifyPassword>>,
+        TError,
+        {id: string;data: PostRoomsIdVerifyPasswordBody},
+        TContext
+      > => {
+
+      const mutationOptions = getPostRoomsIdVerifyPasswordMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

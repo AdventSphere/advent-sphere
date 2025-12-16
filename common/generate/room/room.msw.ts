@@ -25,9 +25,9 @@ import type {
 
 export const getPostRoomsResponseMock = (overrideResponse: Partial< CreateRoomResponse > = {}): CreateRoomResponse => ({id: faker.string.alpha({length: {min: 10, max: 20}}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getGetRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, password: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
+export const getGetRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getPatchRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, password: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
+export const getPatchRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
 
 export const getPostRoomsMockHandler = (overrideResponse?: CreateRoomResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CreateRoomResponse> | CreateRoomResponse), options?: RequestHandlerOptions) => {
@@ -75,9 +75,20 @@ export const getPatchRoomsIdMockHandler = (overrideResponse?: Room | ((info: Par
       })
   }, options)
 }
+
+export const getPostRoomsIdVerifyPasswordMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.post('*/rooms/:id/verify-password', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 200,
+        
+      })
+  }, options)
+}
 export const getRoomMock = () => [
   getPostRoomsMockHandler(),
   getGetRoomsIdMockHandler(),
   getDeleteRoomsIdMockHandler(),
-  getPatchRoomsIdMockHandler()
+  getPatchRoomsIdMockHandler(),
+  getPostRoomsIdVerifyPasswordMockHandler()
 ]
