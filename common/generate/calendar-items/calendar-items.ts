@@ -156,7 +156,7 @@ export const postCalendarItemsRoomIdCalendarItems = (
   
 
 
-export const getPostCalendarItemsRoomIdCalendarItemsMutationOptions = <TError = unknown,
+export const getPostCalendarItemsRoomIdCalendarItemsMutationOptions = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>, TError,{roomId: string;data: CreateCalendarItemRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>, TError,{roomId: string;data: CreateCalendarItemRequest}, TContext> => {
 
@@ -183,12 +183,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostCalendarItemsRoomIdCalendarItemsMutationResult = NonNullable<Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>>
     export type PostCalendarItemsRoomIdCalendarItemsMutationBody = CreateCalendarItemRequest
-    export type PostCalendarItemsRoomIdCalendarItemsMutationError = unknown
+    export type PostCalendarItemsRoomIdCalendarItemsMutationError = void
 
     /**
  * @summary カレンダーアイテムの作成
  */
-export const usePostCalendarItemsRoomIdCalendarItems = <TError = unknown,
+export const usePostCalendarItemsRoomIdCalendarItems = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>, TError,{roomId: string;data: CreateCalendarItemRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postCalendarItemsRoomIdCalendarItems>>,
@@ -288,7 +288,7 @@ export const patchCalendarItemsRoomIdCalendarItemsId = (
   
 
 
-export const getPatchCalendarItemsRoomIdCalendarItemsIdMutationOptions = <TError = unknown,
+export const getPatchCalendarItemsRoomIdCalendarItemsIdMutationOptions = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>, TError,{roomId: string;id: string;data: PatchCalendarItemRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>, TError,{roomId: string;id: string;data: PatchCalendarItemRequest}, TContext> => {
 
@@ -315,12 +315,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PatchCalendarItemsRoomIdCalendarItemsIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>>
     export type PatchCalendarItemsRoomIdCalendarItemsIdMutationBody = PatchCalendarItemRequest
-    export type PatchCalendarItemsRoomIdCalendarItemsIdMutationError = unknown
+    export type PatchCalendarItemsRoomIdCalendarItemsIdMutationError = void
 
     /**
  * @summary カレンダーアイテムの更新
  */
-export const usePatchCalendarItemsRoomIdCalendarItemsId = <TError = unknown,
+export const usePatchCalendarItemsRoomIdCalendarItemsId = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>, TError,{roomId: string;id: string;data: PatchCalendarItemRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof patchCalendarItemsRoomIdCalendarItemsId>>,
@@ -333,4 +333,189 @@ export const usePatchCalendarItemsRoomIdCalendarItemsId = <TError = unknown,
 
       return useMutation(mutationOptions, queryClient);
     }
+    /**
+ * インベントリーに入っているアイテムを取得します。
+ * @summary インベントリーに入っているアイテムの取得
+ */
+export const getCalendarItemsRoomIdCalendarItemsInventory = (
+    roomId: string,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<CalendarItem[]>(
+      {url: `/calendarItems/${roomId}/calendarItems/inventory`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetCalendarItemsRoomIdCalendarItemsInventoryQueryKey = (roomId?: string,) => {
+    return [
+    `/calendarItems/${roomId}/calendarItems/inventory`
+    ] as const;
+    }
+
     
+export const getGetCalendarItemsRoomIdCalendarItemsInventoryQueryOptions = <TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError = unknown>(roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCalendarItemsRoomIdCalendarItemsInventoryQueryKey(roomId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>> = ({ signal }) => getCalendarItemsRoomIdCalendarItemsInventory(roomId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(roomId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCalendarItemsRoomIdCalendarItemsInventoryQueryResult = NonNullable<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>>
+export type GetCalendarItemsRoomIdCalendarItemsInventoryQueryError = unknown
+
+
+export function useGetCalendarItemsRoomIdCalendarItemsInventory<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError = unknown>(
+ roomId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>,
+          TError,
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCalendarItemsRoomIdCalendarItemsInventory<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>,
+          TError,
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCalendarItemsRoomIdCalendarItemsInventory<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary インベントリーに入っているアイテムの取得
+ */
+
+export function useGetCalendarItemsRoomIdCalendarItemsInventory<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsInventory>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCalendarItemsRoomIdCalendarItemsInventoryQueryOptions(roomId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * 部屋に配置されているアイテムを取得します。
+ * @summary 部屋に配置されているアイテムの取得
+ */
+export const getCalendarItemsRoomIdCalendarItemsRoom = (
+    roomId: string,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<CalendarItem[]>(
+      {url: `/calendarItems/${roomId}/calendarItems/room`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetCalendarItemsRoomIdCalendarItemsRoomQueryKey = (roomId?: string,) => {
+    return [
+    `/calendarItems/${roomId}/calendarItems/room`
+    ] as const;
+    }
+
+    
+export const getGetCalendarItemsRoomIdCalendarItemsRoomQueryOptions = <TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError = unknown>(roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCalendarItemsRoomIdCalendarItemsRoomQueryKey(roomId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>> = ({ signal }) => getCalendarItemsRoomIdCalendarItemsRoom(roomId, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(roomId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCalendarItemsRoomIdCalendarItemsRoomQueryResult = NonNullable<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>>
+export type GetCalendarItemsRoomIdCalendarItemsRoomQueryError = unknown
+
+
+export function useGetCalendarItemsRoomIdCalendarItemsRoom<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError = unknown>(
+ roomId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>,
+          TError,
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCalendarItemsRoomIdCalendarItemsRoom<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>,
+          TError,
+          Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCalendarItemsRoomIdCalendarItemsRoom<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 部屋に配置されているアイテムの取得
+ */
+
+export function useGetCalendarItemsRoomIdCalendarItemsRoom<TData = Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError = unknown>(
+ roomId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalendarItemsRoomIdCalendarItemsRoom>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCalendarItemsRoomIdCalendarItemsRoomQueryOptions(roomId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

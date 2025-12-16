@@ -23,11 +23,15 @@ import type {
 } from '../adventSphereAPI.schemas';
 
 
-export const getGetCalendarItemsRoomIdCalendarItemsResponseMock = (): CalendarItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), rotation: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
+export const getGetCalendarItemsRoomIdCalendarItemsResponseMock = (): CalendarItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), rotation: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null])})))
 
 export const getPostCalendarItemsRoomIdCalendarItemsResponseMock = (overrideResponse: Partial< CreateCalendarItemResponse > = {}): CreateCalendarItemResponse => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (overrideResponse: Partial< CalendarItem > = {}): CalendarItem => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), rotation: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (overrideResponse: Partial< CalendarItem > = {}): CalendarItem => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), rotation: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), ...overrideResponse})
+
+export const getGetCalendarItemsRoomIdCalendarItemsInventoryResponseMock = (): CalendarItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), rotation: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null])})))
+
+export const getGetCalendarItemsRoomIdCalendarItemsRoomResponseMock = (): CalendarItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), rotation: Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), isOpened: faker.datatype.boolean(), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null])})))
 
 
 export const getGetCalendarItemsRoomIdCalendarItemsMockHandler = (overrideResponse?: CalendarItem[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CalendarItem[]> | CalendarItem[]), options?: RequestHandlerOptions) => {
@@ -75,9 +79,35 @@ export const getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler = (overrideRe
       })
   }, options)
 }
+
+export const getGetCalendarItemsRoomIdCalendarItemsInventoryMockHandler = (overrideResponse?: CalendarItem[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CalendarItem[]> | CalendarItem[]), options?: RequestHandlerOptions) => {
+  return http.get('*/calendarItems/:roomId/calendarItems/inventory', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetCalendarItemsRoomIdCalendarItemsInventoryResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
+
+export const getGetCalendarItemsRoomIdCalendarItemsRoomMockHandler = (overrideResponse?: CalendarItem[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CalendarItem[]> | CalendarItem[]), options?: RequestHandlerOptions) => {
+  return http.get('*/calendarItems/:roomId/calendarItems/room', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetCalendarItemsRoomIdCalendarItemsRoomResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 export const getCalendarItemsMock = () => [
   getGetCalendarItemsRoomIdCalendarItemsMockHandler(),
   getPostCalendarItemsRoomIdCalendarItemsMockHandler(),
   getDeleteCalendarItemsRoomIdCalendarItemsIdMockHandler(),
-  getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler()
+  getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler(),
+  getGetCalendarItemsRoomIdCalendarItemsInventoryMockHandler(),
+  getGetCalendarItemsRoomIdCalendarItemsRoomMockHandler()
 ]

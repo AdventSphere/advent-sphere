@@ -38,6 +38,7 @@
           },
           "position": {
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "number"
             },
@@ -46,6 +47,7 @@
           },
           "rotation": {
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "number"
             },
@@ -64,6 +66,7 @@
           },
           "imageId": {
             "type": "string",
+            "nullable": true,
             "example": "image_12345",
             "description": "関連する画像ID"
           }
@@ -74,8 +77,11 @@
           "roomId",
           "createdAt",
           "openDate",
+          "position",
+          "rotation",
           "isOpened",
-          "itemId"
+          "itemId",
+          "imageId"
         ]
       },
       "CreateCalendarItemResponse": {
@@ -110,6 +116,7 @@
           },
           "position": {
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "number"
             },
@@ -118,6 +125,7 @@
           },
           "rotation": {
             "type": "array",
+            "nullable": true,
             "items": {
               "type": "number"
             },
@@ -131,11 +139,26 @@
           },
           "imageId": {
             "type": "string",
+            "nullable": true,
             "example": "image_12345",
             "description": "関連する画像ID"
+          },
+          "isOpened": {
+            "type": "boolean",
+            "example": false,
+            "description": "アイテムが開封されたかどうか"
           }
         },
-        "required": ["userId", "roomId", "openDate", "itemId"]
+        "required": [
+          "userId",
+          "roomId",
+          "openDate",
+          "position",
+          "rotation",
+          "itemId",
+          "imageId",
+          "isOpened"
+        ]
       },
       "CreateCalendarItemRequest": {
         "type": "object",
@@ -180,6 +203,7 @@
               },
               "position": {
                 "type": "array",
+                "nullable": true,
                 "items": {
                   "type": "number"
                 },
@@ -188,6 +212,7 @@
               },
               "rotation": {
                 "type": "array",
+                "nullable": true,
                 "items": {
                   "type": "number"
                 },
@@ -201,13 +226,19 @@
               },
               "imageId": {
                 "type": "string",
+                "nullable": true,
                 "example": "image_12345",
                 "description": "関連する画像ID"
+              },
+              "isOpened": {
+                "type": "boolean",
+                "example": false,
+                "description": "アイテムが開封されたかどうか"
               }
             }
           }
         },
-        "required": ["editId", "calendarItem"]
+        "required": ["calendarItem"]
       },
       "User": {
         "type": "object",
@@ -666,6 +697,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "ルームの編集権限がありません"
           }
         }
       }
@@ -768,6 +802,82 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CalendarItem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ルームの編集権限がありません"
+          },
+          "404": {
+            "description": "カレンダーアイテムが見つかりません"
+          }
+        }
+      }
+    },
+    "/calendarItems/{roomId}/calendarItems/inventory": {
+      "get": {
+        "tags": ["calendar_items"],
+        "summary": "インベントリーに入っているアイテムの取得",
+        "description": "インベントリーに入っているアイテムを取得します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "roomId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CalendarItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calendarItems/{roomId}/calendarItems/room": {
+      "get": {
+        "tags": ["calendar_items"],
+        "summary": "部屋に配置されているアイテムの取得",
+        "description": "部屋に配置されているアイテムを取得します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "room_12345",
+              "description": "ルームID"
+            },
+            "required": true,
+            "description": "ルームID",
+            "name": "roomId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CalendarItem"
+                  }
                 }
               }
             }
