@@ -9,7 +9,7 @@ export function Room() {
   return (
     <primitive
       object={splat}
-      scale={10}
+      scale={30}
       position={[0, 0, 0]}
       quaternion={[1, 0, 0, 0]}
     />
