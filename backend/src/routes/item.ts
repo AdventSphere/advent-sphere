@@ -255,13 +255,13 @@ app.openapi(createItemRoute, async (c) => {
       uploadFunction(
         c.env.BUCKET,
         objectFile,
-        `item/object/${type}`,
+        "item/object",
         `${result[0].id}.${objectFile.name.split(".").pop()}`,
       ),
       uploadFunction(
         c.env.BUCKET,
         objectThumbnail,
-        `item/thumbnail/${type}`,
+        "item/thumbnail",
         `${result[0].id}.${objectThumbnail.name.split(".").pop()}`,
       ),
     ]);
@@ -289,10 +289,10 @@ app.openapi(deleteItemRoute, async (c) => {
   if (result.length === 0) {
     return c.json({ error: "アイテムが見つかりません" }, 404);
   }
-  await deleteFunction(
-    c.env.BUCKET,
-    `item/object/${result[0].type}/${result[0].id}`,
-  );
+  await Promise.all([
+    deleteFunction(c.env.BUCKET, `item/object/${result[0].id}`),
+    deleteFunction(c.env.BUCKET, `item/thumbnail/${result[0].id}`),
+  ]);
   return c.body(null, 204);
 });
 
