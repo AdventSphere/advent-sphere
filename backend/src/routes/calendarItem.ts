@@ -382,9 +382,8 @@ app.openapi(createCalendarItemRoute, async (c) => {
   if (calendarInfo.length === 0) {
     return c.json({ message: "カレンダーアイテムの作成に失敗しました" }, 500);
   }
-  const transformed = transformCalendarItem(calendarInfo[0]);
 
-  return c.json(transformed, 201);
+  return c.json({ id: calendarInfo[0].id }, 201);
 });
 
 app.openapi(deleteCalendarItemRoute, async (c) => {
