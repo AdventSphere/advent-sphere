@@ -26,6 +26,7 @@ import type {
 import type {
   CreateRoom,
   CreateRoomResponse,
+  GetRoomsIdIsPasswordProtected200,
   PostRoomsIdVerifyPasswordBody,
   Room,
   UpdateRoom
@@ -339,7 +340,7 @@ export const postRoomsIdVerifyPassword = (
       
       
       return axiosInstance<void>(
-      {url: `/rooms/${id}/verify-password`, method: 'POST',
+      {url: `/rooms/${id}/verifyPassword`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: postRoomsIdVerifyPasswordBody, signal
     },
@@ -393,4 +394,96 @@ export const usePostRoomsIdVerifyPassword = <TError = void,
 
       return useMutation(mutationOptions, queryClient);
     }
+    /**
+ * ルームIDを指定してそのルームがパスワード保護されているか確認します.
+ * @summary ルームのパスワード保護確認
+ */
+export const getRoomsIdIsPasswordProtected = (
+    id: string,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return axiosInstance<GetRoomsIdIsPasswordProtected200>(
+      {url: `/rooms/${id}/isPasswordProtected`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+
+
+export const getGetRoomsIdIsPasswordProtectedQueryKey = (id?: string,) => {
+    return [
+    `/rooms/${id}/isPasswordProtected`
+    ] as const;
+    }
+
     
+export const getGetRoomsIdIsPasswordProtectedQueryOptions = <TData = Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRoomsIdIsPasswordProtectedQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>> = ({ signal }) => getRoomsIdIsPasswordProtected(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRoomsIdIsPasswordProtectedQueryResult = NonNullable<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>>
+export type GetRoomsIdIsPasswordProtectedQueryError = void
+
+
+export function useGetRoomsIdIsPasswordProtected<TData = Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>,
+          TError,
+          Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRoomsIdIsPasswordProtected<TData = Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>,
+          TError,
+          Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRoomsIdIsPasswordProtected<TData = Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary ルームのパスワード保護確認
+ */
+
+export function useGetRoomsIdIsPasswordProtected<TData = Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRoomsIdIsPasswordProtected>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetRoomsIdIsPasswordProtectedQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

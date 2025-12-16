@@ -121,7 +121,7 @@ const listCalendarItemsRoute = createRoute({
         .number()
         .min(1)
         .optional()
-        .openapi({ example: 10, description: "取得数" }),
+        .openapi({ example: 20, description: "取得数" }),
       offset: z.coerce
         .number()
         .min(0)

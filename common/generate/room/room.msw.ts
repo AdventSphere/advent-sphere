@@ -19,6 +19,7 @@ import type {
 
 import type {
   CreateRoomResponse,
+  GetRoomsIdIsPasswordProtected200,
   Room
 } from '../adventSphereAPI.schemas';
 
@@ -28,6 +29,8 @@ export const getPostRoomsResponseMock = (overrideResponse: Partial< CreateRoomRe
 export const getGetRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
 export const getPatchRoomsIdResponseMock = (overrideResponse: Partial< Room > = {}): Room => ({id: faker.string.alpha({length: {min: 10, max: 20}}), ownerId: faker.string.alpha({length: {min: 10, max: 20}}), itemGetTime: `${faker.date.past().toISOString().split('.')[0]}Z`, isAnonymous: faker.datatype.boolean(), startAt: `${faker.date.past().toISOString().split('.')[0]}Z`, createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, generateCount: faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), editId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
+
+export const getGetRoomsIdIsPasswordProtectedResponseMock = (overrideResponse: Partial< GetRoomsIdIsPasswordProtected200 > = {}): GetRoomsIdIsPasswordProtected200 => ({isPasswordProtected: faker.datatype.boolean(), ...overrideResponse})
 
 
 export const getPostRoomsMockHandler = (overrideResponse?: CreateRoomResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CreateRoomResponse> | CreateRoomResponse), options?: RequestHandlerOptions) => {
@@ -77,11 +80,23 @@ export const getPatchRoomsIdMockHandler = (overrideResponse?: Room | ((info: Par
 }
 
 export const getPostRoomsIdVerifyPasswordMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.post('*/rooms/:id/verify-password', async (info) => {await delay(1000);
+  return http.post('*/rooms/:id/verifyPassword', async (info) => {await delay(1000);
   if (typeof overrideResponse === 'function') {await overrideResponse(info); }
     return new HttpResponse(null,
       { status: 200,
         
+      })
+  }, options)
+}
+
+export const getGetRoomsIdIsPasswordProtectedMockHandler = (overrideResponse?: GetRoomsIdIsPasswordProtected200 | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<GetRoomsIdIsPasswordProtected200> | GetRoomsIdIsPasswordProtected200), options?: RequestHandlerOptions) => {
+  return http.get('*/rooms/:id/isPasswordProtected', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetRoomsIdIsPasswordProtectedResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
       })
   }, options)
 }
@@ -90,5 +105,6 @@ export const getRoomMock = () => [
   getGetRoomsIdMockHandler(),
   getDeleteRoomsIdMockHandler(),
   getPatchRoomsIdMockHandler(),
-  getPostRoomsIdVerifyPasswordMockHandler()
+  getPostRoomsIdVerifyPasswordMockHandler(),
+  getGetRoomsIdIsPasswordProtectedMockHandler()
 ]

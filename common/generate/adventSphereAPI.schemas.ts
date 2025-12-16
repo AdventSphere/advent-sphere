@@ -294,3 +294,8 @@ export type PostRoomsIdVerifyPasswordBody = {
   password: string;
 };
 
+export type GetRoomsIdIsPasswordProtected200 = {
+  /** ルームがパスワード保護されているかどうか */
+  isPasswordProtected: boolean;
+};
+
