@@ -15,16 +15,25 @@ export interface CalendarItem {
   createdAt: string;
   /** 開封可能日時 */
   openDate: string;
-  /** アイテムの位置情報 */
-  position?: number[];
-  /** アイテムの回転情報 */
-  rotation?: number[];
+  /**
+   * アイテムの位置情報
+   * @nullable
+   */
+  position: number[] | null;
+  /**
+   * アイテムの回転情報
+   * @nullable
+   */
+  rotation: number[] | null;
   /** アイテムが開封されたかどうか */
   isOpened: boolean;
   /** 関連するアイテムID */
   itemId: string;
-  /** 関連する画像ID */
-  imageId?: string;
+  /**
+   * 関連する画像ID
+   * @nullable
+   */
+  imageId: string | null;
 }
 
 export interface CreateCalendarItemResponse {
@@ -39,14 +48,25 @@ export interface CreateCalendarItem {
   roomId: string;
   /** 開封可能日時 */
   openDate: string;
-  /** アイテムの位置情報 */
-  position?: number[];
-  /** アイテムの回転情報 */
-  rotation?: number[];
+  /**
+   * アイテムの位置情報
+   * @nullable
+   */
+  position: number[] | null;
+  /**
+   * アイテムの回転情報
+   * @nullable
+   */
+  rotation: number[] | null;
   /** 関連するアイテムID */
   itemId: string;
-  /** 関連する画像ID */
-  imageId?: string;
+  /**
+   * 関連する画像ID
+   * @nullable
+   */
+  imageId: string | null;
+  /** アイテムが開封されたかどうか */
+  isOpened: boolean;
 }
 
 export interface CreateCalendarItemRequest {
@@ -62,19 +82,30 @@ export type PatchCalendarItemRequestCalendarItem = {
   roomId?: string;
   /** 開封可能日時 */
   openDate?: string;
-  /** アイテムの位置情報 */
-  position?: number[];
-  /** アイテムの回転情報 */
-  rotation?: number[];
+  /**
+   * アイテムの位置情報
+   * @nullable
+   */
+  position?: number[] | null;
+  /**
+   * アイテムの回転情報
+   * @nullable
+   */
+  rotation?: number[] | null;
   /** 関連するアイテムID */
   itemId?: string;
-  /** 関連する画像ID */
-  imageId?: string;
+  /**
+   * 関連する画像ID
+   * @nullable
+   */
+  imageId?: string | null;
+  /** アイテムが開封されたかどうか */
+  isOpened?: boolean;
 };
 
 export interface PatchCalendarItemRequest {
   /** ルームの編集ID */
-  editId: string;
+  editId?: string;
   calendarItem: PatchCalendarItemRequestCalendarItem;
 }
 

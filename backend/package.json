@@ -15,6 +15,7 @@
     "@hono/standard-validator": "^0.2.0",
     "@hono/zod-openapi": "^1.1.5",
     "@scalar/hono-api-reference": "^0.9.28",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.10.8",
