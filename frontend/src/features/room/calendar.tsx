@@ -4,7 +4,7 @@ import { R2_BASE_URL } from "@/constants/r2-url";
 
 const calendarBoxUrl = `${R2_BASE_URL}/static/calendar_box.glb`;
 
-const calendarMainUrl = `${R2_BASE_URL}/static/calender_main.glb`;
+const calendarMainUrl = `${R2_BASE_URL}/static/calendar_main.glb`;
 
 const COLS = 5;
 const ROWS = 5;
