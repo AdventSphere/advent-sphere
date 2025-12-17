@@ -117,7 +117,9 @@ code {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 2px); /* 12px */
+  --radius-2xl: calc(var(--radius) + 6px); /* 16px */
+  --radius-3xl: calc(var(--radius) + 10px); /* 20px */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
