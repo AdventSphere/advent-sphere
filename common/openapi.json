@@ -538,6 +538,39 @@
         },
         "required": ["imageData"]
       },
+      "CreatePhotoError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "画像生成の上限に達しました",
+            "description": "エラーメッセージ"
+          }
+        },
+        "required": ["error"]
+      },
+      "CreatePhotoNotFoundError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "ルームが見つかりません",
+            "description": "エラーメッセージ"
+          }
+        },
+        "required": ["error"]
+      },
+      "CreatePhotoInternalError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "写真の作成に失敗しました",
+            "description": "エラーメッセージ"
+          }
+        },
+        "required": ["error"]
+      },
       "CreatePhotoRequest": {
         "type": "object",
         "properties": {
@@ -545,9 +578,14 @@
             "type": "string",
             "example": "大きな山と湖の風景",
             "description": "画像生成のためのプロンプト"
+          },
+          "roomId": {
+            "type": "string",
+            "example": "room_12345",
+            "description": "ルームIDで画像生成回数を取得する"
           }
         },
-        "required": ["prompt"]
+        "required": ["prompt", "roomId"]
       },
       "CreatePromptResponse": {
         "type": "object",
@@ -556,9 +594,14 @@
             "type": "string",
             "example": "雪が降り積もる中、クリスマスのイルミネーションが輝く街並み。暖かい光が窓から漏れ、通りには人々が楽しそうに歩いている様子。",
             "description": "生成された写真プロンプト"
+          },
+          "feedback": {
+            "type": "string",
+            "example": "写真のプロンプトが具体的で魅力的です。クリスマスの雰囲気がよく伝わります。",
+            "description": "画像生成の意図を改善するためのフォローアップの質問、提案、または建設的なコメントを含む対話的なAIレスポンス"
           }
         },
-        "required": ["prompt"]
+        "required": ["prompt", "feedback"]
       },
       "CreatePromptRequest": {
         "type": "object",
@@ -1369,6 +1412,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreatePhotoResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "画像生成の上限に達しました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePhotoError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ルームが見つかりません",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePhotoNotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "写真の作成に失敗しました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePhotoInternalError"
                 }
               }
             }

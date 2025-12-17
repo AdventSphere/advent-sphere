@@ -15,6 +15,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreatePhotoError,
+  CreatePhotoInternalError,
+  CreatePhotoNotFoundError,
   CreatePhotoRequest,
   CreatePhotoResponse,
   CreatePromptRequest,
@@ -52,7 +55,7 @@ export const postAiCreatePhoto = (
   
 
 
-export const getPostAiCreatePhotoMutationOptions = <TError = unknown,
+export const getPostAiCreatePhotoMutationOptions = <TError = CreatePhotoError | CreatePhotoNotFoundError | CreatePhotoInternalError,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePhoto>>, TError,{data: CreatePhotoRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePhoto>>, TError,{data: CreatePhotoRequest}, TContext> => {
 
@@ -79,12 +82,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostAiCreatePhotoMutationResult = NonNullable<Awaited<ReturnType<typeof postAiCreatePhoto>>>
     export type PostAiCreatePhotoMutationBody = CreatePhotoRequest
-    export type PostAiCreatePhotoMutationError = unknown
+    export type PostAiCreatePhotoMutationError = CreatePhotoError | CreatePhotoNotFoundError | CreatePhotoInternalError
 
     /**
  * @summary 写真の作成
  */
-export const usePostAiCreatePhoto = <TError = unknown,
+export const usePostAiCreatePhoto = <TError = CreatePhotoError | CreatePhotoNotFoundError | CreatePhotoInternalError,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAiCreatePhoto>>, TError,{data: CreatePhotoRequest}, TContext>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postAiCreatePhoto>>,

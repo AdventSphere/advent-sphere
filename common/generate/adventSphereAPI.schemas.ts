@@ -230,14 +230,33 @@ export interface CreatePhotoResponse {
   imageData: string;
 }
 
+export interface CreatePhotoError {
+  /** エラーメッセージ */
+  error: string;
+}
+
+export interface CreatePhotoNotFoundError {
+  /** エラーメッセージ */
+  error: string;
+}
+
+export interface CreatePhotoInternalError {
+  /** エラーメッセージ */
+  error: string;
+}
+
 export interface CreatePhotoRequest {
   /** 画像生成のためのプロンプト */
   prompt: string;
+  /** ルームIDで画像生成回数を取得する */
+  roomId: string;
 }
 
 export interface CreatePromptResponse {
   /** 生成された写真プロンプト */
   prompt: string;
+  /** 画像生成の意図を改善するためのフォローアップの質問、提案、または建設的なコメントを含む対話的なAIレスポンス */
+  feedback: string;
 }
 
 /**
