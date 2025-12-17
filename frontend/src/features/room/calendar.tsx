@@ -9,12 +9,12 @@ const calendarMainUrl = `${R2_BASE_URL}/static/calendar_main.glb`;
 const COLS = 5;
 const ROWS = 5;
 
-const START_X = -0.1;
-const START_Y = 16.67;
-const START_Z = -6.4;
+const START_X = 0;
+const START_Y = 0;
+const START_Z = 0;
 
-const GAP_Y = 3.13;
-const GAP_Z = -3.17;
+const GAP_Y = 0.535;
+const GAP_Z = 0.542;
 
 function getDrawerPosition(
   index: number,
@@ -24,7 +24,7 @@ function getDrawerPosition(
   const row = Math.floor(index / COLS);
 
   return [
-    START_X + (isOpened ? -1.4 : 0),
+    START_X + (isOpened ? 0.2 : 0),
     START_Y - row * GAP_Y,
     START_Z - col * GAP_Z,
   ];
@@ -39,7 +39,13 @@ export default function Calendar({
 }) {
   const [isOpened, setIsOpened] = useState<number[]>([]);
   return (
-    <group scale={0.1} position={position} rotation={rotation}>
+    <group
+      scale={0.1}
+      position={position}
+      rotation={rotation}
+      castShadow
+      receiveShadow
+    >
       <Gltf src={calendarMainUrl} />
 
       {Array.from({ length: COLS * ROWS }).map((_, i) => (
@@ -79,9 +85,9 @@ function Drawer({
     >
       <Gltf src={calendarBoxUrl} />
       <Text
-        fontSize={0.6}
-        position={[-1, 0.7, 0]}
-        rotation={[0, -Math.PI / 2, 0]}
+        fontSize={0.1}
+        position={[0.223, 3, 1.107]}
+        rotation={[0, Math.PI / 2, 0]}
         anchorX="center"
         anchorY="middle"
         fontWeight={"bold"}

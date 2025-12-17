@@ -15,12 +15,18 @@ import { Route as NewRouteImport } from './routes/new'
 import { Route as IndexRouteImport } from './routes/index'
 
 const R3dSampleLazyRouteImport = createFileRoute('/3d-sample')()
+const RoomIdLazyRouteImport = createFileRoute('/$roomId')()
 
 const R3dSampleLazyRoute = R3dSampleLazyRouteImport.update({
   id: '/3d-sample',
   path: '/3d-sample',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/3d-sample.lazy').then((d) => d.Route))
+const RoomIdLazyRoute = RoomIdLazyRouteImport.update({
+  id: '/$roomId',
+  path: '/$roomId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/$roomId.lazy').then((d) => d.Route))
 const NewRoute = NewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -35,30 +41,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/new': typeof NewRoute
+  '/$roomId': typeof RoomIdLazyRoute
   '/3d-sample': typeof R3dSampleLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/new': typeof NewRoute
+  '/$roomId': typeof RoomIdLazyRoute
   '/3d-sample': typeof R3dSampleLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/new': typeof NewRoute
+  '/$roomId': typeof RoomIdLazyRoute
   '/3d-sample': typeof R3dSampleLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/new' | '/3d-sample'
+  fullPaths: '/' | '/new' | '/$roomId' | '/3d-sample'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/new' | '/3d-sample'
-  id: '__root__' | '/' | '/new' | '/3d-sample'
+  to: '/' | '/new' | '/$roomId' | '/3d-sample'
+  id: '__root__' | '/' | '/new' | '/$roomId' | '/3d-sample'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   NewRoute: typeof NewRoute
+  RoomIdLazyRoute: typeof RoomIdLazyRoute
   R3dSampleLazyRoute: typeof R3dSampleLazyRoute
 }
 
@@ -69,6 +79,13 @@ declare module '@tanstack/react-router' {
       path: '/3d-sample'
       fullPath: '/3d-sample'
       preLoaderRoute: typeof R3dSampleLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$roomId': {
+      id: '/$roomId'
+      path: '/$roomId'
+      fullPath: '/$roomId'
+      preLoaderRoute: typeof RoomIdLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/new': {
@@ -91,6 +108,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   NewRoute: NewRoute,
+  RoomIdLazyRoute: RoomIdLazyRoute,
   R3dSampleLazyRoute: R3dSampleLazyRoute,
 }
 export const routeTree = rootRouteImport
