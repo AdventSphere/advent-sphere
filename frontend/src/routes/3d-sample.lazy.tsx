@@ -26,7 +26,7 @@ function RouteComponent() {
 
       {/* 3Dオブジェクト */}
       <div className="fixed inset-0 z-0">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading text="部屋を読み込み中..." />}>
           <Canvas>
             <ambientLight intensity={0.4} />
             <Environment preset="apartment" />
