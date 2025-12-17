@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import InventoryIcon from "@/components/icons/inventory";
+import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import Calendar from "@/features/room/calendar";
 import { Room } from "@/features/room/room";
@@ -15,9 +16,9 @@ function RouteComponent() {
   return (
     <div className="w-full h-svh flex">
       <div className="w-full p-3 md:p-6 lg:p-8 grow h-full grid grid-cols-2">
-        <Button className="relative z-30 self-end size-24 border-4 border-primary-foreground rounded-3xl font-bold text-base shadow-xl hover:[&_span]:animate-bounce active:scale-95">
-          <span className="absolute -top-2.5 -right-2.5 p-2 bg-primary-foreground rounded-full">
-            <InventoryIcon className="size-6 text-primary" />
+        <Button className="relative z-30 self-end size-20 md:size-22 lg:size-24 border-4 border-primary-foreground rounded-3xl font-bold text-sm md:text-base shadow-xl hover:[&_span]:animate-bounce active:scale-95">
+          <span className="absolute -top-2.5 -right-2.5 p-1.5 md:p-2 bg-primary-foreground rounded-full">
+            <InventoryIcon className="size-4 md:size-5 lg:size-6 text-primary" />
           </span>
           持ち物
         </Button>
@@ -25,7 +26,7 @@ function RouteComponent() {
 
       {/* 3Dオブジェクト */}
       <div className="fixed inset-0 z-0">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           <Canvas>
             <ambientLight intensity={0.4} />
             <Environment preset="apartment" />
