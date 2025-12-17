@@ -8,14 +8,12 @@ import room from "./routes/room";
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://advent-sphere-app.3d-calendar.workers.dev/",
+  "https://advent-sphere-app.3d-calendar.workers.dev",
 ];
 
 import user from "./routes/user";
 
 const app = new OpenAPIHono();
-
-app.get("/", (c) => c.text("Hello, World!"));
 app.use(
   "*",
   cors({
@@ -30,6 +28,7 @@ app.use(
   }),
 );
 
+app.get("/", (c) => c.text("Hello, World!"));
 app.route("/calendarItems", calendarItem);
 app.route("/users", user);
 app.route("/items", item);
