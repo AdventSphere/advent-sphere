@@ -8,7 +8,7 @@ import room from "./routes/room";
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://advent-sphere-app.3d-calendar.workers.dev",
+  "https://*-advent-sphere-app.3d-calendar.workers.dev",
 ];
 
 import user from "./routes/user";
