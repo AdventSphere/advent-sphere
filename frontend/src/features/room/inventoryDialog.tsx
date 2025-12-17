@@ -53,12 +53,6 @@ function ItemCard({
           src={thumbnailUrl}
           alt={item.name}
           className="absolute inset-0 w-full h-full object-cover object-center rounded-xl"
-          onError={(e) => {
-            // 画像の読み込みに失敗した場合、デフォルト画像を表示
-            const target = e.target as HTMLImageElement;
-            target.src =
-              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150'%3E%3Crect fill='%23e9e9e9' width='200' height='150'/%3E%3C/svg%3E";
-          }}
         />
       </div>
       <p
@@ -116,7 +110,7 @@ export default function InventoryDialog({
             持ち物
           </DialogTitle>
           <Button
-            className="font-bold text-sm sm:text-base rounded-xl py-2.5 sm:py-3.5 px-3 sm:px-4 h-fit bg-primary hover:bg-primary/90 w-auto"
+            className="font-bold text-sm sm:text-base rounded-xl py-2.5 px-3 sm:px-4 h-fit bg-primary hover:bg-primary/90 w-auto"
             size="lg"
             onClick={handlePlaceItem}
             disabled={!selectedItemId}
