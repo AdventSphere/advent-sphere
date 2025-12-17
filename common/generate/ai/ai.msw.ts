@@ -25,7 +25,7 @@ import type {
 
 export const getPostAiCreatePhotoResponseMock = (overrideResponse: Partial< CreatePhotoResponse > = {}): CreatePhotoResponse => ({imageData: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
-export const getPostAiCreatePromptResponseMock = (overrideResponse: Partial< CreatePromptResponse > = {}): CreatePromptResponse => ({prompt: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
+export const getPostAiCreatePromptResponseMock = (overrideResponse: Partial< CreatePromptResponse > = {}): CreatePromptResponse => ({prompt: faker.string.alpha({length: {min: 10, max: 20}}), feedback: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
 
 export const getPostAiCreatePhotoMockHandler = (overrideResponse?: CreatePhotoResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CreatePhotoResponse> | CreatePhotoResponse), options?: RequestHandlerOptions) => {
