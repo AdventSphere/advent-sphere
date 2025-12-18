@@ -80,6 +80,40 @@
           "itemId"
         ]
       },
+      "CalendarItemWithItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CalendarItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "item": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "item_12345",
+                    "description": "アイテムID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "アイテム名",
+                    "description": "アイテム名"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "photo_frame",
+                    "description": "アイテムの種類"
+                  }
+                },
+                "required": ["id", "name", "type"]
+              }
+            },
+            "required": ["item"]
+          }
+        ]
+      },
       "CreateCalendarItemResponse": {
         "type": "object",
         "properties": {
@@ -665,42 +699,6 @@
             "description": "ルームID",
             "name": "roomId",
             "in": "path"
-          },
-          {
-            "schema": {
-              "type": "number",
-              "minimum": 1,
-              "example": 20,
-              "description": "取得数"
-            },
-            "required": false,
-            "description": "取得数",
-            "name": "limit",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": "number",
-              "nullable": true,
-              "minimum": 0,
-              "example": 0,
-              "description": "オフセット"
-            },
-            "required": false,
-            "description": "オフセット",
-            "name": "offset",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": "string",
-              "example": "photo_frame",
-              "description": "アイテムの種類"
-            },
-            "required": false,
-            "description": "アイテムの種類",
-            "name": "type",
-            "in": "query"
           }
         ],
         "responses": {
@@ -711,7 +709,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CalendarItem"
+                    "$ref": "#/components/schemas/CalendarItemWithItem"
                   }
                 }
               }
@@ -900,7 +898,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CalendarItem"
+                    "$ref": "#/components/schemas/CalendarItemWithItem"
                   }
                 }
               }
@@ -1007,6 +1005,44 @@
         "tags": ["Item"],
         "summary": "アイテム一覧の取得",
         "description": "すべてのアイテムを取得します。",
+        "parameters": [
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "example": 20,
+              "description": "取得数"
+            },
+            "required": false,
+            "description": "取得数",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "nullable": true,
+              "minimum": 0,
+              "example": 0,
+              "description": "オフセット"
+            },
+            "required": false,
+            "description": "オフセット",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "photo_frame",
+              "description": "アイテムの種類"
+            },
+            "required": false,
+            "description": "アイテムの種類",
+            "name": "type",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "成功",

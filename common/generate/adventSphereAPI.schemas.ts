@@ -36,6 +36,21 @@ export interface CalendarItem {
   imageId?: string | null;
 }
 
+export type CalendarItemWithItemAllOfItem = {
+  /** アイテムID */
+  id: string;
+  /** アイテム名 */
+  name: string;
+  /** アイテムの種類 */
+  type: string;
+};
+
+export type CalendarItemWithItemAllOf = {
+  item: CalendarItemWithItemAllOfItem;
+};
+
+export type CalendarItemWithItem = CalendarItem & CalendarItemWithItemAllOf;
+
 export interface CreateCalendarItemResponse {
   /** カレンダーアイテムID */
   id: string;
@@ -285,7 +300,12 @@ export interface CreatePromptRequest {
   history: CreatePromptRequestHistoryItem[];
 }
 
-export type GetCalendarItemsRoomIdCalendarItemsParams = {
+export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
+  /** ルームの編集ID */
+  editId: string;
+};
+
+export type GetItemsParams = {
 /**
  * 取得数
  * @minimum 1
@@ -301,11 +321,6 @@ offset?: number | null;
  * アイテムの種類
  */
 type?: string;
-};
-
-export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
-  /** ルームの編集ID */
-  editId: string;
 };
 
 export type PostRoomsIdVerifyPasswordBody = {

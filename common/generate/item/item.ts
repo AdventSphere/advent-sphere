@@ -27,6 +27,7 @@ import type {
   CreateItem,
   CreateItemError,
   CreateItemResponse,
+  GetItemsParams,
   Item,
   UpdateItem
 } from '../adventSphereAPI.schemas';
@@ -47,13 +48,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * @summary アイテム一覧の取得
  */
 export const getItems = (
-    
+    params?: GetItemsParams,
  options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
 ) => {
       
       
       return axiosInstance<Item[]>(
-      {url: `/items`, method: 'GET', signal
+      {url: `/items`, method: 'GET',
+        params, signal
     },
       options);
     }
@@ -61,23 +63,23 @@ export const getItems = (
 
 
 
-export const getGetItemsQueryKey = () => {
+export const getGetItemsQueryKey = (params?: GetItemsParams,) => {
     return [
-    `/items`
+    `/items`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getGetItemsQueryOptions = <TData = Awaited<ReturnType<typeof getItems>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+export const getGetItemsQueryOptions = <TData = Awaited<ReturnType<typeof getItems>>, TError = unknown>(params?: GetItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetItemsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetItemsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getItems>>> = ({ signal }) => getItems(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getItems>>> = ({ signal }) => getItems(params, requestOptions, signal);
 
       
 
@@ -91,7 +93,7 @@ export type GetItemsQueryError = unknown
 
 
 export function useGetItems<TData = Awaited<ReturnType<typeof getItems>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>> & Pick<
+ params: undefined |  GetItemsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getItems>>,
           TError,
@@ -101,7 +103,7 @@ export function useGetItems<TData = Awaited<ReturnType<typeof getItems>>, TError
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetItems<TData = Awaited<ReturnType<typeof getItems>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>> & Pick<
+ params?: GetItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getItems>>,
           TError,
@@ -111,7 +113,7 @@ export function useGetItems<TData = Awaited<ReturnType<typeof getItems>>, TError
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetItems<TData = Awaited<ReturnType<typeof getItems>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ params?: GetItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -119,11 +121,11 @@ export function useGetItems<TData = Awaited<ReturnType<typeof getItems>>, TError
  */
 
 export function useGetItems<TData = Awaited<ReturnType<typeof getItems>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ params?: GetItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItems>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetItemsQueryOptions(options)
+  const queryOptions = getGetItemsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
