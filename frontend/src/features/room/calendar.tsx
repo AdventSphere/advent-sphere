@@ -1,6 +1,6 @@
 import { Gltf, Text } from "@react-three/drei";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Group } from "three";
 import { R2_BASE_URL } from "@/constants/r2-url";
 
@@ -37,15 +37,43 @@ export default function Calendar({
   rotation,
   isFocusMode,
   onCalendarClick,
+  onDayClick,
   groupRef,
+  openedDrawers,
+  onOpenedDrawersChange,
+  filledDays = [],
+  filledDayUserNames = {},
+  isAnonymous = true,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
   isFocusMode: boolean;
   onCalendarClick: () => void;
+  onDayClick?: (day: number) => void;
   groupRef?: React.RefObject<Group | null>;
+  openedDrawers?: number[];
+  onOpenedDrawersChange?: (drawers: number[]) => void;
+  filledDays?: number[];
+  filledDayUserNames?: Record<number, string>;
+  isAnonymous?: boolean;
 }) {
-  const [isOpened, setIsOpened] = useState<number[]>([]);
+  const [internalOpened, setInternalOpened] = useState<number[]>([]);
+  const isOpened = openedDrawers ?? internalOpened;
+
+  const handleSetOpened = (newDrawers: number[]) => {
+    if (onOpenedDrawersChange) {
+      onOpenedDrawersChange(newDrawers);
+    } else {
+      setInternalOpened(newDrawers);
+    }
+  };
+
+  // 外部から引き出しを閉じる場合の処理
+  useEffect(() => {
+    if (openedDrawers !== undefined && openedDrawers.length === 0) {
+      setInternalOpened([]);
+    }
+  }, [openedDrawers]);
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: calendar click handler
     <group
@@ -72,11 +100,17 @@ export default function Calendar({
           day={i + 1}
           position={getDrawerPosition(i, isOpened.includes(i))}
           isFocusMode={isFocusMode}
+          isFilled={filledDays.includes(i + 1)}
+          userName={filledDayUserNames[i + 1]}
+          isAnonymous={isAnonymous}
           setIsOpened={() =>
-            setIsOpened((prev) =>
-              prev.includes(i) ? prev.filter((day) => day !== i) : [...prev, i],
+            handleSetOpened(
+              isOpened.includes(i)
+                ? isOpened.filter((day) => day !== i)
+                : [...isOpened, i],
             )
           }
+          onDayClick={onDayClick}
         />
       ))}
     </group>
@@ -87,39 +121,66 @@ function Drawer({
   day,
   position,
   isFocusMode,
+  isFilled,
+  userName,
+  isAnonymous,
   setIsOpened,
+  onDayClick,
 }: {
   day: number;
   position: [number, number, number];
   isFocusMode: boolean;
+  isFilled: boolean;
+  userName?: string;
+  isAnonymous: boolean;
   setIsOpened: () => void;
+  onDayClick?: (day: number) => void;
 }) {
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: day is dynamic
     <group
       position={position}
       onClick={(e) => {
-        // フォーカスモード時のみ引き出しを開閉
-        if (isFocusMode) {
+        // フォーカスモード時かつ埋まっていない日付のみ引き出しを開閉
+        if (isFocusMode && !isFilled) {
           e.stopPropagation();
           setIsOpened();
+          // 日付クリック時にコールバックを呼び出す
+          if (onDayClick) {
+            onDayClick(day);
+          }
         }
       }}
     >
       <Gltf src={calendarBoxUrl} />
       <Text
         fontSize={0.1}
-        position={[0.223, 3, 1.107]}
+        position={[0.223, 3.02, 1.107]}
         rotation={[0, Math.PI / 2, 0]}
         anchorX="center"
         anchorY="middle"
         fontWeight={800}
-        color={"#006003"}
+        color={isFilled ? "#c41e3a" : "#006003"}
         outlineWidth={0.015}
         outlineColor={"#fff"}
       >
         {day}
       </Text>
+      {/* 埋まっている日付には匿名モードならチェック、そうでなければユーザー名を表示 */}
+      {isFilled && (
+        <Text
+          fontSize={isAnonymous ? 0.06 : 0.05}
+          position={[0.223, 2.92, 1.107]}
+          rotation={[0, Math.PI / 2, 0]}
+          anchorX="center"
+          anchorY="middle"
+          fontWeight={700}
+          color="#c41e3a"
+          maxWidth={0.4}
+        >
+          {isAnonymous ? "✓" : (userName ?? "✓")}
+        </Text>
+      )}
     </group>
   );
 }

@@ -111,7 +111,7 @@ function RouteComponent() {
               ? data.item_get_time.toISOString()
               : data.item_get_time,
         password: data.password || undefined,
-        isAnonymous: data.is_anonymous as boolean,
+        isAnonymous: !data.is_anonymous as boolean,
       };
 
       console.log("API送信データ:", apiData);
