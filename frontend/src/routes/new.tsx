@@ -100,7 +100,10 @@ function RouteComponent() {
       // APIに送信するデータ形式に変換
       const apiData = {
         ownerId: user.id,
-        startAt: data.start_at.toString(),
+        startAt:
+          data.start_at instanceof Date
+            ? data.start_at.toISOString()
+            : data.start_at,
         itemGetTime:
           data.item_get_time === ""
             ? undefined
