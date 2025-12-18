@@ -534,6 +534,7 @@ app.openapi(getInventoryItemRoute, async (c) => {
       and(
         eq(schema.calendarItemTable.roomId, roomId),
         isNull(schema.calendarItemTable.position),
+        eq(schema.calendarItemTable.isOpened, true),
       ),
     );
 
@@ -566,6 +567,7 @@ app.openapi(getRoomItemsRoute, async (c) => {
       and(
         eq(schema.calendarItemTable.roomId, roomId),
         isNotNull(schema.calendarItemTable.position),
+        eq(schema.calendarItemTable.isOpened, true),
       ),
     );
 
