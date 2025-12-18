@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePostRooms } from "common/generate/room/room";
 import { format } from "date-fns";
 import {
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { useUser } from "@/context/UserContext";
+import NameInput from "@/features/user/nameInput";
 import { cn } from "@/lib/utils";
 
 // zodスキーマ定義
@@ -63,10 +65,12 @@ export const Route = createFileRoute("/new")({
 function RouteComponent() {
   const [usePassword, setUsePassword] = useState(false);
   const [successData, setSuccessData] = useState({
-    editUrl: "",
+    id: "",
+    editId: "",
     password: "",
   });
   const { mutateAsync: postRooms } = usePostRooms();
+  const { user } = useUser();
 
   const {
     register,
@@ -89,10 +93,13 @@ function RouteComponent() {
   const onSubmit = async (data: FormData) => {
     try {
       console.log("送信データ:", data);
+      if (!user) {
+        throw new Error("ユーザーが存在しません");
+      }
 
       // APIに送信するデータ形式に変換
       const apiData = {
-        ownerId: "temp_user_id", // TODO: 実際のユーザーIDを取得
+        ownerId: user.id,
         startAt:
           data.start_at instanceof Date
             ? data.start_at.toISOString()
@@ -113,7 +120,8 @@ function RouteComponent() {
       const response = await postRooms({ data: apiData });
 
       setSuccessData({
-        editUrl: `https://advent-sphere.com/edit/${response.editId}`,
+        id: response.id,
+        editId: response.editId,
         password: data.password || "",
       });
     } catch (error) {
@@ -148,7 +156,12 @@ function RouteComponent() {
   const isRandomTime =
     !watchedValues.item_get_time || watchedValues.item_get_time === "";
 
-  if (successData.editUrl) {
+  // ユーザーが存在しない場合は名前入力フォームを表示
+  if (!user) {
+    return <NameInput />;
+  }
+
+  if (successData.id && successData.editId) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-secondary p-4">
         <div className="w-full max-w-md bg-white rounded-lg flex flex-col px-4 py-8 gap-6 text-center">
@@ -165,14 +178,18 @@ function RouteComponent() {
               <div className="flex items-center gap-2">
                 <Input
                   type="text"
-                  value={successData.editUrl}
+                  value={`${window.location.origin}/${successData.id}/${successData.editId}`}
                   readOnly
                   className="flex-1 text-sm p-2 h-auto focus-visible:ring-0"
                 />
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => copyToClipboard(successData.editUrl)}
+                  onClick={() =>
+                    copyToClipboard(
+                      `${window.location.origin}/${successData.id}/${successData.editId}`,
+                    )
+                  }
                   className="w-8 h-8 p-0 bg-primary hover:bg-green-700 text-white"
                 >
                   <Copy className="w-4 h-4  text-white" />
@@ -206,10 +223,13 @@ function RouteComponent() {
             )}
           </div>
 
-          <Button>
-            {/*<Link to="/">*/}
-            編集へ
-            {/*</Link>*/}
+          <Button asChild>
+            <Link
+              to={"/$roomId/$editId"}
+              params={{ roomId: successData.id, editId: successData.editId }}
+            >
+              編集へ
+            </Link>
           </Button>
         </div>
       </div>
