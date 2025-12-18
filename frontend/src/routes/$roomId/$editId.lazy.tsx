@@ -84,7 +84,10 @@ function RouteComponent() {
   // calendarItemsから埋まっている日付とユーザー名のマップを計算
   const { filledDays, filledDayUserNames } = useMemo(() => {
     if (!calendarItems || !room)
-      return { filledDays: [], filledDayUserNames: {} as Record<number, string> };
+      return {
+        filledDays: [],
+        filledDayUserNames: {} as Record<number, string>,
+      };
 
     const startDate = new Date(room.startAt);
     const days: number[] = [];
