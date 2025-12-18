@@ -14,6 +14,9 @@ export const CalendarItemSchema = z
     userId: z
       .string()
       .openapi({ example: "user_12345", description: "ユーザーID" }),
+    userName: z
+      .string()
+      .openapi({ example: "太郎", description: "ユーザー名" }),
     roomId: z
       .string()
       .openapi({ example: "room_12345", description: "ルームID" }),
@@ -317,16 +320,21 @@ app.openapi(listCalendarItemsRoute, async (c) => {
     .select({
       calendarItem: schema.calendarItemTable,
       item: schema.itemTable,
+      user: schema.usersTable,
     })
     .from(schema.calendarItemTable)
     .innerJoin(
       schema.itemTable,
       eq(schema.calendarItemTable.itemId, schema.itemTable.id),
     )
+    .innerJoin(
+      schema.usersTable,
+      eq(schema.calendarItemTable.userId, schema.usersTable.id),
+    )
     .where(eq(schema.calendarItemTable.roomId, roomId));
 
   const transformed = calendarItems.map((i) =>
-    transformCalendarItemWithItem(i.calendarItem, i.item),
+    transformCalendarItemWithItem(i.calendarItem, i.item, i.user),
   );
   return c.json(transformed, 200);
 });
@@ -448,7 +456,18 @@ app.openapi(patchCalendarItemRoute, async (c) => {
     if (result.length === 0) {
       return c.json({ message: "カレンダーアイテムが見つかりません" }, 404);
     }
-    return c.json(transformCalendarItem(result[0]), 200);
+
+    const user = await db
+      .select()
+      .from(schema.usersTable)
+      .where(eq(schema.usersTable.id, result[0].userId))
+      .limit(1);
+
+    if (user.length === 0) {
+      return c.json({ message: "ユーザーが見つかりません" }, 404);
+    }
+
+    return c.json(transformCalendarItem(result[0], user[0]), 200);
   }
 
   if (!(await verifyEditId(db, roomId, editId))) {
@@ -478,7 +497,17 @@ app.openapi(patchCalendarItemRoute, async (c) => {
     return c.json({ message: "カレンダーアイテムが見つかりません" }, 404);
   }
 
-  const updated = transformCalendarItem(result[0]);
+  const user = await db
+    .select()
+    .from(schema.usersTable)
+    .where(eq(schema.usersTable.id, result[0].userId))
+    .limit(1);
+
+  if (user.length === 0) {
+    return c.json({ message: "ユーザーが見つかりません" }, 404);
+  }
+
+  const updated = transformCalendarItem(result[0], user[0]);
   return c.json(updated, 200);
 });
 
@@ -490,11 +519,16 @@ app.openapi(getInventoryItemRoute, async (c) => {
     .select({
       calendarItem: schema.calendarItemTable,
       item: schema.itemTable,
+      user: schema.usersTable,
     })
     .from(schema.calendarItemTable)
     .innerJoin(
       schema.itemTable,
       eq(schema.calendarItemTable.itemId, schema.itemTable.id),
+    )
+    .innerJoin(
+      schema.usersTable,
+      eq(schema.calendarItemTable.userId, schema.usersTable.id),
     )
     .where(
       and(
@@ -504,7 +538,7 @@ app.openapi(getInventoryItemRoute, async (c) => {
     );
 
   const transformed = calendarItems.map((i) =>
-    transformCalendarItemWithItem(i.calendarItem, i.item),
+    transformCalendarItemWithItem(i.calendarItem, i.item, i.user),
   );
   return c.json(transformed, 200);
 });
@@ -517,11 +551,16 @@ app.openapi(getRoomItemsRoute, async (c) => {
     .select({
       calendarItem: schema.calendarItemTable,
       item: schema.itemTable,
+      user: schema.usersTable,
     })
     .from(schema.calendarItemTable)
     .innerJoin(
       schema.itemTable,
       eq(schema.calendarItemTable.itemId, schema.itemTable.id),
+    )
+    .innerJoin(
+      schema.usersTable,
+      eq(schema.calendarItemTable.userId, schema.usersTable.id),
     )
     .where(
       and(
@@ -531,7 +570,7 @@ app.openapi(getRoomItemsRoute, async (c) => {
     );
 
   const transformed = calendarItems.map((i) =>
-    transformCalendarItemWithItem(i.calendarItem, i.item),
+    transformCalendarItemWithItem(i.calendarItem, i.item, i.user),
   );
   return c.json(transformed, 200);
 });
@@ -562,9 +601,11 @@ const parseCoordinates = (data: string | null): number[] | null => {
 
 const transformCalendarItem = (
   item: typeof schema.calendarItemTable.$inferSelect,
+  user: typeof schema.usersTable.$inferSelect,
 ): CalendarItemSchema => {
   const result = CalendarItemSchema.safeParse({
     ...item,
+    userName: user.name,
     position: parseCoordinates(item.position),
     rotation: parseCoordinates(item.rotation),
   });
@@ -577,8 +618,9 @@ const transformCalendarItem = (
 const transformCalendarItemWithItem = (
   calendarItem: typeof schema.calendarItemTable.$inferSelect,
   item: typeof schema.itemTable.$inferSelect,
+  user: typeof schema.usersTable.$inferSelect,
 ): CalendarItemWithItemSchema => {
-  const parsed = transformCalendarItem(calendarItem);
+  const parsed = transformCalendarItem(calendarItem, user);
   const result = CalendarItemWithItemSchema.safeParse({
     ...parsed,
     item: {

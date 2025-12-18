@@ -9,6 +9,8 @@ export interface CalendarItem {
   id: string;
   /** ユーザーID */
   userId: string;
+  /** ユーザー名 */
+  userName: string;
   /** ルームID */
   roomId: string;
   /** 作成日時 */
