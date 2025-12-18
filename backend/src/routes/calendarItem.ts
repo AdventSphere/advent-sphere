@@ -3,6 +3,7 @@ import { set } from "date-fns";
 import { and, eq, isNotNull, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
+import { ItemSchema } from "./item";
 
 export const CalendarItemSchema = z
   .object({
@@ -54,6 +55,14 @@ export const CalendarItemSchema = z
   .openapi("CalendarItem");
 
 export type CalendarItemSchema = z.infer<typeof CalendarItemSchema>;
+
+export const CalendarItemWithItemSchema = CalendarItemSchema.extend({
+  item: ItemSchema.pick({ id: true, name: true, type: true }),
+}).openapi("CalendarItemWithItem");
+
+export type CalendarItemWithItemSchema = z.infer<
+  typeof CalendarItemWithItemSchema
+>;
 
 export const CreateCalendarItemSchema = CalendarItemSchema.pick({
   userId: true,
@@ -122,7 +131,7 @@ const listCalendarItemsRoute = createRoute({
       description: "成功",
       content: {
         "application/json": {
-          schema: z.array(CalendarItemSchema),
+          schema: z.array(CalendarItemWithItemSchema),
         },
       },
     },
@@ -262,7 +271,7 @@ const getInventoryItemRoute = createRoute({
       description: "成功",
       content: {
         "application/json": {
-          schema: z.array(CalendarItemSchema),
+          schema: z.array(CalendarItemWithItemSchema),
         },
       },
     },
@@ -305,12 +314,19 @@ app.openapi(listCalendarItemsRoute, async (c) => {
   const db = drizzle(c.env.DB, { schema });
 
   const calendarItems = await db
-    .select({ calendarItem: schema.calendarItemTable })
+    .select({
+      calendarItem: schema.calendarItemTable,
+      item: schema.itemTable,
+    })
     .from(schema.calendarItemTable)
+    .innerJoin(
+      schema.itemTable,
+      eq(schema.calendarItemTable.itemId, schema.itemTable.id),
+    )
     .where(eq(schema.calendarItemTable.roomId, roomId));
 
   const transformed = calendarItems.map((i) =>
-    transformCalendarItem(i.calendarItem),
+    transformCalendarItemWithItem(i.calendarItem, i.item),
   );
   return c.json(transformed, 200);
 });
@@ -471,8 +487,15 @@ app.openapi(getInventoryItemRoute, async (c) => {
 
   const db = drizzle(c.env.DB, { schema });
   const calendarItems = await db
-    .select()
+    .select({
+      calendarItem: schema.calendarItemTable,
+      item: schema.itemTable,
+    })
     .from(schema.calendarItemTable)
+    .innerJoin(
+      schema.itemTable,
+      eq(schema.calendarItemTable.itemId, schema.itemTable.id),
+    )
     .where(
       and(
         eq(schema.calendarItemTable.roomId, roomId),
@@ -480,7 +503,9 @@ app.openapi(getInventoryItemRoute, async (c) => {
       ),
     );
 
-  const transformed = calendarItems.map(transformCalendarItem);
+  const transformed = calendarItems.map((i) =>
+    transformCalendarItemWithItem(i.calendarItem, i.item),
+  );
   return c.json(transformed, 200);
 });
 
@@ -489,8 +514,15 @@ app.openapi(getRoomItemsRoute, async (c) => {
 
   const db = drizzle(c.env.DB, { schema });
   const calendarItems = await db
-    .select()
+    .select({
+      calendarItem: schema.calendarItemTable,
+      item: schema.itemTable,
+    })
     .from(schema.calendarItemTable)
+    .innerJoin(
+      schema.itemTable,
+      eq(schema.calendarItemTable.itemId, schema.itemTable.id),
+    )
     .where(
       and(
         eq(schema.calendarItemTable.roomId, roomId),
@@ -498,7 +530,9 @@ app.openapi(getRoomItemsRoute, async (c) => {
       ),
     );
 
-  const transformed = calendarItems.map(transformCalendarItem);
+  const transformed = calendarItems.map((i) =>
+    transformCalendarItemWithItem(i.calendarItem, i.item),
+  );
   return c.json(transformed, 200);
 });
 
@@ -533,6 +567,25 @@ const transformCalendarItem = (
     ...item,
     position: parseCoordinates(item.position),
     rotation: parseCoordinates(item.rotation),
+  });
+  if (!result.success) {
+    throw new Error(`パースエラーが発生しました ${result.error.message}`);
+  }
+  return result.data;
+};
+
+const transformCalendarItemWithItem = (
+  calendarItem: typeof schema.calendarItemTable.$inferSelect,
+  item: typeof schema.itemTable.$inferSelect,
+): CalendarItemWithItemSchema => {
+  const parsed = transformCalendarItem(calendarItem);
+  const result = CalendarItemWithItemSchema.safeParse({
+    ...parsed,
+    item: {
+      id: item.id,
+      name: item.name,
+      type: item.type,
+    },
   });
   if (!result.success) {
     throw new Error(`パースエラーが発生しました ${result.error.message}`);
