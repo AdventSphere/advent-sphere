@@ -1,29 +1,27 @@
-import { CameraControls, Environment } from "@react-three/drei";
+import { CameraControls, Environment, Gltf } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Physics, RigidBody } from "@react-three/rapier";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
-import InventoryIcon from "@/components/icons/inventory";
+import * as THREE from "three";
 import Loading from "@/components/Loading";
-import { Button } from "@/components/ui/button";
+import { R2_BASE_URL } from "@/constants/r2-url";
 import Calendar from "@/features/room/calendar";
-import { Room } from "@/features/room/room";
 
 export const Route = createLazyFileRoute("/3d-sample")({
   component: RouteComponent,
 });
 
+const floorUrl = `${R2_BASE_URL}/static/Floor_001.glb`;
+
+const snowdomeDomeUrl = `${R2_BASE_URL}/static/snowdome_dome.glb`;
+const snowdomePedestalUrl = `${R2_BASE_URL}/static/snowdome_pedestal.glb`;
+const snowdomeSnowmanUrl = `${R2_BASE_URL}/static/snowdome_snowman.glb`;
+const snowdomeTreeUrl = `${R2_BASE_URL}/static/snowdome_tree.glb`;
+
 function RouteComponent() {
   return (
     <div className="w-full h-svh flex">
-      <div className="w-full p-3 md:p-6 lg:p-8 grow h-full grid grid-cols-2">
-        <Button className="relative z-30 self-end size-20 md:size-22 lg:size-24 border-4 border-primary-foreground rounded-3xl font-bold text-sm md:text-base shadow-xl hover:[&_span]:animate-bounce active:scale-95">
-          <span className="absolute -top-2.5 -right-2.5 p-1.5 md:p-2 bg-primary-foreground rounded-full">
-            <InventoryIcon className="size-4 md:size-5 lg:size-6 text-primary" />
-          </span>
-          持ち物
-        </Button>
-      </div>
-
       {/* 3Dオブジェクト */}
       <div className="fixed inset-0 z-0">
         <Suspense fallback={<Loading text="部屋を読み込み中..." />}>
@@ -31,14 +29,55 @@ function RouteComponent() {
             <ambientLight intensity={0.4} />
             <Environment preset="apartment" />
 
-            <group position={[0, 0, 0]}>
-              <Room />
-              <Calendar position={[0, 0, 0]} rotation={[0, 0, 0]} />
-            </group>
+            <Physics>
+              <group position={[0, 0, 0]}>
+                <RigidBody lockRotations>
+                  <group position={[0, 0, 0]} scale={0.2}>
+                    <Gltf src={snowdomeDomeUrl} position={[0, 0, 0]} />
+                    <Gltf src={snowdomePedestalUrl} position={[0, 0, 0]} />
+                    <Gltf src={snowdomeSnowmanUrl} position={[0, 0, 0]} />
+                    <Gltf src={snowdomeTreeUrl} position={[0, 0, 0]} />
+                  </group>
+                </RigidBody>
+                {/* <RigidBody>
+                  <Gltf src={wallUrl} position={[0, 0.1, 0]} />
+                </RigidBody> */}
+                <RigidBody type="fixed">
+                  <Gltf src={floorUrl} position={[0, -1, 0]} />
+                </RigidBody>
+                {/* <RigidBody lockRotations>
+                  <Gltf src={tableUrl} scale={10} position={[1, 0, 0]} />
+                </RigidBody>
+                <RigidBody lockRotations>
+                  <Gltf src={giftBoxUrl} scale={1} position={[-1, 0, 0]} />
+                </RigidBody> */}
+
+                <RigidBody type="fixed" friction={5}>
+                  <mesh
+                    position={[0, -5, 0]}
+                    rotation={[Math.PI / 2, 0, 0]}
+                    receiveShadow
+                  >
+                    <planeGeometry args={[10, 10]} />
+                    <meshStandardMaterial
+                      color="#ddd"
+                      side={THREE.DoubleSide}
+                    />
+                  </mesh>
+                </RigidBody>
+                <RigidBody lockRotations>
+                  <Calendar
+                    position={[0, 0, 0]}
+                    rotation={[0, 0, 0]}
+                    isFocusMode={false}
+                    onCalendarClick={() => {}}
+                  />
+                </RigidBody>
+              </group>
+            </Physics>
 
             <CameraControls
               minDistance={0}
-              maxDistance={30}
               dollySpeed={0.3}
               smoothTime={0.1}
               makeDefault
