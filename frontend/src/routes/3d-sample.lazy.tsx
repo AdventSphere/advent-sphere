@@ -7,7 +7,6 @@ import * as THREE from "three";
 import Loading from "@/components/Loading";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import Calendar from "@/features/room/calendar";
-import { Room } from "@/features/room/room";
 
 export const Route = createLazyFileRoute("/3d-sample")({
   component: RouteComponent,
@@ -32,8 +31,6 @@ function RouteComponent() {
 
             <Physics>
               <group position={[0, 0, 0]}>
-                <Room />
-
                 <RigidBody lockRotations>
                   <group position={[0, 0, 0]} scale={0.2}>
                     <Gltf src={snowdomeDomeUrl} position={[0, 0, 0]} />
