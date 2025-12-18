@@ -116,22 +116,6 @@ const listCalendarItemsRoute = createRoute({
         description: "ルームID",
       }),
     }),
-    query: z.object({
-      limit: z.coerce
-        .number()
-        .min(1)
-        .optional()
-        .openapi({ example: 20, description: "取得数" }),
-      offset: z.coerce
-        .number()
-        .min(0)
-        .optional()
-        .openapi({ example: 0, description: "オフセット" }),
-      type: z
-        .string()
-        .optional()
-        .openapi({ example: "photo_frame", description: "アイテムの種類" }),
-    }),
   },
   responses: {
     200: {
@@ -318,41 +302,16 @@ const app = new OpenAPIHono<{
 
 app.openapi(listCalendarItemsRoute, async (c) => {
   const { roomId } = c.req.valid("param");
-  const { limit, offset, type } = c.req.valid("query");
-
   const db = drizzle(c.env.DB, { schema });
 
-  if (type) {
-    const calendarItems = await db
-      .select({ calendarItem: schema.calendarItemTable })
-      .from(schema.calendarItemTable)
-      .innerJoin(
-        schema.itemTable,
-        eq(schema.calendarItemTable.itemId, schema.itemTable.id),
-      )
-      .where(
-        and(
-          eq(schema.calendarItemTable.roomId, roomId),
-          eq(schema.itemTable.type, type),
-        ),
-      )
-      .limit(limit ?? 10)
-      .offset(offset ?? 0);
-
-    const transformed = calendarItems.map((i) =>
-      transformCalendarItem(i.calendarItem),
-    );
-    return c.json(transformed, 200);
-  }
-
   const calendarItems = await db
-    .select()
+    .select({ calendarItem: schema.calendarItemTable })
     .from(schema.calendarItemTable)
-    .where(eq(schema.calendarItemTable.roomId, roomId))
-    .limit(limit ?? 20)
-    .offset(offset ?? 0);
+    .where(eq(schema.calendarItemTable.roomId, roomId));
 
-  const transformed = calendarItems.map(transformCalendarItem);
+  const transformed = calendarItems.map((i) =>
+    transformCalendarItem(i.calendarItem),
+  );
   return c.json(transformed, 200);
 });
 

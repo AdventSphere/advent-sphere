@@ -87,6 +87,24 @@ const listItemsRoute = createRoute({
   tags: ["Item"],
   summary: "アイテム一覧の取得",
   description: "すべてのアイテムを取得します。",
+  request: {
+    query: z.object({
+      limit: z.coerce
+        .number()
+        .min(1)
+        .optional()
+        .openapi({ example: 20, description: "取得数" }),
+      offset: z.coerce
+        .number()
+        .min(0)
+        .optional()
+        .openapi({ example: 0, description: "オフセット" }),
+      type: z
+        .string()
+        .optional()
+        .openapi({ example: "photo_frame", description: "アイテムの種類" }),
+    }),
+  },
   responses: {
     200: {
       description: "成功",
@@ -216,9 +234,23 @@ const app = new OpenAPIHono<{
 }>();
 
 app.openapi(listItemsRoute, async (c) => {
-  const db = drizzle(c.env.DB, { schema });
-  const result = await db.select().from(schema.itemTable);
+  const { limit, offset, type } = c.req.valid("query");
 
+  const db = drizzle(c.env.DB, { schema });
+  if (type) {
+    const items = await db
+      .select()
+      .from(schema.itemTable)
+      .where(eq(schema.itemTable.type, type))
+      .limit(limit ?? 20)
+      .offset(offset ?? 0);
+    return c.json(items, 200);
+  }
+  const result = await db
+    .select()
+    .from(schema.itemTable)
+    .limit(limit ?? 20)
+    .offset(offset ?? 0);
   return c.json(result, 200);
 });
 
