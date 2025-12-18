@@ -15,18 +15,14 @@ import { Route as NewRouteImport } from './routes/new'
 import { Route as IndexRouteImport } from './routes/index'
 
 const R3dSampleLazyRouteImport = createFileRoute('/3d-sample')()
-const RoomIdLazyRouteImport = createFileRoute('/$roomId')()
+const RoomIdIndexLazyRouteImport = createFileRoute('/$roomId/')()
+const RoomIdEditIdLazyRouteImport = createFileRoute('/$roomId/$editId')()
 
 const R3dSampleLazyRoute = R3dSampleLazyRouteImport.update({
   id: '/3d-sample',
   path: '/3d-sample',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/3d-sample.lazy').then((d) => d.Route))
-const RoomIdLazyRoute = RoomIdLazyRouteImport.update({
-  id: '/$roomId',
-  path: '/$roomId',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/$roomId.lazy').then((d) => d.Route))
 const NewRoute = NewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -37,39 +33,61 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoomIdIndexLazyRoute = RoomIdIndexLazyRouteImport.update({
+  id: '/$roomId/',
+  path: '/$roomId/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/$roomId/index.lazy').then((d) => d.Route))
+const RoomIdEditIdLazyRoute = RoomIdEditIdLazyRouteImport.update({
+  id: '/$roomId/$editId',
+  path: '/$roomId/$editId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/$roomId/$editId.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/new': typeof NewRoute
-  '/$roomId': typeof RoomIdLazyRoute
   '/3d-sample': typeof R3dSampleLazyRoute
+  '/$roomId/$editId': typeof RoomIdEditIdLazyRoute
+  '/$roomId': typeof RoomIdIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/new': typeof NewRoute
-  '/$roomId': typeof RoomIdLazyRoute
   '/3d-sample': typeof R3dSampleLazyRoute
+  '/$roomId/$editId': typeof RoomIdEditIdLazyRoute
+  '/$roomId': typeof RoomIdIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/new': typeof NewRoute
-  '/$roomId': typeof RoomIdLazyRoute
   '/3d-sample': typeof R3dSampleLazyRoute
+  '/$roomId/$editId': typeof RoomIdEditIdLazyRoute
+  '/$roomId/': typeof RoomIdIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/new' | '/$roomId' | '/3d-sample'
+  fullPaths: '/' | '/new' | '/3d-sample' | '/$roomId/$editId' | '/$roomId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/new' | '/$roomId' | '/3d-sample'
-  id: '__root__' | '/' | '/new' | '/$roomId' | '/3d-sample'
+  to: '/' | '/new' | '/3d-sample' | '/$roomId/$editId' | '/$roomId'
+  id:
+    | '__root__'
+    | '/'
+    | '/new'
+    | '/3d-sample'
+    | '/$roomId/$editId'
+    | '/$roomId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   NewRoute: typeof NewRoute
-  RoomIdLazyRoute: typeof RoomIdLazyRoute
   R3dSampleLazyRoute: typeof R3dSampleLazyRoute
+  RoomIdEditIdLazyRoute: typeof RoomIdEditIdLazyRoute
+  RoomIdIndexLazyRoute: typeof RoomIdIndexLazyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -79,13 +97,6 @@ declare module '@tanstack/react-router' {
       path: '/3d-sample'
       fullPath: '/3d-sample'
       preLoaderRoute: typeof R3dSampleLazyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$roomId': {
-      id: '/$roomId'
-      path: '/$roomId'
-      fullPath: '/$roomId'
-      preLoaderRoute: typeof RoomIdLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/new': {
@@ -102,14 +113,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$roomId/': {
+      id: '/$roomId/'
+      path: '/$roomId'
+      fullPath: '/$roomId'
+      preLoaderRoute: typeof RoomIdIndexLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$roomId/$editId': {
+      id: '/$roomId/$editId'
+      path: '/$roomId/$editId'
+      fullPath: '/$roomId/$editId'
+      preLoaderRoute: typeof RoomIdEditIdLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   NewRoute: NewRoute,
-  RoomIdLazyRoute: RoomIdLazyRoute,
   R3dSampleLazyRoute: R3dSampleLazyRoute,
+  RoomIdEditIdLazyRoute: RoomIdEditIdLazyRoute,
+  RoomIdIndexLazyRoute: RoomIdIndexLazyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

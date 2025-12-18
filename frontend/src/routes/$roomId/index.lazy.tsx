@@ -12,11 +12,11 @@ import Calendar from "@/features/room/calendar";
 import { useCalendarFocus } from "@/features/room/hooks/useCalendarFocus";
 import InventoryDialog from "@/features/room/inventoryDialog";
 
-export const Route = createLazyFileRoute("/$roomId")({
+export const Route = createLazyFileRoute("/$roomId/")({
   component: RouteComponent,
 });
 
-const roomUrl = `${R2_BASE_URL}/static/wall.glb`;
+const roomUrl = `${R2_BASE_URL}/static/room.glb`;
 const tableUrl = `${R2_BASE_URL}/static/table%20(1).glb`;
 
 // フォーカスモード時にカレンダーを照らすライト
@@ -90,24 +90,24 @@ function RouteComponent() {
 
             <Physics>
               <group position={[0, 0, 0]}>
-                {/* <Room /> */}
-
                 <RigidBody type="fixed" friction={5}>
                   <Gltf src={roomUrl} position={[0, -1, 0]} />
                 </RigidBody>
 
-                <RigidBody lockRotations>
-                  <Gltf src={tableUrl} scale={6} position={[0, 0, 0]} />
-                </RigidBody>
-                <RigidBody lockRotations>
-                  <Calendar
-                    groupRef={calendarRef}
-                    position={CALENDAR_POSITION}
-                    rotation={[0, 0, 0]}
-                    isFocusMode={isFocusMode}
-                    onCalendarClick={handleFocusCalendar}
-                  />
-                </RigidBody>
+                <group position={[0, 0, 1]}>
+                  <RigidBody lockRotations>
+                    <Gltf src={tableUrl} scale={6} position={[0, 0, 0]} />
+                  </RigidBody>
+                  <RigidBody lockRotations>
+                    <Calendar
+                      groupRef={calendarRef}
+                      position={CALENDAR_POSITION}
+                      rotation={[0, 0, 0]}
+                      isFocusMode={isFocusMode}
+                      onCalendarClick={handleFocusCalendar}
+                    />
+                  </RigidBody>
+                </group>
               </group>
             </Physics>
 
