@@ -1,5 +1,5 @@
-import type { Item } from "common/generate/adventSphereAPI.schemas";
-import { useGetItems } from "common/generate/item/item";
+import type { CalendarItem } from "common/generate/adventSphereAPI.schemas";
+import { useGetCalendarItemsRoomIdCalendarItemsInventory } from "common/generate/calendar-items/calendar-items";
 import { useMemo, useState } from "react";
 import InventoryIcon from "@/components/icons/inventory";
 import { Button } from "@/components/ui/button";
@@ -17,15 +17,15 @@ const GRID_ROWS = 4;
 const TOTAL_SLOTS = GRID_COLS * GRID_ROWS;
 
 function ItemCard({
-  item,
+  calendarItem,
   isSelected,
   onClick,
 }: {
-  item: Item | null;
+  calendarItem: CalendarItem | null;
   isSelected: boolean;
   onClick: () => void;
 }) {
-  if (!item) {
+  if (!calendarItem) {
     return (
       <div className="flex flex-col gap-1 sm:gap-2 items-center p-1 sm:p-2 rounded-xl sm:rounded-2xl aspect-164/149 justify-center">
         <div className="relative w-full rounded-xl flex items-center justify-center">
@@ -35,7 +35,7 @@ function ItemCard({
     );
   }
 
-  const thumbnailUrl = `${R2_BASE_URL}/item/thumbnail/${item.id}.png`;
+  const thumbnailUrl = `${R2_BASE_URL}/item/thumbnail/${calendarItem.id}.png`;
 
   return (
     <button
@@ -51,7 +51,7 @@ function ItemCard({
       <div className="aspect-4/3 relative w-full rounded-xl overflow-hidden">
         <img
           src={thumbnailUrl}
-          alt={item.name}
+          alt={calendarItem?.id || ""}
           className="absolute inset-0 w-full h-full object-cover object-center rounded-xl"
         />
       </div>
@@ -63,30 +63,33 @@ function ItemCard({
             : "font-normal text-foreground",
         )}
       >
-        {item.name}
+        {calendarItem.id}
       </p>
     </button>
   );
 }
 
 export default function InventoryDialog({
+  roomId,
   open,
   onOpenChange,
 }: {
+  roomId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { data: items = [], isLoading } = useGetItems();
+  const { data: calendarItems = [], isLoading } =
+    useGetCalendarItemsRoomIdCalendarItemsInventory(roomId);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   // アイテムを24スロットに配置（不足分はnullで埋める）
   const itemSlots = useMemo(() => {
-    const slots: (Item | null)[] = [];
+    const slots: (CalendarItem | null)[] = [];
     for (let i = 0; i < TOTAL_SLOTS; i++) {
-      slots.push(items[i] || null);
+      slots.push(calendarItems[i] || null);
     }
     return slots;
-  }, [items]);
+  }, [calendarItems]);
 
   const handlePlaceItem = () => {
     if (selectedItemId) {
@@ -99,7 +102,7 @@ export default function InventoryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="lg:max-w-6xl bg-muted rounded-2xl sm:rounded-3xl w-full max-h-[calc(100vh-2rem)] sm:max-h-[90vh] flex flex-col p-4 md:p-6 overflow-hidden"
+        className="xl:max-w-6xl bg-muted rounded-2xl sm:rounded-3xl w-full max-h-[calc(100vh-2rem)] sm:max-h-[90vh] flex flex-col p-4 md:p-6 overflow-hidden"
         showCloseButton={false}
       >
         <DialogHeader className="flex flex-row justify-between items-center gap-3 sm:gap-0 shrink-0">
@@ -134,7 +137,7 @@ export default function InventoryDialog({
               {itemSlots.map((item, index) => (
                 <ItemCard
                   key={item?.id || `empty-${index}`}
-                  item={item}
+                  calendarItem={item}
                   isSelected={item?.id === selectedItemId}
                   onClick={() => {
                     if (item) {

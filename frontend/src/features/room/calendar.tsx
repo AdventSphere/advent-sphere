@@ -1,5 +1,7 @@
 import { Gltf, Text } from "@react-three/drei";
+import type React from "react";
 import { useState } from "react";
+import type { Group } from "three";
 import { R2_BASE_URL } from "@/constants/r2-url";
 
 const calendarBoxUrl = `${R2_BASE_URL}/static/calendar_box.glb`;
@@ -33,18 +35,33 @@ function getDrawerPosition(
 export default function Calendar({
   position,
   rotation,
+  isFocusMode,
+  onCalendarClick,
+  groupRef,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
+  isFocusMode: boolean;
+  onCalendarClick: () => void;
+  groupRef?: React.RefObject<Group | null>;
 }) {
   const [isOpened, setIsOpened] = useState<number[]>([]);
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: calendar click handler
     <group
+      ref={groupRef}
       scale={0.1}
       position={position}
       rotation={rotation}
       castShadow
       receiveShadow
+      onClick={(e) => {
+        // フォーカスモードでない場合は、カレンダー全体クリックでフォーカスモードへ
+        if (!isFocusMode) {
+          e.stopPropagation();
+          onCalendarClick();
+        }
+      }}
     >
       <Gltf src={calendarMainUrl} />
 
@@ -54,6 +71,7 @@ export default function Calendar({
           key={i}
           day={i + 1}
           position={getDrawerPosition(i, isOpened.includes(i))}
+          isFocusMode={isFocusMode}
           setIsOpened={() =>
             setIsOpened((prev) =>
               prev.includes(i) ? prev.filter((day) => day !== i) : [...prev, i],
@@ -68,10 +86,12 @@ export default function Calendar({
 function Drawer({
   day,
   position,
+  isFocusMode,
   setIsOpened,
 }: {
   day: number;
   position: [number, number, number];
+  isFocusMode: boolean;
   setIsOpened: () => void;
 }) {
   return (
@@ -79,8 +99,11 @@ function Drawer({
     <group
       position={position}
       onClick={(e) => {
-        e.stopPropagation();
-        setIsOpened();
+        // フォーカスモード時のみ引き出しを開閉
+        if (isFocusMode) {
+          e.stopPropagation();
+          setIsOpened();
+        }
       }}
     >
       <Gltf src={calendarBoxUrl} />
@@ -90,8 +113,10 @@ function Drawer({
         rotation={[0, Math.PI / 2, 0]}
         anchorX="center"
         anchorY="middle"
-        fontWeight={"bold"}
-        color={"#fff"}
+        fontWeight={800}
+        color={"#006003"}
+        outlineWidth={0.015}
+        outlineColor={"#fff"}
       >
         {day}
       </Text>

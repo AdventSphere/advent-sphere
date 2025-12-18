@@ -13,10 +13,7 @@ export const Route = createLazyFileRoute("/3d-sample")({
   component: RouteComponent,
 });
 
-const tableUrl = `${R2_BASE_URL}/static/table%20(1).glb`;
-const wallUrl = `${R2_BASE_URL}/static/Wall_001.glb`;
 const floorUrl = `${R2_BASE_URL}/static/Floor_001.glb`;
-const giftBoxUrl = `${R2_BASE_URL}/static/gift_box.glb`;
 
 const snowdomeDomeUrl = `${R2_BASE_URL}/static/snowdome_dome.glb`;
 const snowdomePedestalUrl = `${R2_BASE_URL}/static/snowdome_pedestal.glb`;
@@ -72,7 +69,12 @@ function RouteComponent() {
                   </mesh>
                 </RigidBody>
                 <RigidBody lockRotations>
-                  <Calendar position={[0, 0, 0]} rotation={[0, 0, 0]} />
+                  <Calendar
+                    position={[0, 0, 0]}
+                    rotation={[0, 0, 0]}
+                    isFocusMode={false}
+                    onCalendarClick={() => {}}
+                  />
                 </RigidBody>
               </group>
             </Physics>
