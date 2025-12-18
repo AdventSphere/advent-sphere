@@ -90,8 +90,6 @@ function RouteComponent() {
 
             <Physics>
               <group position={[0, 0, 0]}>
-                {/* <Room /> */}
-
                 <RigidBody type="fixed" friction={5}>
                   <Gltf src={roomUrl} position={[0, -1, 0]} />
                 </RigidBody>

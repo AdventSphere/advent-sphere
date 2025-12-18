@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { useUser } from "@/context/UserContext";
 
 export default function NameInput() {
-  const { createUser } = useUser();
+  const { createUser, isLoading } = useUser();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,8 +33,9 @@ export default function NameInput() {
           type="submit"
           size={"lg"}
           className="w-full rounded-xl font-bold"
+          disabled={isLoading}
         >
-          保存
+          {isLoading ? <Spinner className="size-4" /> : "保存"}
         </Button>
       </form>
     </div>

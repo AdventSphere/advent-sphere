@@ -1,6 +1,6 @@
 import type { User } from "common/generate/adventSphereAPI.schemas";
 import { useGetUsersId, usePostUsers } from "common/generate/user/user";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import Loading from "@/components/Loading";
 import { generateUserId, getUserId, setUserId } from "@/lib/user-storage";
 
@@ -14,8 +14,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const userId = getUserId() ?? "";
-  const [isLoading, setIsLoading] = useState(true);
-  const { mutateAsync: postUsers } = usePostUsers();
+  const { mutateAsync: postUsers, isPending: isPostUsersLoading } =
+    usePostUsers();
   const {
     data: user,
     isLoading: isUserLoading,
@@ -30,7 +30,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const createUser = async (name: string) => {
     try {
       const newUserId = generateUserId();
-      setIsLoading(true);
       await postUsers({
         data: { id: newUserId, name },
       });
@@ -40,8 +39,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error(error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -50,7 +47,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <UserContext.Provider value={{ user, isLoading, createUser: createUser }}>
+    <UserContext.Provider
+      value={{ user, isLoading: isPostUsersLoading, createUser: createUser }}
+    >
       {children}
     </UserContext.Provider>
   );
