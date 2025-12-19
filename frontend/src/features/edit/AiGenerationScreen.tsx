@@ -1,16 +1,16 @@
-import InventoryIcon from "@/components/icons/inventory";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
-    type CreatePromptRequestHistoryItem,
-    CreatePromptRequestHistoryItemRole,
+  type CreatePromptRequestHistoryItem,
+  CreatePromptRequestHistoryItemRole,
 } from "common/generate/adventSphereAPI.schemas";
 import {
-    usePostAiCreatePhoto,
-    usePostAiCreatePrompt,
+  usePostAiCreatePhoto,
+  usePostAiCreatePrompt,
 } from "common/generate/ai/ai";
 import { ArrowUp, ChevronLeft, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import InventoryIcon from "@/components/icons/inventory";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface AiGenerationScreenProps {
   onBack: () => void;
@@ -121,14 +121,14 @@ export default function AiGenerationScreen({
       <div className="flex flex-col h-full min-h-screen bg-[#F5F5F5] p-6 text-foreground relative">
         {/* Header */}
         <div className="flex flex-col items-start gap-4 mb-6">
-          <button 
-            onClick={() => setViewState('chat')}
+          <button
+            onClick={() => setViewState("chat")}
             className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
           >
             <ChevronLeft className="w-4 h-4 mr-1" />
             写真アップロードに戻る
           </button>
-          
+
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
               <InventoryIcon className="w-6 h-6 text-[#006400]" />
