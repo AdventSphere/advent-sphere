@@ -351,14 +351,30 @@ app.openapi(patchItemRoute, async (c) => {
     return c.json({ error: "更新するフィールドがありません" }, 400);
   }
 
-  const result = await db
-    .update(schema.itemTable)
-    .set(updateData)
-    .where(eq(schema.itemTable.id, id))
-    .returning();
+  let result: (typeof schema.itemTable.$inferSelect)[] = [];
 
-  if (result.length === 0) {
-    return c.json({ error: "アイテムが見つかりません" }, 404);
+  //NOTE: フィールドの更新がある場合のみデータベース更新
+  if (Object.keys(updateData).length > 0) {
+    result = await db
+      .update(schema.itemTable)
+      .set(updateData)
+      .where(eq(schema.itemTable.id, id))
+      .returning();
+
+    if (result.length === 0) {
+      return c.json({ error: "アイテムが見つかりません" }, 404);
+    }
+  } else {
+    //NOTE: フィールド更新がない場合は、アイテムが存在するか確認
+    const existing = await db
+      .select()
+      .from(schema.itemTable)
+      .where(eq(schema.itemTable.id, id));
+
+    if (existing.length === 0) {
+      return c.json({ error: "アイテムが見つかりません" }, 404);
+    }
+    result = existing;
   }
 
   if (body.objectFile || body.objectThumbnail) {
