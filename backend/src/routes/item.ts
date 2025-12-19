@@ -332,18 +332,61 @@ app.openapi(patchItemRoute, async (c) => {
   const { id } = c.req.valid("param");
   const body = c.req.valid("form");
   const db = drizzle(c.env.DB, { schema });
+
+  // 定義されたフィールドのみを含めて部分更新
+  const updateData: Partial<{
+    name: string;
+    description: string;
+    type: string;
+  }> = {};
+  if (body.name !== undefined) updateData.name = body.name;
+  if (body.description !== undefined) updateData.description = body.description;
+  if (body.type !== undefined) updateData.type = body.type;
+
+  if (
+    Object.keys(updateData).length === 0 &&
+    !body.objectFile &&
+    !body.objectThumbnail
+  ) {
+    return c.json({ error: "更新するフィールドがありません" }, 400);
+  }
+
   const result = await db
     .update(schema.itemTable)
-    .set({
-      name: body.name,
-      description: body.description,
-      type: body.type,
-    })
+    .set(updateData)
     .where(eq(schema.itemTable.id, id))
     .returning();
+
   if (result.length === 0) {
     return c.json({ error: "アイテムが見つかりません" }, 404);
   }
+
+  if (body.objectFile || body.objectThumbnail) {
+    try {
+      if (body.objectFile) {
+        await deleteFunction(c.env.BUCKET, `item/object/${result[0].id}`);
+        await uploadFunction(
+          c.env.BUCKET,
+          body.objectFile,
+          "item/object",
+          `${result[0].id}.${body.objectFile.name.split(".").pop()}`,
+        );
+      }
+
+      if (body.objectThumbnail) {
+        await deleteFunction(c.env.BUCKET, `item/thumbnail/${result[0].id}`);
+        await uploadFunction(
+          c.env.BUCKET,
+          body.objectThumbnail,
+          "item/thumbnail",
+          `${result[0].id}.${body.objectThumbnail.name.split(".").pop()}`,
+        );
+      }
+    } catch (e) {
+      return c.json({ error: `ファイルの更新に失敗しました．${e}` }, 500);
+    }
+  }
+
   return c.json(result[0], 200);
 });
 
