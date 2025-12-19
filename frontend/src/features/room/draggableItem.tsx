@@ -132,6 +132,12 @@ export default function DraggableItem({
       true,
     );
 
+    // レイキャストがヒットしない場合は配置不可
+    if (!intersects.length) {
+      setIsPlacementValid(false);
+      return;
+    }
+
     // 仮：床に当たっていれば配置可能
     setIsPlacementValid(true);
   });
