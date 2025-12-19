@@ -1,6 +1,7 @@
 import { Environment, Gltf } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import type { Item } from "common/generate/adventSphereAPI.schemas";
 import {
   useGetCalendarItemsRoomIdCalendarItems,
   usePostCalendarItemsRoomIdCalendarItems,
@@ -12,6 +13,7 @@ import * as THREE from "three";
 import Loading from "@/components/Loading";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import { useUser } from "@/context/UserContext";
+import AiGenerationScreen from "@/features/edit/AiGenerationScreen";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import Calendar from "@/features/room/calendar";
 import NameInput from "@/features/user/nameInput";
@@ -72,6 +74,7 @@ function RouteComponent() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
+  const [isAiGenerationOpen, setIsAiGenerationOpen] = useState(false);
 
   const { user } = useUser();
   const { data: room } = useGetRoomsId(roomId);
@@ -113,9 +116,18 @@ function RouteComponent() {
     setOpenedDrawers([drawerIndex]);
   };
 
-  const handleItemSelect = async (itemId: string) => {
-    console.log(`Day ${selectedDay} selected item:`, itemId);
+  const handleItemSelect = async (item: Item) => {
+    console.log(`Day ${selectedDay} selected item:`, item.id);
     if (!room) return;
+
+    if (item.type === "photo_frame") {
+      setIsAiGenerationOpen(true);
+      // Don't close dialog or post item yet?
+      // For now, let's allow the flow to continue but show the screen on top?
+      // Actually, typically you'd want to generate FIRST or handle it specially.
+      // But purely for "Opening" it:
+    }
+
     const startAt = new Date(room.startAt);
     const openDate = new Date(
       startAt.setDate(startAt.getDate() + (selectedDay ?? 0) - 1),
@@ -129,7 +141,7 @@ function RouteComponent() {
           userId: user?.id ?? "",
           roomId,
           openDate: openDate.toISOString(),
-          itemId,
+          itemId: item.id,
         },
       },
     });
@@ -197,6 +209,20 @@ function RouteComponent() {
           day={selectedDay}
           onSelect={handleItemSelect}
         />
+      )}
+
+      {isAiGenerationOpen && (
+        <div className="fixed inset-0 z-50 bg-background">
+          <AiGenerationScreen
+            roomId={roomId}
+            onBack={() => setIsAiGenerationOpen(false)}
+            onAdopt={(base64Image) => {
+              console.log("Image adopted, base64 length:", base64Image.length);
+              // TODO: Implement image upload/saving logic here
+              setIsAiGenerationOpen(false);
+            }}
+          />
+        </div>
       )}
     </div>
   );
