@@ -37,6 +37,7 @@ export default function AiGenerationScreen({
   // Scroll to bottom of chat
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: "Should scroll on history/view change"
   useEffect(() => {
     if (viewState === "chat") {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,6 +123,7 @@ export default function AiGenerationScreen({
         {/* Header */}
         <div className="flex flex-col items-start gap-4 mb-6">
           <button
+            type="button"
             onClick={() => setViewState("chat")}
             className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
           >
@@ -173,6 +175,7 @@ export default function AiGenerationScreen({
       {/* Header */}
       <div className="flex flex-col items-start gap-4 mb-6">
         <button
+          type="button"
           onClick={onBack}
           className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
         >
@@ -200,20 +203,22 @@ export default function AiGenerationScreen({
               {/* This image mimics the one in the screenshot with two frames */}
               <img
                 src="/placeholder-frames.png"
-                alt="Photo Frames"
+                alt="Frames"
                 className="max-w-full h-auto object-contain"
                 onError={(e) => {
                   // Fallback if image doesn't exist (likely doesn't)
                   e.currentTarget.style.display = "none";
-                  e.currentTarget.parentElement!.classList.add(
+                  e.currentTarget.parentElement?.classList.add(
                     "bg-white",
                     "rounded-xl",
                     "border-2",
                     "border-dashed",
                     "border-gray-300",
                   );
-                  e.currentTarget.parentElement!.innerText =
-                    "フォトフレーム画像";
+                  if (e.currentTarget.parentElement) {
+                    e.currentTarget.parentElement.innerText =
+                      "フォトフレーム画像";
+                  }
                 }}
               />
             </div>
@@ -237,7 +242,7 @@ export default function AiGenerationScreen({
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {history.map((item, index) => (
               <div
-                key={index}
+                key={`${index}-${item.role}`}
                 className={cn(
                   "flex w-full",
                   item.role === CreatePromptRequestHistoryItemRole.user
@@ -284,6 +289,7 @@ export default function AiGenerationScreen({
                 rows={2}
               />
               <button
+                type="button"
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || createPromptMutation.isPending}
                 className="absolute right-2 bottom-2.5 p-1.5 bg-[#920209] text-white rounded-lg hover:bg-[#7a0207] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
