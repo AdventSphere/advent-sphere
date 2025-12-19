@@ -2,21 +2,32 @@ import { CameraControls, Environment, Gltf } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { useGetCalendarItemsRoomIdCalendarItems } from "common/generate/calendar-items/calendar-items";
+import { useGetRoomsId } from "common/generate/room/room";
 import { X } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useRef, useState } from "react";
+import type * as THREE from "three";
 import InventoryIcon from "@/components/icons/inventory";
 import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import Calendar from "@/features/room/calendar";
 import { useCalendarFocus } from "@/features/room/hooks/useCalendarFocus";
+import { useItemAcquisition } from "@/features/room/hooks/useItemAcquisition";
 import InventoryDialog from "@/features/room/inventoryDialog";
+import ItemGetDialog from "@/features/room/itemGetDialog";
+import {
+  ItemPlacementOverlay,
+  PlacementDraggableItem,
+  usePlacementMode,
+} from "@/features/room/itemPlacementMode";
+import PlacedItems from "@/features/room/placedItems";
 
 export const Route = createLazyFileRoute("/$roomId/")({
   component: RouteComponent,
 });
 
-const roomUrl = `${R2_BASE_URL}/static/room.glb`;
+const roomUrl = `${R2_BASE_URL}/static/room_2.glb`;
 const tableUrl = `${R2_BASE_URL}/static/table%20(1).glb`;
 
 // フォーカスモード時にカレンダーを照らすライト
@@ -35,7 +46,11 @@ const CALENDAR_POSITION: [number, number, number] = [0, 1, 0];
 
 function RouteComponent() {
   const { roomId } = Route.useParams();
+  const { data: room } = useGetRoomsId(roomId);
+  const { data: calendarItems } =
+    useGetCalendarItemsRoomIdCalendarItems(roomId);
   const [isInventoryDialogOpen, setIsInventoryDialogOpen] = useState(false);
+  const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
   const {
     isFocusMode,
     cameraControlsRef,
@@ -43,11 +58,133 @@ function RouteComponent() {
     handleFocusCalendar,
     handleExitFocusMode,
   } = useCalendarFocus();
+  const roomRef = useRef<THREE.Group>(null);
+  // アイテム取得フロー
+  const {
+    phase,
+    targetCalendarItem,
+    targetDay,
+    todayDay,
+    todayOpenableItem,
+    canOpenDay,
+    handleDayClick,
+    handleNextFromGetModal,
+    handlePlacement,
+    handleSkipPlacement,
+    resetFlow,
+    isPending,
+  } = useItemAcquisition({
+    roomId,
+    calendarItems,
+    room,
+  });
+
+  // 配置モード
+  const {
+    isPlacementValid,
+    setIsPlacementValid,
+    isLocked,
+    tempPosition,
+    tempRotation,
+    handlePositionChange,
+    handleLockChange,
+    resetTempPlacement,
+  } = usePlacementMode();
+
+  // filledDays、filledDayUserNames、openedDaysを計算
+  const { filledDays, filledDayUserNames, openedDays } = useMemo(() => {
+    if (!calendarItems || !room)
+      return {
+        filledDays: [] as number[],
+        filledDayUserNames: {} as Record<number, string>,
+        openedDays: [] as number[],
+      };
+
+    const startDate = new Date(room.startAt);
+    const days: number[] = [];
+    const userNames: Record<number, string> = {};
+    const opened: number[] = [];
+
+    for (const item of calendarItems) {
+      const openDate = new Date(item.openDate);
+      // startDateからopenDateまでの日数を計算（1始まり）
+      const diffTime = openDate.getTime() - startDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      days.push(diffDays);
+      userNames[diffDays] = item.userName;
+
+      // 開封済みのアイテムは引き出しを開いた状態に
+      if (item.isOpened) {
+        opened.push(diffDays - 1); // drawerのインデックスは0始まり
+      }
+    }
+
+    return {
+      filledDays: days,
+      filledDayUserNames: userNames,
+      openedDays: opened,
+    };
+  }, [calendarItems, room]);
+
+  // クリック可能な日を計算（今日開封可能なアイテムがある場合）
+  const clickableDays = useMemo(() => {
+    if (todayOpenableItem && todayDay) {
+      return [todayDay];
+    }
+    return [];
+  }, [todayOpenableItem, todayDay]);
+
+  // 開封済みの引き出しは常に開いた状態 + ユーザー操作で開いた引き出し
+  const effectiveOpenedDrawers = useMemo(() => {
+    return [...new Set([...openedDays, ...openedDrawers])];
+  }, [openedDays, openedDrawers]);
+
+  // 引き出しクリック時のハンドラー
+  const handleDrawerClick = (day: number) => {
+    if (canOpenDay(day)) {
+      // 引き出しを開く
+      setOpenedDrawers([day - 1]);
+      handleDayClick(day);
+    }
+  };
+
+  // モーダルを閉じる時
+  const handleModalClose = (open: boolean) => {
+    if (!open) {
+      setOpenedDrawers([]);
+      resetFlow();
+    }
+  };
+
+  // 配置決定時
+  const handleConfirmPlacement = async () => {
+    if (tempPosition && tempRotation && isPlacementValid) {
+      await handlePlacement(tempPosition, tempRotation);
+      setOpenedDrawers([]);
+      resetTempPlacement();
+    }
+  };
+
+  // スキップ時
+  const handleSkip = async () => {
+    await handleSkipPlacement();
+    setOpenedDrawers([]);
+    resetTempPlacement();
+  };
+
+  // 「次へ」を押した時（配置モードへ）
+  const handleNext = () => {
+    handleNextFromGetModal();
+    handleExitFocusMode();
+  };
+
+  // 配置モード中かどうか
+  const isPlacementMode = phase === "placement";
 
   return (
     <div className="w-full h-svh flex">
       <div className="w-full p-3 md:p-6 lg:p-8 grow h-full grid grid-cols-2">
-        {!isFocusMode && (
+        {!isFocusMode && !isPlacementMode && (
           <Button
             onClick={() => setIsInventoryDialogOpen((prev) => !prev)}
             className="relative z-30 self-end size-20 md:size-22 lg:size-24 border-4 border-primary-foreground rounded-3xl font-bold text-sm md:text-base shadow-xl hover:[&_span]:animate-bounce active:scale-95"
@@ -63,7 +200,7 @@ function RouteComponent() {
           open={isInventoryDialogOpen}
           onOpenChange={setIsInventoryDialogOpen}
         />
-        {isFocusMode && (
+        {isFocusMode && !isPlacementMode && (
           <Button
             onClick={handleExitFocusMode}
             className="justify-self-end col-span-2 w-fit z-40"
@@ -75,10 +212,32 @@ function RouteComponent() {
         )}
       </div>
 
+      {/* アイテムゲットモーダル */}
+      {phase === "get_modal" && targetCalendarItem && targetDay && (
+        <ItemGetDialog
+          open={true}
+          onOpenChange={handleModalClose}
+          day={targetDay}
+          calendarItem={targetCalendarItem}
+          onNext={handleNext}
+        />
+      )}
+
+      {/* 配置モードオーバーレイ */}
+      {isPlacementMode && (
+        <ItemPlacementOverlay
+          onConfirm={handleConfirmPlacement}
+          onSkip={handleSkip}
+          isPending={isPending}
+          isPlacementValid={isPlacementValid}
+          isLocked={isLocked}
+        />
+      )}
+
       {/* 3Dオブジェクト */}
       <div className="fixed inset-0 z-0">
         <Suspense fallback={<Loading text="部屋を読み込み中..." />}>
-          <Canvas camera={{ position: [0, 0, 2.5] }}>
+          <Canvas>
             <ambientLight intensity={isFocusMode ? 0.15 : 0.4} />
             <Environment
               preset="apartment"
@@ -89,26 +248,59 @@ function RouteComponent() {
             <FocusLights isFocusMode={isFocusMode} />
 
             <Physics>
-              <group position={[0, 0, 0]}>
-                <RigidBody type="fixed" friction={5}>
-                  <Gltf src={roomUrl} position={[0, -1, 0]} />
-                </RigidBody>
+              {/* 部屋のGLB（物理コライダーあり） */}
+              <RigidBody type="fixed" colliders="trimesh" friction={5}>
+                <Gltf
+                  ref={roomRef}
+                  src={roomUrl}
+                  scale={1}
+                  position={[0, -1, 0]}
+                />
+              </RigidBody>
 
-                <group position={[0, 0, 1]}>
-                  <RigidBody lockRotations>
-                    <Gltf src={tableUrl} scale={6} position={[0, 0, 0]} />
-                  </RigidBody>
-                  <RigidBody lockRotations>
-                    <Calendar
-                      groupRef={calendarRef}
-                      position={CALENDAR_POSITION}
-                      rotation={[0, 0, 0]}
-                      isFocusMode={isFocusMode}
-                      onCalendarClick={handleFocusCalendar}
-                    />
-                  </RigidBody>
-                </group>
+              <group position={[0, 0, 1]}>
+                <RigidBody
+                  lockRotations
+                  type={isPlacementMode ? "kinematicPosition" : "dynamic"}
+                >
+                  <Gltf src={tableUrl} scale={6} position={[0, 0, 0]} />
+                </RigidBody>
+                <RigidBody
+                  lockRotations
+                  type={isPlacementMode ? "kinematicPosition" : "dynamic"}
+                >
+                  <Calendar
+                    groupRef={calendarRef}
+                    position={CALENDAR_POSITION}
+                    rotation={[0, 0, 0]}
+                    isFocusMode={isFocusMode}
+                    onCalendarClick={handleFocusCalendar}
+                    onDayClick={handleDrawerClick}
+                    openedDrawers={effectiveOpenedDrawers}
+                    onOpenedDrawersChange={setOpenedDrawers}
+                    filledDays={filledDays}
+                    filledDayUserNames={filledDayUserNames}
+                    isAnonymous={room?.isAnonymous ?? true}
+                    clickableDays={clickableDays}
+                  />
+                </RigidBody>
               </group>
+
+              {/* 配置済みアイテム */}
+              <PlacedItems calendarItems={calendarItems} />
+
+              {/* 配置モード時のドラッグ可能アイテム */}
+              {isPlacementMode && targetCalendarItem && roomRef && (
+                <PlacementDraggableItem
+                  roomRef={roomRef as React.RefObject<THREE.Group>}
+                  calendarItem={targetCalendarItem}
+                  onPositionChange={handlePositionChange}
+                  isPlacementValid={isPlacementValid}
+                  setIsPlacementValid={setIsPlacementValid}
+                  initialRotation={tempRotation ?? undefined}
+                  onLockChange={handleLockChange}
+                />
+              )}
             </Physics>
 
             <CameraControls

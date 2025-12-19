@@ -44,6 +44,7 @@ export default function Calendar({
   filledDays = [],
   filledDayUserNames = {},
   isAnonymous = true,
+  clickableDays,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
@@ -56,6 +57,8 @@ export default function Calendar({
   filledDays?: number[];
   filledDayUserNames?: Record<number, string>;
   isAnonymous?: boolean;
+  /** クリック可能な日のリスト。指定されない場合はfilledでない日がクリック可能 */
+  clickableDays?: number[];
 }) {
   const [internalOpened, setInternalOpened] = useState<number[]>([]);
   const isOpened = openedDrawers ?? internalOpened;
@@ -93,26 +96,35 @@ export default function Calendar({
     >
       <Gltf src={calendarMainUrl} />
 
-      {Array.from({ length: COLS * ROWS }).map((_, i) => (
-        <Drawer
-          // biome-ignore lint/suspicious/noArrayIndexKey: index is unique
-          key={i}
-          day={i + 1}
-          position={getDrawerPosition(i, isOpened.includes(i))}
-          isFocusMode={isFocusMode}
-          isFilled={filledDays.includes(i + 1)}
-          userName={filledDayUserNames[i + 1]}
-          isAnonymous={isAnonymous}
-          setIsOpened={() =>
-            handleSetOpened(
-              isOpened.includes(i)
-                ? isOpened.filter((day) => day !== i)
-                : [...isOpened, i],
-            )
-          }
-          onDayClick={onDayClick}
-        />
-      ))}
+      {Array.from({ length: COLS * ROWS }).map((_, i) => {
+        const day = i + 1;
+        // clickableDaysが指定されていればそれを使用、なければfilledでない日がクリック可能
+        const isClickable = clickableDays
+          ? clickableDays.includes(day)
+          : !filledDays.includes(day);
+
+        return (
+          <Drawer
+            // biome-ignore lint/suspicious/noArrayIndexKey: index is unique
+            key={i}
+            day={day}
+            position={getDrawerPosition(i, isOpened.includes(i))}
+            isFocusMode={isFocusMode}
+            isFilled={filledDays.includes(day)}
+            isClickable={isClickable}
+            userName={filledDayUserNames[day]}
+            isAnonymous={isAnonymous}
+            setIsOpened={() =>
+              handleSetOpened(
+                isOpened.includes(i)
+                  ? isOpened.filter((d) => d !== i)
+                  : [...isOpened, i],
+              )
+            }
+            onDayClick={onDayClick}
+          />
+        );
+      })}
     </group>
   );
 }
@@ -122,6 +134,7 @@ function Drawer({
   position,
   isFocusMode,
   isFilled,
+  isClickable,
   userName,
   isAnonymous,
   setIsOpened,
@@ -131,6 +144,7 @@ function Drawer({
   position: [number, number, number];
   isFocusMode: boolean;
   isFilled: boolean;
+  isClickable: boolean;
   userName?: string;
   isAnonymous: boolean;
   setIsOpened: () => void;
@@ -141,8 +155,8 @@ function Drawer({
     <group
       position={position}
       onClick={(e) => {
-        // フォーカスモード時かつ埋まっていない日付のみ引き出しを開閉
-        if (isFocusMode && !isFilled) {
+        // フォーカスモード時かつクリック可能な日付のみ引き出しを開閉
+        if (isFocusMode && isClickable) {
           e.stopPropagation();
           setIsOpened();
           // 日付クリック時にコールバックを呼び出す

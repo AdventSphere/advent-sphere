@@ -1,4 +1,4 @@
-import type { CalendarItem } from "common/generate/adventSphereAPI.schemas";
+import type { CalendarItemWithItem } from "common/generate/adventSphereAPI.schemas";
 import { useGetCalendarItemsRoomIdCalendarItemsInventory } from "common/generate/calendar-items/calendar-items";
 import { useMemo, useState } from "react";
 import InventoryIcon from "@/components/icons/inventory";
@@ -21,7 +21,7 @@ function ItemCard({
   isSelected,
   onClick,
 }: {
-  calendarItem: CalendarItem | null;
+  calendarItem: CalendarItemWithItem | null;
   isSelected: boolean;
   onClick: () => void;
 }) {
@@ -35,7 +35,7 @@ function ItemCard({
     );
   }
 
-  const thumbnailUrl = `${R2_BASE_URL}/item/thumbnail/${calendarItem.id}.png`;
+  const thumbnailUrl = `${R2_BASE_URL}/item/thumbnail/${calendarItem.item.id}.png`;
 
   return (
     <button
@@ -51,7 +51,7 @@ function ItemCard({
       <div className="aspect-4/3 relative w-full rounded-xl overflow-hidden">
         <img
           src={thumbnailUrl}
-          alt={calendarItem?.id || ""}
+          alt={calendarItem?.item.id || ""}
           className="absolute inset-0 w-full h-full object-cover object-center rounded-xl"
         />
       </div>
@@ -63,7 +63,7 @@ function ItemCard({
             : "font-normal text-foreground",
         )}
       >
-        {calendarItem.id}
+        {calendarItem.item.name}
       </p>
     </button>
   );
@@ -84,7 +84,7 @@ export default function InventoryDialog({
 
   // アイテムを24スロットに配置（不足分はnullで埋める）
   const itemSlots = useMemo(() => {
-    const slots: (CalendarItem | null)[] = [];
+    const slots: (CalendarItemWithItem | null)[] = [];
     for (let i = 0; i < TOTAL_SLOTS; i++) {
       slots.push(calendarItems[i] || null);
     }
@@ -136,13 +136,13 @@ export default function InventoryDialog({
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 sm:gap-2 w-full auto-rows-min">
               {itemSlots.map((item, index) => (
                 <ItemCard
-                  key={item?.id || `empty-${index}`}
+                  key={item?.item.id || `empty-${index}`}
                   calendarItem={item}
-                  isSelected={item?.id === selectedItemId}
+                  isSelected={item?.item.id === selectedItemId}
                   onClick={() => {
                     if (item) {
                       setSelectedItemId(
-                        item.id === selectedItemId ? null : item.id,
+                        item.item.id === selectedItemId ? null : item.item.id,
                       );
                     }
                   }}
