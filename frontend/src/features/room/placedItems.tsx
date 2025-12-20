@@ -1,10 +1,10 @@
 import { Gltf } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
-import type { CalendarItemWithItem } from "common/generate/adventSphereAPI.schemas";
+import type { CalendarItem } from "common/generate/adventSphereAPI.schemas";
 import { R2_BASE_URL } from "@/constants/r2-url";
 
 interface PlacedItemsProps {
-  calendarItems: CalendarItemWithItem[] | undefined;
+  calendarItems: CalendarItem[] | undefined;
 }
 
 /**
@@ -13,14 +13,9 @@ interface PlacedItemsProps {
 export default function PlacedItems({ calendarItems }: PlacedItemsProps) {
   if (!calendarItems) return null;
 
-  // position が設定されているアイテムのみ表示
-  const placedItems = calendarItems.filter(
-    (item) => item.position && item.position.length === 3,
-  );
-
   return (
     <>
-      {placedItems.map((item) => (
+      {calendarItems.map((item) => (
         <PlacedItem key={item.id} calendarItem={item} />
       ))}
     </>
@@ -28,7 +23,7 @@ export default function PlacedItems({ calendarItems }: PlacedItemsProps) {
 }
 
 interface PlacedItemProps {
-  calendarItem: CalendarItemWithItem;
+  calendarItem: CalendarItem;
 }
 
 function PlacedItem({ calendarItem }: PlacedItemProps) {
