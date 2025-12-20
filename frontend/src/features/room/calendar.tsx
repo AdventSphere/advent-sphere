@@ -98,10 +98,8 @@ export default function Calendar({
 
       {Array.from({ length: COLS * ROWS }).map((_, i) => {
         const day = i + 1;
-        // clickableDaysが指定されていればそれを使用、なければfilledでない日がクリック可能
-        const isClickable = clickableDays
-          ? clickableDays.includes(day)
-          : !filledDays.includes(day);
+        // clickableDaysが指定されていればそれを使用
+        const isClickable = clickableDays ? clickableDays.includes(day) : true;
 
         return (
           <Drawer

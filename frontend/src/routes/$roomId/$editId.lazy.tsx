@@ -4,6 +4,7 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import type { Item } from "common/generate/adventSphereAPI.schemas";
 import {
   useGetCalendarItemsRoomIdCalendarItems,
+  usePatchCalendarItemsRoomIdCalendarItemsId,
   usePostCalendarItemsRoomIdCalendarItems,
   usePostCalendarItemsUploadPhoto,
 } from "common/generate/calendar-items/calendar-items";
@@ -27,6 +28,7 @@ import {
 import { R2_BASE_URL } from "@/constants/r2-url";
 import { useUser } from "@/context/UserContext";
 import AiGenerationScreen from "@/features/edit/AiGenerationScreen";
+import ChangeItemDialog from "@/features/edit/changeItem";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import UploadImg from "@/features/edit/uploadImg";
 import Calendar from "@/features/room/calendar";
@@ -88,6 +90,7 @@ function RouteComponent() {
   const calendarRef = useRef<Group>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isChangeMode, setIsChangeMode] = useState(false);
   const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
   const [isAiGenerationOpen, setIsAiGenerationOpen] = useState(false);
   const [isUploadImgOpen, setIsUploadImgOpen] = useState(false);
@@ -226,6 +229,10 @@ function RouteComponent() {
   const { mutateAsync: postCalendarItem } =
     usePostCalendarItemsRoomIdCalendarItems();
 
+  // ■ 更新用APIの初期化
+  const { mutateAsync: updateCalendarItem } =
+    usePatchCalendarItemsRoomIdCalendarItemsId();
+
   const { mutateAsync: uploadPhoto } = usePostCalendarItemsUploadPhoto();
 
   // ルームIDは既にuseParamsで取得されているため、特別な設定は不要
@@ -254,6 +261,22 @@ function RouteComponent() {
     return { filledDays: days, filledDayUserNames: userNames };
   }, [calendarItems, room]);
 
+  // 選択された日のアイテム情報を安全に計算
+  const targetCalendarItem = useMemo(() => {
+    if (!room || !calendarItems || selectedDay === null) {
+      return null;
+    }
+
+    const startDate = new Date(room.startAt);
+
+    return calendarItems.find((calendarItem) => {
+      const openDate = new Date(calendarItem.openDate);
+      const diffTime = openDate.getTime() - startDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      return diffDays === selectedDay;
+    });
+  }, [room, calendarItems, selectedDay]);
+
   const handleDayClick = (day: number) => {
     const drawerIndex = day - 1;
     setSelectedDay(day);
@@ -277,18 +300,44 @@ function RouteComponent() {
       startAt.setDate(startAt.getDate() + (selectedDay ?? 0) - 1),
     );
 
-    await postCalendarItem({
-      roomId,
-      data: {
-        editId,
-        calendarItem: {
-          userId: user?.id ?? "",
+    if (targetCalendarItem) {
+      try {
+        console.log("Updating existing item:", targetCalendarItem.id);
+        await updateCalendarItem({
           roomId,
-          openDate: openDate.toISOString(),
-          itemId: item.id,
-        },
-      },
-    });
+          id: targetCalendarItem.id, // カレンダーアイテムのIDを指定
+          data: {
+            editId,
+            calendarItem: {
+              itemId: item.id, // 新しいアイテムIDで更新
+              // 必要に応じて他のフィールドも更新（例: 画像をリセットする場合は imageId: null など）
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Update failed:", error);
+      }
+    } else {
+      // アイテムがない場合 -> POST (新規作成)
+      try {
+        console.log("Creating new item");
+        await postCalendarItem({
+          roomId,
+          data: {
+            editId,
+            calendarItem: {
+              userId: user?.id ?? "",
+              roomId,
+              openDate: openDate.toISOString(),
+              itemId: item.id,
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Creation failed:", error);
+      }
+    }
+
     await refetch();
     handleDialogClose(false);
   };
@@ -385,15 +434,38 @@ function RouteComponent() {
         </Suspense>
       </div>
 
-      {/* アイテム選択ダイアログ */}
-      {selectedDay !== null && (
-        <ItemSelectDialog
-          open={isDialogOpen}
-          onOpenChange={handleDialogClose}
-          day={selectedDay}
-          onSelect={handleItemSelect}
-        />
-      )}
+      {/* アイテム選択または変更ダイアログ */}
+      {selectedDay !== null &&
+        (filledDays.includes(selectedDay) &&
+        targetCalendarItem &&
+        !isChangeMode ? (
+          <ChangeItemDialog
+            open={isDialogOpen}
+            onOpenChange={handleDialogClose}
+            day={selectedDay}
+            // 型エラー回避: CalendarItemWithItemAllOfItemをItem型へ変換（最低限のプロパティのみ渡す）
+            item={{
+              id: targetCalendarItem.item.id,
+              name: targetCalendarItem.item.name,
+              type: targetCalendarItem.item.type,
+              createdAt: "",
+              description: "",
+            }}
+            onChange={() => {
+              setIsChangeMode(true);
+            }}
+          />
+        ) : (
+          <ItemSelectDialog
+            open={isDialogOpen}
+            onOpenChange={handleDialogClose}
+            day={selectedDay}
+            onSelect={(item) => {
+              handleItemSelect(item);
+              setIsChangeMode(false);
+            }}
+          />
+        ))}
 
       {/* アップロード成功ダイアログ */}
       <Dialog open={showUploadSuccess} onOpenChange={setShowUploadSuccess}>
