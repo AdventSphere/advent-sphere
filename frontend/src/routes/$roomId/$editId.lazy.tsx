@@ -88,7 +88,7 @@ function RouteComponent() {
   // コンポーネント初期化時に認証状態を復元
   useEffect(() => {
     const savedAuth = sessionStorage.getItem(`auth_${roomId}`);
-    if (savedAuth === 'true') {
+    if (savedAuth === "true") {
       setIsAuthenticated(true);
     }
   }, [roomId]);
@@ -116,7 +116,7 @@ function RouteComponent() {
       // 既に認証が成功していた場合（認証→ユーザー作成の流れ）は認証状態を保持
       // この場合、ローカルストレージなどに認証フラグを保存することも可能
       const wasAuthenticated = sessionStorage.getItem(`auth_${roomId}`);
-      if (wasAuthenticated === 'true') {
+      if (wasAuthenticated === "true") {
         setIsAuthenticated(true);
       }
     }
@@ -135,8 +135,9 @@ function RouteComponent() {
         data: { password },
       });
       console.log("Password verified successfully");
-      setIsAuthenticated(true);      // 認証状態をセッションストレージに保存
-      sessionStorage.setItem(`auth_${roomId}`, 'true');    } catch (error) {
+      setIsAuthenticated(true); // 認証状態をセッションストレージに保存
+      sessionStorage.setItem(`auth_${roomId}`, "true");
+    } catch (error) {
       console.error("Password verification failed:", error);
       setPasswordError("合言葉が間違っています。再度入力してください。");
     }
