@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePostCalendarItemsRoomIdCalendarItems } from "common/generate/calendar-items/calendar-items";
 import { usePostRooms } from "common/generate/room/room";
-import { format } from "date-fns";
+import { format, subWeeks } from "date-fns";
 import {
   CalendarDays,
   CalendarIcon,
@@ -185,8 +185,8 @@ function RouteComponent() {
                 calendarItem: {
                   userId: user.id,
                   roomId: response.id,
-                  openDate: apiData.startAt,
                   itemId,
+                  openDate: subWeeks(watchedValues.start_at, 2).toISOString(),
                   isOpened: true,
                   position: null,
                   rotation: null,
