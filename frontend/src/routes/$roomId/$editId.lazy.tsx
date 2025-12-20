@@ -1,3 +1,4 @@
+import { Environment, Gltf } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import type { Item } from "common/generate/adventSphereAPI.schemas";
