@@ -2,7 +2,10 @@ import { CameraControls, Environment, Gltf } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useGetCalendarItemsRoomIdCalendarItems } from "common/generate/calendar-items/calendar-items";
+import {
+  useGetCalendarItemsRoomIdCalendarItems,
+  useGetCalendarItemsRoomIdCalendarItemsRoom,
+} from "common/generate/calendar-items/calendar-items";
 import { useGetRoomsId } from "common/generate/room/room";
 import { X } from "lucide-react";
 import { Suspense, useMemo, useRef, useState } from "react";
@@ -49,6 +52,8 @@ function RouteComponent() {
   const { data: room } = useGetRoomsId(roomId);
   const { data: calendarItems } =
     useGetCalendarItemsRoomIdCalendarItems(roomId);
+  const { data: calendarItemsRoom } =
+    useGetCalendarItemsRoomIdCalendarItemsRoom(roomId);
   const [isInventoryDialogOpen, setIsInventoryDialogOpen] = useState(false);
   const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
   const {
@@ -72,6 +77,7 @@ function RouteComponent() {
     handlePlacement,
     handleSkipPlacement,
     resetFlow,
+    startPlacementFromInventory,
     isPending,
   } = useItemAcquisition({
     roomId,
@@ -199,6 +205,7 @@ function RouteComponent() {
           roomId={roomId}
           open={isInventoryDialogOpen}
           onOpenChange={setIsInventoryDialogOpen}
+          onStartPlacement={startPlacementFromInventory}
         />
         {isFocusMode && !isPlacementMode && (
           <Button
@@ -287,7 +294,7 @@ function RouteComponent() {
               </group>
 
               {/* 配置済みアイテム */}
-              <PlacedItems calendarItems={calendarItems} />
+              <PlacedItems calendarItems={calendarItemsRoom} />
 
               {/* 配置モード時のドラッグ可能アイテム */}
               {isPlacementMode && targetCalendarItem && roomRef && (

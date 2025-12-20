@@ -73,10 +73,12 @@ export default function InventoryDialog({
   roomId,
   open,
   onOpenChange,
+  onStartPlacement,
 }: {
   roomId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onStartPlacement?: (calendarItem: CalendarItemWithItem) => void;
 }) {
   const { data: calendarItems = [], isLoading } =
     useGetCalendarItemsRoomIdCalendarItemsInventory(roomId);
@@ -92,10 +94,14 @@ export default function InventoryDialog({
   }, [calendarItems]);
 
   const handlePlaceItem = () => {
-    if (selectedItemId) {
-      // TODO: 部屋にアイテムを配置する処理を実装
-      console.log("Placing item:", selectedItemId);
-      onOpenChange(false);
+    if (selectedItemId && onStartPlacement) {
+      const selectedItem = calendarItems.find(
+        (item) => item.item.id === selectedItemId,
+      );
+      if (selectedItem) {
+        onStartPlacement(selectedItem);
+        onOpenChange(false);
+      }
     }
   };
 
