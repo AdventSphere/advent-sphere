@@ -452,14 +452,16 @@ function RouteComponent() {
             open={isDialogOpen}
             onOpenChange={handleDialogClose}
             day={selectedDay}
-            // 型エラー回避: CalendarItemWithItemAllOfItemをItem型へ変換（最低限のプロパティのみ渡す）
+            // itemにuserIdを含めて渡す
             item={{
               id: targetCalendarItem.item.id,
               name: targetCalendarItem.item.name,
               type: targetCalendarItem.item.type,
               createdAt: "",
               description: "",
+              userId: targetCalendarItem.userId,
             }}
+            currentUserId={user?.id}
             onChange={() => {
               setIsChangeMode(true);
             }}
