@@ -14,14 +14,17 @@ export default function ChangeItemDialog({
   day,
   item,
   onChange,
+  currentUserId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   day: number;
-  item: Item;
+  item: Item & { userId?: string };
   onChange?: () => void;
+  currentUserId?: string;
 }) {
   const thumbnailUrl = `${R2_BASE_URL}/item/thumbnail/${item.id}.png`;
+  const isOwner = item.userId && currentUserId && item.userId === currentUserId;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -54,7 +57,9 @@ export default function ChangeItemDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             キャンセル
           </Button>
-          <Button onClick={onChange}>アイテムを変更する</Button>
+          <Button onClick={onChange} disabled={!isOwner} title={!isOwner ? '作成者のみ変更できます' : undefined}>
+            アイテムを変更する
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
