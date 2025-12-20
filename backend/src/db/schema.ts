@@ -23,7 +23,7 @@ export const roomTable = sqliteTable("room", {
 
   ownerId: text("owner_id")
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
 
   password: text("password"),
   isAnonymous: integer("is_anonymous", { mode: "boolean" })
@@ -58,10 +58,10 @@ export const calendarItemTable = sqliteTable("calendar_item", {
     .default(sql`(unixepoch())`),
   roomId: text("room_id")
     .notNull()
-    .references(() => roomTable.id),
+    .references(() => roomTable.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   openDate: integer("open_date", { mode: "timestamp" }).notNull(),
   position: text("position"),
   rotation: text("rotation"),

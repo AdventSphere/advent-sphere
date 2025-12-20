@@ -43,6 +43,13 @@
       "when": 1765774425527,
       "tag": "0005_deep_hitman",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1766241365070,
+      "tag": "0006_glossy_lockjaw",
+      "breakpoints": true
     }
   ]
 }
