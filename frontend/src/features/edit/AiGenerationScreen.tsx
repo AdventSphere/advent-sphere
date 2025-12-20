@@ -124,9 +124,9 @@ export default function AiGenerationScreen({
 
   if (viewState === "result" && generatedImage) {
     return (
-      <div className="flex flex-col h-screen overflow-y-auto bg-neutral-100 p-6 text-foreground relative gap-6">
+      <div className="flex flex-col h-screen overflow-y-auto bg-neutral-100 p-4 md:p-6 text-foreground relative gap-4 md:gap-6">
         {/* Header */}
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start gap-2 md:gap-4">
           <button
             type="button"
             onClick={() => setViewState("chat")}
@@ -136,11 +136,11 @@ export default function AiGenerationScreen({
             AI生成に戻る
           </button>
 
-          <div className="flex items-center gap-3">
-            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <InventoryIcon className="size-6 text-primary" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="size-8 md:size-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+              <InventoryIcon className="size-5 md:size-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-primary">
+            <h1 className="text-xl md:text-2xl font-bold text-primary">
               写真をAIで生成する
             </h1>
           </div>
@@ -173,10 +173,10 @@ export default function AiGenerationScreen({
   }
 
   return (
-    <div className="flex w-full py-8 px-8 items-center justify-center min-h-screen">
-      <div className="flex flex-col max-h-screen overflow-y-auto w-3/4 bg-neutral-100 p-6 text-foreground max-w-7xl rounded-3xl gap-6">
+    <div className="flex w-full p-4 md:p-8 items-center justify-center min-h-screen">
+      <div className="flex flex-col max-h-screen overflow-y-auto w-full md:w-3/4 bg-neutral-100 p-4 md:p-6 text-foreground max-w-7xl rounded-2xl md:rounded-3xl gap-4 md:gap-6">
         {/* Header */}
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start gap-2 md:gap-4">
           <button
             type="button"
             onClick={onBack}
@@ -186,11 +186,11 @@ export default function AiGenerationScreen({
             画像アップロード画面に戻る
           </button>
 
-          <div className="flex items-center gap-3">
-            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <InventoryIcon className="size-6 text-primary" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="size-8 md:size-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+              <InventoryIcon className="size-5 md:size-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-primary">
+            <h1 className="text-xl md:text-2xl font-bold text-primary">
               写真をAIで生成する
             </h1>
           </div>
