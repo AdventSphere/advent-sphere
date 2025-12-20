@@ -13,7 +13,7 @@ import {
   useGetRoomsIdIsPasswordProtected,
   usePostRoomsIdVerifyPassword,
 } from "common/generate/room/room";
-import { Eye } from "lucide-react";
+import { Check, Copy, Eye } from "lucide-react";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
@@ -97,6 +97,14 @@ function RouteComponent() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadSuccess, setShowUploadSuccess] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyUrl = async () => {
+    const url = `${window.location.origin}/${roomId}`;
+    await navigator.clipboard.writeText(url);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   // ローカルでパスワード認証を管理
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -390,7 +398,21 @@ function RouteComponent() {
   return (
     <div className="w-full h-svh flex">
       {/* 閲覧画面への遷移ボタン */}
-      <div className="absolute top-4 right-4 z-50 rounded-md">
+
+      <div className="absolute top-4 right-4 z-50 rounded-md flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-primary hover:bg-green-700 text-white hover:text-white text-lg"
+          onClick={handleCopyUrl}
+        >
+          {isCopied ? (
+            <Check className="w-5 h-5 mr-2" />
+          ) : (
+            <Copy className="w-5 h-5 mr-2" />
+          )}
+          {isCopied ? "コピーしました" : "URLをコピー"}
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -398,7 +420,7 @@ function RouteComponent() {
           asChild
         >
           <Link to="/$roomId" params={{ roomId }} target="_blank">
-            <Eye className="w-8 h-8 mr-2" />
+            <Eye className="w-6 h-6 mr-2" />
             閲覧画面へ
           </Link>
         </Button>
