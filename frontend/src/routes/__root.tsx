@@ -3,6 +3,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { UserProvider } from "@/context/UserContext";
+import { PasswordProvider } from "@/context/PasswordContext";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 
 interface MyRouterContext {
@@ -14,7 +15,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     <>
       <div className="w-full min-h-svh flex flex-col">
         <UserProvider>
-          <Outlet />
+          <PasswordProvider>
+            <Outlet />
+          </PasswordProvider>
         </UserProvider>
       </div>
       <TanStackDevtools

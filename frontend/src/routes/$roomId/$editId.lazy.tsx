@@ -12,9 +12,11 @@ import * as THREE from "three";
 import Loading from "@/components/Loading";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import { useUser } from "@/context/UserContext";
+import { usePassword } from "@/context/PasswordContext";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import Calendar from "@/features/room/calendar";
 import NameInput from "@/features/user/nameInput";
+import PasswordInput from "@/features/room/passwordInput";
 
 export const Route = createLazyFileRoute("/$roomId/$editId")({
   component: RouteComponent,
@@ -74,12 +76,24 @@ function RouteComponent() {
   const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
 
   const { user } = useUser();
+  const {
+    setRoomId,
+    isPasswordProtected,
+    isAuthenticated,
+    isLoading: passwordLoading,
+  } = usePassword();
+
   const { data: room } = useGetRoomsId(roomId);
   const { data: calendarItems, refetch } =
     useGetCalendarItemsRoomIdCalendarItems(roomId);
 
   const { mutateAsync: postCalendarItem } =
     usePostCalendarItemsRoomIdCalendarItems();
+
+  // ルームIDを設定
+  useEffect(() => {
+    setRoomId(roomId);
+  }, [roomId, setRoomId]);
 
   // calendarItemsから埋まっている日付とユーザー名のマップを計算
   const { filledDays, filledDayUserNames } = useMemo(() => {
@@ -145,9 +159,27 @@ function RouteComponent() {
     }
   };
 
+  // パスワード認証のローディング中
+  if (passwordLoading) {
+    return <Loading text="認証確認中..." />;
+  }
+
+  // パスワード保護状態が未確定の場合
+  if (isPasswordProtected === null) {
+    return <Loading text="ルーム情報確認中..." />;
+  }
+
+  // パスワード保護されていて認証されていない場合
+  if (isPasswordProtected === true && !isAuthenticated) {
+    return <PasswordInput />;
+  }
+
+  // ユーザーが存在しない場合
   if (!user) {
     return <NameInput />;
   }
+
+  // 認証完了または不要な場合、編集画面を表示
   return (
     <div className="w-full h-svh flex">
       {/* 3Dオブジェクト */}
