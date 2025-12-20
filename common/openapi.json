@@ -267,6 +267,18 @@
         },
         "required": ["calendarItem"]
       },
+      "UploadPhoto": {
+        "type": "object",
+        "properties": {
+          "photo": {
+            "type": "string",
+            "format": "binary",
+            "description": "アップロードする写真ファイル",
+            "example": "image.png"
+          }
+        },
+        "required": ["photo"]
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -944,6 +956,46 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/calendarItems/uploadPhoto": {
+      "post": {
+        "tags": ["calendar_items"],
+        "summary": "写真のアップロード",
+        "description": "写真をアップロードします。",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPhoto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "写真が正常にアップロードされました",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "imageId": {
+                      "type": "string",
+                      "example": "image_12345",
+                      "description": "アップロードされた画像ID"
+                    }
+                  },
+                  "required": ["imageId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "写真ファイルが提供されていません"
           }
         }
       }

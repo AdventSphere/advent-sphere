@@ -2,8 +2,19 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { set } from "date-fns";
 import { and, eq, isNotNull, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
+import { nanoid } from "nanoid";
 import * as schema from "../db/schema";
 import { ItemSchema } from "./item";
+
+const uploadFunction = (
+  bucket: R2Bucket,
+  object: File,
+  path: string,
+  fileName: string,
+) => {
+  const key = `${path}/${fileName}`;
+  return bucket.put(key, object);
+};
 
 export const CalendarItemSchema = z
   .object({
@@ -79,6 +90,18 @@ export const CreateCalendarItemSchema = CalendarItemSchema.pick({
 }).openapi("CreateCalendarItem");
 
 export type CreateCalendarItemSchema = z.infer<typeof CreateCalendarItemSchema>;
+
+export const UploadPhotoSchema = z
+  .object({
+    photo: z.instanceof(File).openapi({
+      type: "string",
+      format: "binary",
+      description: "アップロードする写真ファイル",
+      example: "image.png",
+    }),
+  })
+  .openapi("UploadPhoto");
+export type UploadPhotoSchema = z.infer<typeof UploadPhotoSchema>;
 
 const EditIdSchema = z.object({
   editId: z
@@ -304,6 +327,42 @@ const getRoomItemsRoute = createRoute({
           schema: z.array(CalendarItemSchema),
         },
       },
+    },
+  },
+});
+
+const uploadPhotoRoute = createRoute({
+  method: "post",
+  path: "/uploadPhoto",
+  tags: ["calendar_items"],
+  summary: "写真のアップロード",
+  description: "写真をアップロードします。",
+  request: {
+    body: {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: UploadPhotoSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "写真が正常にアップロードされました",
+      content: {
+        "application/json": {
+          schema: z.object({
+            imageId: z.string().openapi({
+              example: "image_12345",
+              description: "アップロードされた画像ID",
+            }),
+          }),
+        },
+      },
+    },
+    400: {
+      description: "写真ファイルが提供されていません",
     },
   },
 });
@@ -575,6 +634,24 @@ app.openapi(getRoomItemsRoute, async (c) => {
     transformCalendarItemWithItem(i.calendarItem, i.item, i.user),
   );
   return c.json(transformed, 200);
+});
+
+app.openapi(uploadPhotoRoute, async (c) => {
+  const formData = await c.req.formData();
+  const file = formData.get("photo");
+  if (!file || !(file instanceof File)) {
+    return c.json({ message: "写真ファイルが提供されていません" }, 400);
+  }
+
+  const imageId = nanoid();
+  await uploadFunction(
+    c.env.BUCKET,
+    file,
+    "item/user_image",
+    `${imageId}.${file.name.split(".").pop()}`,
+  );
+
+  return c.json({ imageId }, 200);
 });
 
 // editId検証

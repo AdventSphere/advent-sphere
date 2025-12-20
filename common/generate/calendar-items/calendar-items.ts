@@ -29,7 +29,9 @@ import type {
   CreateCalendarItemRequest,
   CreateCalendarItemResponse,
   DeleteCalendarItemsRoomIdCalendarItemsIdBody,
-  PatchCalendarItemRequest
+  PatchCalendarItemRequest,
+  PostCalendarItemsUploadPhoto200,
+  UploadPhoto
 } from '../adventSphereAPI.schemas';
 
 import { axiosInstance } from '../../axios-instance';
@@ -520,3 +522,71 @@ export function useGetCalendarItemsRoomIdCalendarItemsRoom<TData = Awaited<Retur
 
 
 
+/**
+ * 写真をアップロードします。
+ * @summary 写真のアップロード
+ */
+export const postCalendarItemsUploadPhoto = (
+    uploadPhoto: UploadPhoto,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
+) => {
+      
+      const formData = new FormData();
+formData.append(`photo`, uploadPhoto.photo)
+
+      return axiosInstance<PostCalendarItemsUploadPhoto200>(
+      {url: `/calendarItems/uploadPhoto`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      options);
+    }
+  
+
+
+export const getPostCalendarItemsUploadPhotoMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCalendarItemsUploadPhoto>>, TError,{data: UploadPhoto}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof postCalendarItemsUploadPhoto>>, TError,{data: UploadPhoto}, TContext> => {
+
+const mutationKey = ['postCalendarItemsUploadPhoto'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postCalendarItemsUploadPhoto>>, {data: UploadPhoto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postCalendarItemsUploadPhoto(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostCalendarItemsUploadPhotoMutationResult = NonNullable<Awaited<ReturnType<typeof postCalendarItemsUploadPhoto>>>
+    export type PostCalendarItemsUploadPhotoMutationBody = UploadPhoto
+    export type PostCalendarItemsUploadPhotoMutationError = void
+
+    /**
+ * @summary 写真のアップロード
+ */
+export const usePostCalendarItemsUploadPhoto = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCalendarItemsUploadPhoto>>, TError,{data: UploadPhoto}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postCalendarItemsUploadPhoto>>,
+        TError,
+        {data: UploadPhoto},
+        TContext
+      > => {
+
+      const mutationOptions = getPostCalendarItemsUploadPhotoMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    

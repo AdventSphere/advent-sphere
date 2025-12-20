@@ -126,6 +126,11 @@ export interface PatchCalendarItemRequest {
   calendarItem: PatchCalendarItemRequestCalendarItem;
 }
 
+export interface UploadPhoto {
+  /** アップロードする写真ファイル */
+  photo: Blob;
+}
+
 export interface User {
   /** ユーザーID */
   id: string;
@@ -305,6 +310,11 @@ export interface CreatePromptRequest {
 export type DeleteCalendarItemsRoomIdCalendarItemsIdBody = {
   /** ルームの編集ID */
   editId: string;
+};
+
+export type PostCalendarItemsUploadPhoto200 = {
+  /** アップロードされた画像ID */
+  imageId: string;
 };
 
 export type GetItemsParams = {
