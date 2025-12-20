@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import {
   CalendarDays,
   CalendarIcon,
+  Check,
   Copy,
   Gift,
   Info,
@@ -30,7 +31,6 @@ import { Switch } from "@/components/ui/switch";
 import { useUser } from "@/context/UserContext";
 import NameInput from "@/features/user/nameInput";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 
 // zodスキーマ定義
 const formSchema = z
