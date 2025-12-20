@@ -1,5 +1,5 @@
 import type { Item } from "common/generate/adventSphereAPI.schemas";
-import { ChevronLeft, Sparkles, Upload } from "lucide-react";
+import { ChevronLeft, Loader2, Sparkles, Upload } from "lucide-react";
 import { useState } from "react";
 import InventoryIcon from "@/components/icons/inventory";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 interface UploadImgProps {
   onBack?: () => void;
   onAiGenerate?: () => void;
-  onFileUpload?: (file: File) => void;
+  onFileUpload?: (file: File) => Promise<void> | void;
   className?: string;
   item?: Item;
   isUploading?: boolean;
@@ -27,6 +27,10 @@ export default function UploadImg({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // 最低1秒間のローディングを保証するためのステート
+  const [minLoading, setMinLoading] = useState(false);
+  const isLoading = isUploading || minLoading;
 
   const thumbnailUrl = item
     ? `${R2_BASE_URL}/item/thumbnail/${item.id}.png`
@@ -93,25 +97,46 @@ export default function UploadImg({
     setDragOver(false);
   };
 
-  const handleConfirmUpload = () => {
+  const handleConfirmUpload = async () => {
     if (selectedFile) {
-      onFileUpload?.(selectedFile);
+      try {
+        setMinLoading(true);
+        // 演出として最低2秒間待機
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await onFileUpload?.(selectedFile);
+      } catch (e) {
+        console.error(e);
+        setMinLoading(false);
+      }
     }
   };
 
   return (
     <div
       className={cn(
-        "bg-background p-6 h-screen overflow-y-auto flex flex-col justify-start items-center",
+        "bg-background p-6 h-screen overflow-y-auto flex flex-col justify-start items-center relative",
         className,
       )}
     >
+      {/* ローディングオーバーレイ */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <p className="text-lg font-medium text-muted-foreground animate-pulse">
+              アップロード中...
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="bg-gray-100 rounded-lg p-10 w-3/4 my-auto">
         {/* Header */}
         <div className="mb-8">
           {onBack && (
             <Button
               onClick={onBack}
+              disabled={isLoading}
               className="bg-transparent hover:bg-transparent text-gray-600"
             >
               <ChevronLeft className="size-4 mr-1" />
@@ -154,6 +179,7 @@ export default function UploadImg({
               <div className="text-center w-full">
                 <Button
                   onClick={onAiGenerate}
+                  disabled={isLoading}
                   className="w-full bg-red-800  hover:bg-red-900 text-white px-24 py-5 rounded-lg font-medium text-lg"
                 >
                   <Sparkles className="size-5 mr-2" />
@@ -180,12 +206,12 @@ export default function UploadImg({
                       dragOver
                         ? "border-primary bg-primary/5"
                         : "border-muted-foreground/25",
-                      isUploading && "opacity-50 cursor-not-allowed",
+                      isLoading && "opacity-50 cursor-not-allowed",
                     )}
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
-                    disabled={isUploading}
+                    disabled={isLoading}
                     asChild
                   >
                     <label>
@@ -198,7 +224,7 @@ export default function UploadImg({
                         type="file"
                         accept=".png,image/png"
                         onChange={handleFileInput}
-                        disabled={isUploading}
+                        disabled={isLoading}
                         className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
                       />
                     </label>
@@ -212,7 +238,7 @@ export default function UploadImg({
                     </div>
                   )}
 
-                  {selectedFile && !error && !isUploading && (
+                  {selectedFile && !error && !isLoading && (
                     <div className="space-y-4">
                       <div className="p-4 bg-muted rounded-lg">
                         {/* 画像プレビュー */}
@@ -251,6 +277,7 @@ export default function UploadImg({
                             variant="outline"
                             size="sm"
                             className="flex-1"
+                            disabled={isLoading}
                           >
                             キャンセル
                           </Button>
@@ -258,7 +285,7 @@ export default function UploadImg({
                             onClick={handleConfirmUpload}
                             size="sm"
                             className="flex-1 bg-primary hover:bg-primary/90"
-                            disabled={isUploading}
+                            disabled={isLoading}
                           >
                             確定
                           </Button>
