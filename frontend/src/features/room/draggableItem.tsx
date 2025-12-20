@@ -17,6 +17,7 @@ interface DraggableItemProps {
   initialRotation?: [number, number, number];
   onLockChange?: (isLocked: boolean) => void;
   roomRef: React.RefObject<THREE.Group>;
+  placedItemsRef?: React.RefObject<THREE.Group>;
 }
 
 // 回転のステップ（ラジアン）
@@ -29,6 +30,7 @@ export default function DraggableItem({
   initialRotation = [0, 0, 0],
   onLockChange,
   roomRef,
+  placedItemsRef,
 }: DraggableItemProps) {
   const { camera, pointer, gl } = useThree();
   const rigidBodyRef = useRef<RapierRigidBody>(null);
@@ -92,8 +94,12 @@ export default function DraggableItem({
 
     raycaster.current.setFromCamera(pointer, camera);
 
-    // room の trimesh に Raycast
-    const intersects = raycaster.current.intersectObject(roomRef.current, true);
+    // room と配置済みオブジェクトの両方に Raycast
+    const targets: THREE.Object3D[] = [];
+    if (roomRef.current) targets.push(roomRef.current);
+    if (placedItemsRef?.current) targets.push(placedItemsRef.current);
+
+    const intersects = raycaster.current.intersectObjects(targets, true);
 
     if (!intersects.length || !rigidBodyRef.current) return;
 

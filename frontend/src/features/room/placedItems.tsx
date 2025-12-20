@@ -1,39 +1,88 @@
-import { Gltf, useGLTF, useTexture } from "@react-three/drei";
+import { Gltf, Html, useGLTF, useTexture } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import type { CalendarItemWithItem } from "common/generate/adventSphereAPI.schemas";
-import { useLayoutEffect, useState } from "react";
+import { Move, Package } from "lucide-react";
+import { forwardRef, useLayoutEffect, useState } from "react";
 import * as THREE from "three";
+import { Button } from "@/components/ui/button";
 import { R2_BASE_URL } from "@/constants/r2-url";
 
 interface PlacedItemsProps {
   calendarItems: CalendarItemWithItem[] | undefined | null;
+  selectedItemId: string | null;
+  excludeItemId: string | null; // 配置モード中のアイテムを除外
+  onItemClick: (calendarItem: CalendarItemWithItem) => void;
+  onReposition: () => void;
+  onReturnToInventory: () => void;
+  isPending: boolean;
 }
 
 /**
  * 部屋に配置済みのアイテムをレンダリング
  */
-export default function PlacedItems({ calendarItems }: PlacedItemsProps) {
-  if (!calendarItems) return null;
+const PlacedItems = forwardRef<THREE.Group, PlacedItemsProps>(
+  (
+    {
+      calendarItems,
+      selectedItemId,
+      excludeItemId,
+      onItemClick,
+      onReposition,
+      onReturnToInventory,
+      isPending,
+    },
+    ref,
+  ) => {
+    if (!calendarItems) return null;
 
-  // position が設定されているアイテムのみ表示
-  const placedItems = calendarItems.filter(
-    (item) => item.position && item.position.length === 3 && item.isOpened,
-  );
+    // position が設定されているアイテムのみ表示（配置中のアイテムは除外）
+    const placedItems = calendarItems.filter(
+      (item) =>
+        item.position &&
+        item.position.length === 3 &&
+        item.isOpened &&
+        item.id !== excludeItemId,
+    );
 
-  return (
-    <>
-      {placedItems.map((item) => (
-        <PlacedItem key={item.id} calendarItem={item} />
-      ))}
-    </>
-  );
-}
+    return (
+      <group ref={ref}>
+        {placedItems.map((item) => (
+          <PlacedItem
+            key={item.id}
+            calendarItem={item}
+            isSelected={item.id === selectedItemId}
+            onItemClick={onItemClick}
+            onReposition={onReposition}
+            onReturnToInventory={onReturnToInventory}
+            isPending={isPending}
+          />
+        ))}
+      </group>
+    );
+  },
+);
+
+PlacedItems.displayName = "PlacedItems";
+
+export default PlacedItems;
 
 interface PlacedItemProps {
   calendarItem: CalendarItemWithItem;
+  isSelected: boolean;
+  onItemClick: (calendarItem: CalendarItemWithItem) => void;
+  onReposition: () => void;
+  onReturnToInventory: () => void;
+  isPending: boolean;
 }
 
-function PlacedItem({ calendarItem }: PlacedItemProps) {
+function PlacedItem({
+  calendarItem,
+  isSelected,
+  onItemClick,
+  onReposition,
+  onReturnToInventory,
+  isPending,
+}: PlacedItemProps) {
   const position = calendarItem.position as [number, number, number];
   const rotation = (calendarItem.rotation as [number, number, number]) ?? [
     0, 0, 0,
@@ -41,31 +90,69 @@ function PlacedItem({ calendarItem }: PlacedItemProps) {
 
   const modelUrl = `${R2_BASE_URL}/item/object/${calendarItem.itemId}.glb`;
 
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onItemClick(calendarItem);
+  };
+
   return (
     <RigidBody type="fixed" colliders="trimesh">
-      {calendarItem.item.type !== "photo_frame" && (
-        <Gltf
-          src={modelUrl}
-          scale={1}
-          position={position}
-          rotation={rotation}
-        />
-      )}
-      {calendarItem.item.type === "photo_frame" && calendarItem.imageId && (
-        <PhotoFrameModel
-          itemId={calendarItem.itemId}
-          imageId={calendarItem.imageId}
-          position={position}
-          rotation={rotation}
-        />
-      )}
-      {calendarItem.item.type === "photo_frame" && !calendarItem.imageId && (
-        <Gltf
-          src={modelUrl}
-          scale={1}
-          position={position}
-          rotation={rotation}
-        />
+      {/** biome-ignore lint/a11y/noStaticElementInteractions: 静的要素にはインタラクティブな操作を追加しない */}
+      <group onClick={handleClick}>
+        {calendarItem.item.type !== "photo_frame" && (
+          <Gltf
+            src={modelUrl}
+            scale={1}
+            position={position}
+            rotation={rotation}
+          />
+        )}
+        {calendarItem.item.type === "photo_frame" && calendarItem.imageId && (
+          <PhotoFrameModel
+            itemId={calendarItem.itemId}
+            imageId={calendarItem.imageId}
+            position={position}
+            rotation={rotation}
+          />
+        )}
+        {calendarItem.item.type === "photo_frame" && !calendarItem.imageId && (
+          <Gltf
+            src={modelUrl}
+            scale={1}
+            position={position}
+            rotation={rotation}
+          />
+        )}
+      </group>
+      {isSelected && (
+        <Html center position={[position[0], position[1] + 0.5, position[2]]}>
+          <div className="flex gap-2 rounded-xl bg-background/90 p-2 shadow-lg backdrop-blur-md">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onReposition();
+              }}
+              disabled={isPending}
+            >
+              <Move className="mr-1 size-4" />
+              位置変更
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onReturnToInventory();
+              }}
+              disabled={isPending}
+            >
+              <Package className="mr-1 size-4" />
+              持ち物に戻す
+            </Button>
+          </div>
+        </Html>
       )}
     </RigidBody>
   );
@@ -137,7 +224,7 @@ function PhotoFrameModel({
       {nodes.PhotoFrame && (
         <mesh
           geometry={(nodes.PhotoFrame as THREE.Mesh).geometry}
-          material={materials.Material} // 元のマテリアル、または変更可
+          material={materials.picture_frame} // 元のマテリアル、または変更可
           position={(nodes.PhotoFrame as THREE.Mesh).position}
           rotation={(nodes.PhotoFrame as THREE.Mesh).rotation}
           scale={(nodes.PhotoFrame as THREE.Mesh).scale}

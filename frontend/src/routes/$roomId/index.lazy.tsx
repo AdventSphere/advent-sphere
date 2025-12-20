@@ -2,10 +2,11 @@ import { CameraControls, Environment, Gltf } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import type { CalendarItemWithItem } from "common/generate/adventSphereAPI.schemas";
 import { useGetCalendarItemsRoomIdCalendarItems } from "common/generate/calendar-items/calendar-items";
 import { useGetRoomsId } from "common/generate/room/room";
 import { X } from "lucide-react";
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useMemo, useRef, useState } from "react";
 import type * as THREE from "three";
 import InventoryIcon from "@/components/icons/inventory";
 import Loading from "@/components/Loading";
@@ -59,6 +60,7 @@ function RouteComponent() {
     handleExitFocusMode,
   } = useCalendarFocus();
   const roomRef = useRef<THREE.Group>(null);
+  const placedItemsRef = useRef<THREE.Group>(null);
   // アイテム取得フロー
   const {
     phase,
@@ -73,12 +75,45 @@ function RouteComponent() {
     handleSkipPlacement,
     resetFlow,
     startPlacementFromInventory,
+    returnPlacedItemToInventory,
     isPending,
   } = useItemAcquisition({
     roomId,
     calendarItems,
     room,
   });
+
+  // 配置済みアイテムの選択状態
+  const [selectedPlacedItem, setSelectedPlacedItem] =
+    useState<CalendarItemWithItem | null>(null);
+
+  // 配置済みアイテムクリック
+  const handlePlacedItemClick = useCallback(
+    (calendarItem: CalendarItemWithItem) => {
+      if (phase !== "idle") return; // 配置モード中は無視
+      setSelectedPlacedItem(calendarItem);
+    },
+    [phase],
+  );
+
+  // 位置変更開始
+  const handleStartReposition = useCallback(() => {
+    if (!selectedPlacedItem) return;
+    startPlacementFromInventory(selectedPlacedItem);
+    setSelectedPlacedItem(null);
+  }, [selectedPlacedItem, startPlacementFromInventory]);
+
+  // 持ち物に戻す
+  const handleReturnToInventory = useCallback(async () => {
+    if (!selectedPlacedItem) return;
+    await returnPlacedItemToInventory(selectedPlacedItem);
+    setSelectedPlacedItem(null);
+  }, [selectedPlacedItem, returnPlacedItemToInventory]);
+
+  // メニュー閉じる
+  const handleCloseMenu = useCallback(() => {
+    setSelectedPlacedItem(null);
+  }, []);
 
   // 配置モード
   const {
@@ -239,7 +274,10 @@ function RouteComponent() {
       {/* 3Dオブジェクト */}
       <div className="fixed inset-0 z-0">
         <Suspense fallback={<Loading text="部屋を読み込み中..." />}>
-          <Canvas>
+          <Canvas
+            camera={{ position: [2.3, 0.5, 2], fov: 45 }}
+            onPointerMissed={handleCloseMenu}
+          >
             <ambientLight intensity={isFocusMode ? 0.15 : 0.4} />
             <Environment
               preset="apartment"
@@ -276,7 +314,9 @@ function RouteComponent() {
                     position={CALENDAR_POSITION}
                     rotation={[0, 0, 0]}
                     isFocusMode={isFocusMode}
-                    onCalendarClick={handleFocusCalendar}
+                    onCalendarClick={
+                      isPlacementMode ? () => {} : handleFocusCalendar
+                    }
                     onDayClick={handleDrawerClick}
                     openedDrawers={effectiveOpenedDrawers}
                     onOpenedDrawersChange={setOpenedDrawers}
@@ -289,12 +329,26 @@ function RouteComponent() {
               </group>
 
               {/* 配置済みアイテム */}
-              <PlacedItems calendarItems={calendarItems} />
+              <PlacedItems
+                ref={placedItemsRef}
+                calendarItems={calendarItems}
+                selectedItemId={selectedPlacedItem?.id ?? null}
+                excludeItemId={
+                  isPlacementMode ? (targetCalendarItem?.id ?? null) : null
+                }
+                onItemClick={handlePlacedItemClick}
+                onReposition={handleStartReposition}
+                onReturnToInventory={handleReturnToInventory}
+                isPending={isPending}
+              />
 
               {/* 配置モード時のドラッグ可能アイテム */}
               {isPlacementMode && targetCalendarItem && roomRef && (
                 <PlacementDraggableItem
                   roomRef={roomRef as React.RefObject<THREE.Group>}
+                  placedItemsRef={
+                    placedItemsRef as React.RefObject<THREE.Group>
+                  }
                   calendarItem={targetCalendarItem}
                   onPositionChange={handlePositionChange}
                   isPlacementValid={isPlacementValid}

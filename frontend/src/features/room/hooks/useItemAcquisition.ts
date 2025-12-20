@@ -270,6 +270,27 @@ export function useItemAcquisition({
     [],
   );
 
+  /**
+   * 配置済みアイテムを持ち物に戻す
+   */
+  const returnPlacedItemToInventory = useCallback(
+    async (calendarItem: CalendarItemWithItem) => {
+      await patchCalendarItem({
+        roomId,
+        id: calendarItem.id,
+        data: {
+          calendarItem: {
+            position: null,
+            rotation: null,
+          },
+        },
+      });
+
+      await invalidateQueries();
+    },
+    [roomId, patchCalendarItem, invalidateQueries],
+  );
+
   return {
     phase,
     targetCalendarItem,
@@ -283,6 +304,7 @@ export function useItemAcquisition({
     handleSkipPlacement,
     resetFlow,
     startPlacementFromInventory,
+    returnPlacedItemToInventory,
     isPending,
   };
 }
