@@ -6,7 +6,11 @@ import {
   useGetCalendarItemsRoomIdCalendarItems,
   usePostCalendarItemsRoomIdCalendarItems,
 } from "common/generate/calendar-items/calendar-items";
-import { useGetRoomsId } from "common/generate/room/room";
+import {
+  useGetRoomsId,
+  useGetRoomsIdIsPasswordProtected,
+  usePostRoomsIdVerifyPassword,
+} from "common/generate/room/room";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
@@ -16,6 +20,7 @@ import { useUser } from "@/context/UserContext";
 import AiGenerationScreen from "@/features/edit/AiGenerationScreen";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import Calendar from "@/features/room/calendar";
+import PasswordInput from "@/features/room/passwordInput";
 import NameInput from "@/features/user/nameInput";
 
 export const Route = createLazyFileRoute("/$roomId/$editId")({
@@ -76,13 +81,80 @@ function RouteComponent() {
   const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
   const [isAiGenerationOpen, setIsAiGenerationOpen] = useState(false);
 
+  // ローカルでパスワード認証を管理
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | undefined>();
+
+  // コンポーネント初期化時に認証状態を復元
+  useEffect(() => {
+    const savedAuth = sessionStorage.getItem(`auth_${roomId}`);
+    if (savedAuth === "true") {
+      setIsAuthenticated(true);
+    }
+  }, [roomId]);
+
   const { user } = useUser();
+
+  // パスワード保護状態をチェック
+  const { data: passwordProtectionData, isLoading: isCheckingProtection } =
+    useGetRoomsIdIsPasswordProtected(roomId, {
+      query: {
+        enabled: !!roomId,
+        retry: false,
+      },
+    });
+
+  // パスワード保護されているかどうかの状態
+  const isPasswordProtected =
+    passwordProtectionData?.isPasswordProtected ?? null;
+  const passwordLoading = isCheckingProtection;
+
+  // ユーザーが作成された場合、認証状態を保持
+  useEffect(() => {
+    // パスワード保護されている場合のみ、ユーザー作成後も認証状態を保持
+    if (isPasswordProtected === true && user && !isAuthenticated) {
+      // 既に認証が成功していた場合（認証→ユーザー作成の流れ）は認証状態を保持
+      // この場合、ローカルストレージなどに認証フラグを保存することも可能
+      const wasAuthenticated = sessionStorage.getItem(`auth_${roomId}`);
+      if (wasAuthenticated === "true") {
+        setIsAuthenticated(true);
+      }
+    }
+  }, [user, isPasswordProtected, roomId, isAuthenticated]);
+
+  // パスワード認証
+  const { mutateAsync: verifyPassword, isPending: isVerifyingPassword } =
+    usePostRoomsIdVerifyPassword();
+
+  // パスワード送信処理
+  const sendPassword = async (password: string) => {
+    try {
+      setPasswordError(undefined); // エラーをクリア
+      await verifyPassword({
+        id: roomId,
+        data: { password },
+      });
+      console.log("Password verified successfully");
+      setIsAuthenticated(true); // 認証状態をセッションストレージに保存
+      sessionStorage.setItem(`auth_${roomId}`, "true");
+    } catch (error) {
+      console.error("Password verification failed:", error);
+      setPasswordError("合言葉が間違っています。再度入力してください。");
+    }
+  };
+
+  const handlePasswordErrorDismiss = () => {
+    setPasswordError(undefined);
+  };
+
   const { data: room } = useGetRoomsId(roomId);
   const { data: calendarItems, refetch } =
     useGetCalendarItemsRoomIdCalendarItems(roomId);
 
   const { mutateAsync: postCalendarItem } =
     usePostCalendarItemsRoomIdCalendarItems();
+
+  // ルームIDは既にuseParamsで取得されているため、特別な設定は不要
 
   // calendarItemsから埋まっている日付とユーザー名のマップを計算
   const { filledDays, filledDayUserNames } = useMemo(() => {
@@ -157,9 +229,34 @@ function RouteComponent() {
     }
   };
 
+  // パスワード認証のローディング中
+  if (passwordLoading) {
+    return <Loading text="認証確認中..." />;
+  }
+
+  // パスワード保護状態が未確定の場合
+  if (isPasswordProtected === null) {
+    return <Loading text="ルーム情報確認中..." />;
+  }
+
+  // パスワード保護されていて認証されていない場合
+  if (isPasswordProtected === true && !isAuthenticated) {
+    return (
+      <PasswordInput
+        onSubmit={sendPassword}
+        isLoading={isVerifyingPassword}
+        error={passwordError}
+        onErrorDismiss={handlePasswordErrorDismiss}
+      />
+    );
+  }
+
+  // ユーザーが存在しない場合
   if (!user) {
     return <NameInput />;
   }
+
+  // 認証完了または不要な場合、編集画面を表示
   return (
     <div className="w-full h-svh flex">
       {/* 3Dオブジェクト */}
