@@ -1,3 +1,4 @@
+import type { Item } from "common/generate/adventSphereAPI.schemas";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { R2_BASE_URL } from "@/constants/r2-url";
-import type { Item } from "common/generate/adventSphereAPI.schemas";
 
 export default function ChangeItemDialog({
   open,
