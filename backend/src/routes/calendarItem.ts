@@ -445,8 +445,9 @@ app.openapi(createCalendarItemRoute, async (c) => {
       milliseconds: 0,
     });
   } else {
-    const getHours = roomInfo[0].itemGetTime.getHours();
-    const getMinutes = roomInfo[0].itemGetTime.getMinutes();
+    const itemGetTimeJST = toZonedTime(roomInfo[0].itemGetTime, "Asia/Tokyo");
+    const getHours = itemGetTimeJST.getHours();
+    const getMinutes = itemGetTimeJST.getMinutes();
 
     targetDateJST = set(baseDateJST, {
       hours: getHours,
