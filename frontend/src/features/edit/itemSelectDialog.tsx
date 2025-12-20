@@ -1,7 +1,6 @@
 import type { Item } from "common/generate/adventSphereAPI.schemas";
-import { useGetItems } from "common/generate/item/item";
 import { Check } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import InventoryIcon from "@/components/icons/inventory";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import { cn } from "@/lib/utils";
+import { useGetInfiniteItems } from "./hooks/useGetInfiniteItems";
+import { useInfiniteScroll } from "./hooks/useInfiniteScroll";
 
 const FILTER_TYPES = [
   { id: "all", label: "すべて" },
@@ -70,14 +71,18 @@ export default function ItemSelectDialog({
 }) {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const { data: items = [], isLoading } = useGetItems();
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const filteredItems = useMemo(() => {
-    if (selectedFilter === "all") {
-      return items;
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    useGetInfiniteItems(selectedFilter);
+  const items = data?.pages.flat() ?? [];
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-    return items.filter((item) => item.type === selectedFilter);
-  }, [items, selectedFilter]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
+  useInfiniteScroll(loadMoreRef, handleLoadMore);
 
   const handleConfirm = () => {
     if (selectedItemId && onSelect) {
@@ -94,7 +99,7 @@ export default function ItemSelectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-[1100px] bg-muted/95 border-2 border-white rounded-3xl p-10 flex flex-col gap-6"
+        className="max-w-[1100px] h-[90vh] bg-muted/95 border-2 border-white rounded-3xl p-10 flex flex-col gap-6"
       >
         <DialogHeader className="flex flex-row justify-between items-center gap-4 shrink-0">
           <div className="flex gap-4 items-center">
@@ -115,7 +120,7 @@ export default function ItemSelectDialog({
           </Button>
         </DialogHeader>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 overflow-x-auto">
           {FILTER_TYPES.map((filter) => (
             <button
               key={filter.id}
@@ -140,7 +145,7 @@ export default function ItemSelectDialog({
             </div>
           ) : (
             <div className="grid grid-cols-6 gap-2 w-full">
-              {filteredItems.map((item) => (
+              {items.map((item) => (
                 <ItemCard
                   key={item.id}
                   item={item}
@@ -154,6 +159,12 @@ export default function ItemSelectDialog({
               ))}
             </div>
           )}
+          {isFetchingNextPage && (
+            <div className="flex items-center justify-center py-2">
+              <p className="text-muted-foreground text-base">読み込み中...</p>
+            </div>
+          )}
+          <div ref={loadMoreRef} />
         </div>
       </DialogContent>
     </Dialog>
