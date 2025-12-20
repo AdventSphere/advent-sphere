@@ -5,6 +5,7 @@ import type { Item } from "common/generate/adventSphereAPI.schemas";
 import {
   useGetCalendarItemsRoomIdCalendarItems,
   usePostCalendarItemsRoomIdCalendarItems,
+  usePostCalendarItemsUploadPhoto,
 } from "common/generate/calendar-items/calendar-items";
 import {
   useGetRoomsId,
@@ -15,6 +16,13 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
 import Loading from "@/components/Loading";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import { useUser } from "@/context/UserContext";
 import AiGenerationScreen from "@/features/edit/AiGenerationScreen";
@@ -22,6 +30,7 @@ import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import Calendar from "@/features/room/calendar";
 import PasswordInput from "@/features/room/passwordInput";
 import NameInput from "@/features/user/nameInput";
+import UploadImg from "@/features/edit/uploadImg";
 
 export const Route = createLazyFileRoute("/$roomId/$editId")({
   component: RouteComponent,
@@ -80,6 +89,10 @@ function RouteComponent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
   const [isAiGenerationOpen, setIsAiGenerationOpen] = useState(false);
+  const [isUploadImgOpen, setIsUploadImgOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showUploadSuccess, setShowUploadSuccess] = useState(false);
 
   // ローカルでパスワード認証を管理
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -147,12 +160,72 @@ function RouteComponent() {
     setPasswordError(undefined);
   };
 
+  const handleUploadImgBack = () => {
+    setIsUploadImgOpen(false);
+    setSelectedItem(null);
+    setIsDialogOpen(true); // アイテム選択ダイアログを再度開く
+  };
+
+  const handleUploadImgAiGenerate = () => {
+    setIsUploadImgOpen(false);
+    setIsAiGenerationOpen(true);
+  };
+
+  const handleUploadImgFileUpload = async (file: File) => {
+    if (!room || !selectedItem || !selectedDay || !user) return;
+
+    try {
+      setIsUploading(true);
+      console.log("Uploading file:", file.name);
+
+      // 画像をアップロード
+      const uploadResult = await uploadPhoto({
+        data: { photo: file },
+      });
+
+      console.log("Upload successful, imageId:", uploadResult.imageId);
+
+      // カレンダーアイテムを作成（画像IDを含む）
+      const startAt = new Date(room.startAt);
+      const openDate = new Date(
+        startAt.setDate(startAt.getDate() + selectedDay - 1),
+      );
+
+      await postCalendarItem({
+        roomId,
+        data: {
+          editId,
+          calendarItem: {
+            userId: user.id,
+            roomId,
+            openDate: openDate.toISOString(),
+            itemId: selectedItem.id,
+            imageId: uploadResult.imageId, // アップロードした画像IDを設定
+          },
+        },
+      });
+
+      await refetch();
+      setShowUploadSuccess(true); // 成功ダイアログを表示
+      setIsUploadImgOpen(false);
+      setSelectedItem(null);
+      handleDialogClose(false);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      // エラーハンドリング（必要に応じてユーザーに通知）
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const { data: room } = useGetRoomsId(roomId);
   const { data: calendarItems, refetch } =
     useGetCalendarItemsRoomIdCalendarItems(roomId);
 
   const { mutateAsync: postCalendarItem } =
     usePostCalendarItemsRoomIdCalendarItems();
+
+  const { mutateAsync: uploadPhoto } = usePostCalendarItemsUploadPhoto();
 
   // ルームIDは既にuseParamsで取得されているため、特別な設定は不要
 
@@ -193,11 +266,9 @@ function RouteComponent() {
     if (!room) return;
 
     if (item.type === "photo_frame") {
-      setIsAiGenerationOpen(true);
-      // Don't close dialog or post item yet?
-      // For now, let's allow the flow to continue but show the screen on top?
-      // Actually, typically you'd want to generate FIRST or handle it specially.
-      // But purely for "Opening" it:
+      setSelectedItem(item);
+      setIsUploadImgOpen(true);
+      return; // フォトフレームの場合は画像選択画面を表示してリターン
     }
 
     const startAt = new Date(room.startAt);
@@ -308,11 +379,45 @@ function RouteComponent() {
         />
       )}
 
-      {isAiGenerationOpen && (
+      {/* アップロード成功ダイアログ */}
+      <Dialog open={showUploadSuccess} onOpenChange={setShowUploadSuccess}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-green-600">
+              画像のアップロードに成功しました！
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-4">
+            <p className="text-muted-foreground">
+              フォトフレームに画像が設定されました。
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <Button onClick={() => setShowUploadSuccess(false)}>OK</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {isUploadImgOpen && (
         <div className="fixed inset-0 z-50 bg-background">
+          <UploadImg
+            onBack={handleUploadImgBack}
+            onAiGenerate={handleUploadImgAiGenerate}
+            onFileUpload={handleUploadImgFileUpload}
+            item={selectedItem || undefined}
+            isUploading={isUploading}
+          />
+        </div>
+      )}
+
+      {isAiGenerationOpen && (
+        <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
           <AiGenerationScreen
             roomId={roomId}
-            onBack={() => setIsAiGenerationOpen(false)}
+            onBack={() => {
+              setIsAiGenerationOpen(false);
+              setIsUploadImgOpen(true);
+            }}
             onAdopt={(base64Image) => {
               console.log("Image adopted, base64 length:", base64Image.length);
               // TODO: Implement image upload/saving logic here

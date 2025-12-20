@@ -176,7 +176,7 @@ export default function AiGenerationScreen({
           className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
         >
           <ChevronLeft className="size-4 mr-1" />
-          写真アップロードに戻る
+          画像アップロード画面に戻る
         </button>
 
         <div className="flex items-center gap-3">
