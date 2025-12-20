@@ -1,6 +1,6 @@
 import { Environment, Gltf } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import type { Item } from "common/generate/adventSphereAPI.schemas";
 import {
   useGetCalendarItemsRoomIdCalendarItems,
@@ -12,6 +12,7 @@ import {
   useGetRoomsIdIsPasswordProtected,
   usePostRoomsIdVerifyPassword,
 } from "common/generate/room/room";
+import { Eye } from "lucide-react";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
@@ -330,6 +331,21 @@ function RouteComponent() {
   // 認証完了または不要な場合、編集画面を表示
   return (
     <div className="w-full h-svh flex">
+      {/* 閲覧画面への遷移ボタン */}
+      <div className="absolute top-4 right-4 z-50 rounded-md">
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-primary hover:bg-green-700  text-white hover:text-white text-lg"
+          asChild
+        >
+          <Link to="/$roomId" params={{ roomId }} target="_blank">
+            <Eye className="w-8 h-8 mr-2" />
+            閲覧画面へ
+          </Link>
+        </Button>
+      </div>
+
       {/* 3Dオブジェクト */}
       <div className="fixed inset-0 z-0">
         <Suspense fallback={<Loading text="読み込み中..." />}>
