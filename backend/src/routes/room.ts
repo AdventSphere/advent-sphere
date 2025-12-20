@@ -324,7 +324,7 @@ app.openapi(createRoomRoute, async (c) => {
       const response = await db
         .insert(schema.calendarItemTable)
         .values({
-          userId: "snowman",
+          userId: "snowdome",
           roomId: result[0].id,
           openDate: date,
           itemId: snowdomeItems[index].id,
