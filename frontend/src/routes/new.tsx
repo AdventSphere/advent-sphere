@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import {
   CalendarDays,
   CalendarIcon,
+  Check,
   Copy,
   Gift,
   Info,
@@ -68,6 +69,10 @@ function RouteComponent() {
     id: "",
     editId: "",
     password: "",
+  });
+  const [copiedStates, setCopiedStates] = useState({
+    link: false,
+    password: false,
   });
   const { mutateAsync: postRooms } = usePostRooms();
   const { user } = useUser();
@@ -134,8 +139,13 @@ function RouteComponent() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, type: "link" | "password") => {
     navigator.clipboard.writeText(text);
+    setCopiedStates((prev) => ({ ...prev, [type]: true }));
+    // 2秒後にアイコンを元に戻す
+    setTimeout(() => {
+      setCopiedStates((prev) => ({ ...prev, [type]: false }));
+    }, 2000);
   };
 
   // 日付の表示用計算
@@ -188,11 +198,16 @@ function RouteComponent() {
                   onClick={() =>
                     copyToClipboard(
                       `${window.location.origin}/${successData.id}/${successData.editId}`,
+                      "link",
                     )
                   }
                   className="w-8 h-8 p-0 bg-primary hover:bg-green-700 text-white"
                 >
-                  <Copy className="w-4 h-4  text-white" />
+                  {copiedStates.link ? (
+                    <Check className="w-4 h-4 text-white" />
+                  ) : (
+                    <Copy className="w-4 h-4 text-white" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -213,10 +228,16 @@ function RouteComponent() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => copyToClipboard(successData.password)}
+                    onClick={() =>
+                      copyToClipboard(successData.password, "password")
+                    }
                     className="w-8 h-8 p-0 bg-primary hover:bg-green-700 text-white"
                   >
-                    <Copy className="w-4 h-4  text-white" />
+                    {copiedStates.password ? (
+                      <Check className="w-4 h-4 text-white" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-white" />
+                    )}
                   </Button>
                 </div>
               </div>
