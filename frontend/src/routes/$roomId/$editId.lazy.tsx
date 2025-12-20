@@ -1,13 +1,11 @@
-import { Environment, Gltf } from "@react-three/drei";
-import ChangeItemDialog from "@/features/edit/changeItem";
 import { Canvas, useThree } from "@react-three/fiber";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import type { Item } from "common/generate/adventSphereAPI.schemas";
 import {
   useGetCalendarItemsRoomIdCalendarItems,
+  usePatchCalendarItemsRoomIdCalendarItemsId,
   usePostCalendarItemsRoomIdCalendarItems,
   usePostCalendarItemsUploadPhoto,
-  usePatchCalendarItemsRoomIdCalendarItemsId, // ■ 追加: 更新用フック
 } from "common/generate/calendar-items/calendar-items";
 import {
   useGetRoomsId,
@@ -29,6 +27,7 @@ import {
 import { R2_BASE_URL } from "@/constants/r2-url";
 import { useUser } from "@/context/UserContext";
 import AiGenerationScreen from "@/features/edit/AiGenerationScreen";
+import ChangeItemDialog from "@/features/edit/changeItem";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import UploadImg from "@/features/edit/uploadImg";
 import Calendar from "@/features/room/calendar";
