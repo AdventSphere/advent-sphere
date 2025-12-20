@@ -468,6 +468,7 @@ app.openapi(createCalendarItemRoute, async (c) => {
       rotation: stringifyCoordinates(calendarItem.rotation),
       itemId: calendarItem.itemId,
       imageId: calendarItem.imageId,
+      isOpened: calendarItem.isOpened ?? false,
     })
     .returning();
 
