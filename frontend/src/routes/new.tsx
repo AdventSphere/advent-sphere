@@ -46,9 +46,7 @@ const formSchema = z
     item_get_time: z.union([z.string(), z.date()]).optional(),
     password: z.string(),
     is_anonymous: z.union([z.boolean(), z.literal("")]),
-    default_item_ids: z
-      .array(z.string())
-      .min(1, "はじめの持ち物を1つ以上選択してください"),
+    default_item_ids: z.array(z.string()),
   })
   .refine(
     (data) => {
@@ -418,7 +416,7 @@ function RouteComponent() {
         >
           <Label htmlFor="random" className="cursor-pointer">
             <div
-              className={`flex w-full flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 border-2 ${
+              className={`flex w-full flex-row sm:items-center justify-between p-3 rounded-lg transition-all gap-2 border-2 ${
                 isRandomTime
                   ? "border-primary bg-green-50"
                   : "border-transparent bg-muted"
@@ -440,7 +438,7 @@ function RouteComponent() {
           </Label>
           <Label htmlFor="specialized" className="cursor-pointer">
             <div
-              className={`flex flex-col w-full sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg transition-all gap-2 border-2 ${
+              className={`flex w-full flex-row sm:items-center justify-between p-3 rounded-lg transition-all gap-2 border-2 ${
                 !isRandomTime
                   ? "border-primary bg-primary/10"
                   : "border-transparent bg-muted"
@@ -480,7 +478,7 @@ function RouteComponent() {
 
       {/* --- 編集用合言葉 --- */}
       <div className="flex flex-col gap-2">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+        <div className="flex flex-row sm:items-center justify-between gap-2 sm:gap-0">
           <div className="flex gap-2 items-center">
             <Lock className="text-primary" />
             <h2 className="text-base sm:text-lg font-semibold">
@@ -514,7 +512,7 @@ function RouteComponent() {
       </div>
 
       {/* --- 参加者名の公開設定 --- */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-0">
         <div className="flex gap-2 items-center">
           <UsersRound className="text-primary" />
           <h2 className="text-base sm:text-lg font-semibold">
