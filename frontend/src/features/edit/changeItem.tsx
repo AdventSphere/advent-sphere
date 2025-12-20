@@ -57,7 +57,11 @@ export default function ChangeItemDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             キャンセル
           </Button>
-          <Button onClick={onChange} disabled={!isOwner} title={!isOwner ? '作成者のみ変更できます' : undefined}>
+          <Button
+            onClick={onChange}
+            disabled={!isOwner}
+            title={!isOwner ? "作成者のみ変更できます" : undefined}
+          >
             アイテムを変更する
           </Button>
         </div>
