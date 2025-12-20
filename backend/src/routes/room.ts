@@ -63,7 +63,7 @@ export const RoomSchema = z
     editId: z
       .string()
       .openapi({ example: "edit_12345", description: "ルームの編集ID" }),
-    snowDomePartsLastDate: z.coerce.date().openapi({
+    snowDomePartsLastDate: z.coerce.date().nullable().openapi({
       type: "string",
       format: "date-time",
       example: "2024-01-01T00:00:00Z",

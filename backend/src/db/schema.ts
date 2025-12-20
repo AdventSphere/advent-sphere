@@ -34,7 +34,7 @@ export const roomTable = sqliteTable("room", {
   generateCount: integer("generate_count").notNull().default(0),
   snowDomePartsLastDate: integer("snow_dome_parts_last_date", {
     mode: "timestamp",
-  }).notNull(),
+  }),
 });
 
 export const itemTable = sqliteTable("item", {
