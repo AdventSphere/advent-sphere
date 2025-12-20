@@ -83,6 +83,15 @@ function RouteComponent() {
 
   // ローカルでパスワード認証を管理
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | undefined>();
+
+  // コンポーネント初期化時に認証状態を復元
+  useEffect(() => {
+    const savedAuth = sessionStorage.getItem(`auth_${roomId}`);
+    if (savedAuth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, [roomId]);
 
   const { user } = useUser();
 
@@ -100,6 +109,19 @@ function RouteComponent() {
     passwordProtectionData?.isPasswordProtected ?? null;
   const passwordLoading = isCheckingProtection;
 
+  // ユーザーが作成された場合、認証状態を保持
+  useEffect(() => {
+    // パスワード保護されている場合のみ、ユーザー作成後も認証状態を保持
+    if (isPasswordProtected === true && user && !isAuthenticated) {
+      // 既に認証が成功していた場合（認証→ユーザー作成の流れ）は認証状態を保持
+      // この場合、ローカルストレージなどに認証フラグを保存することも可能
+      const wasAuthenticated = sessionStorage.getItem(`auth_${roomId}`);
+      if (wasAuthenticated === 'true') {
+        setIsAuthenticated(true);
+      }
+    }
+  }, [user, isPasswordProtected, roomId, isAuthenticated]);
+
   // パスワード認証
   const { mutateAsync: verifyPassword, isPending: isVerifyingPassword } =
     usePostRoomsIdVerifyPassword();
@@ -107,15 +129,21 @@ function RouteComponent() {
   // パスワード送信処理
   const sendPassword = async (password: string) => {
     try {
+      setPasswordError(undefined); // エラーをクリア
       await verifyPassword({
         id: roomId,
         data: { password },
       });
       console.log("Password verified successfully");
-      setIsAuthenticated(true);
-    } catch (error) {
+      setIsAuthenticated(true);      // 認証状態をセッションストレージに保存
+      sessionStorage.setItem(`auth_${roomId}`, 'true');    } catch (error) {
       console.error("Password verification failed:", error);
+      setPasswordError("合言葉が間違っています。再度入力してください。");
     }
+  };
+
+  const handlePasswordErrorDismiss = () => {
+    setPasswordError(undefined);
   };
 
   const { data: room } = useGetRoomsId(roomId);
@@ -213,7 +241,12 @@ function RouteComponent() {
   // パスワード保護されていて認証されていない場合
   if (isPasswordProtected === true && !isAuthenticated) {
     return (
-      <PasswordInput onSubmit={sendPassword} isLoading={isVerifyingPassword} />
+      <PasswordInput
+        onSubmit={sendPassword}
+        isLoading={isVerifyingPassword}
+        error={passwordError}
+        onErrorDismiss={handlePasswordErrorDismiss}
+      />
     );
   }
 

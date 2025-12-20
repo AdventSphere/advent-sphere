@@ -1,4 +1,4 @@
-import { Key } from "lucide-react";
+import { AlertTriangle, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -6,11 +6,15 @@ import { Spinner } from "@/components/ui/spinner";
 interface PasswordInputProps {
   onSubmit: (password: string) => Promise<void>;
   isLoading: boolean;
+  error?: string;
+  onErrorDismiss?: () => void;
 }
 
 export default function PasswordInput({
   onSubmit,
   isLoading,
+  error,
+  onErrorDismiss,
 }: PasswordInputProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,6 +40,23 @@ export default function PasswordInput({
           name="password"
           required
         />
+
+        {error && (
+          <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-xl">
+            <AlertTriangle className="w-4 h-4 text-destructive" />
+            <p className="text-sm text-destructive">{error}</p>
+            {onErrorDismiss && (
+              <button
+                type="button"
+                onClick={onErrorDismiss}
+                className="ml-auto text-destructive hover:text-destructive/80"
+                aria-label="エラーを閉じる"
+              >
+                ×
+              </button>
+            )}
+          </div>
+        )}
         <Button
           type="submit"
           size={"lg"}
