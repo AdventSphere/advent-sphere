@@ -21,7 +21,7 @@ export const doSomeTaskOnASchedule = async (
       ),
     )
     .orderBy(asc(schema.roomTable.createdAt));
-  oldRooms.forEach(async (room) => {
+  for (const room of oldRooms) {
     const deletedCalendarItems = await drizzleDb
       .delete(schema.calendarItemTable)
       .where(eq(schema.calendarItemTable.roomId, room.id))
@@ -30,7 +30,7 @@ export const doSomeTaskOnASchedule = async (
       const objectKey = `item/user_image/${item.imageId}.png`;
       await env.BUCKET.delete(objectKey);
     }
-  });
+  }
   const deletedRooms = await drizzleDb
     .delete(schema.roomTable)
     .where(
