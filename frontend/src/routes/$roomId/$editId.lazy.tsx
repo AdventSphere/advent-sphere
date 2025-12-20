@@ -175,6 +175,15 @@ function RouteComponent() {
     setIsAiGenerationOpen(true);
   };
 
+  const convertBase64ToImage = async (base64: string) => {
+    const blob = atob(base64.replace(/^.*,/, ""));
+    const buffer = new Uint8Array(blob.length);
+    for (let i = 0; i < blob.length; i++) {
+      buffer[i] = blob.charCodeAt(i);
+    }
+    return new File([buffer.buffer], "image.png", { type: "image/png" });
+  };
+
   const handleUploadImgFileUpload = async (file: File) => {
     if (!room || !selectedItem || !selectedDay || !user) return;
 
@@ -501,14 +510,17 @@ function RouteComponent() {
       {isAiGenerationOpen && (
         <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
           <AiGenerationScreen
+            isLoading={isUploading}
             roomId={roomId}
+            photoFrameId={selectedItem?.id || ""}
             onBack={() => {
               setIsAiGenerationOpen(false);
               setIsUploadImgOpen(true);
             }}
-            onAdopt={(base64Image) => {
+            onAdopt={async (base64Image) => {
               console.log("Image adopted, base64 length:", base64Image.length);
-              // TODO: Implement image upload/saving logic here
+              const file = await convertBase64ToImage(base64Image);
+              await handleUploadImgFileUpload(file);
               setIsAiGenerationOpen(false);
             }}
           />
