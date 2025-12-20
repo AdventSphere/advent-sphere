@@ -474,11 +474,10 @@ app.openapi(createCalendarItemRoute, async (c) => {
     return c.json({ message: "カレンダーアイテムの作成に失敗しました" }, 500);
   }
 
-  // 3. レスポンス。DBから戻ってきた日付（UTC）をそのまま返す
   return c.json(
     {
       id: calendarInfo[0].id,
-      openDate: calendarInfo[0].openDate.toISOString(), // 明示的にISO文字列（UTC）にする
+      openDate: calendarInfo[0].openDate,
     },
     201,
   );
