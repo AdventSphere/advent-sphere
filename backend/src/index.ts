@@ -1,6 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
+import { doSomeTaskOnASchedule } from "./lib/cronFunction";
 import ai from "./routes/ai";
 import calendarItem from "./routes/calendarItem";
 import item from "./routes/item";
@@ -14,7 +15,9 @@ const allowedOrigins = [
 
 import user from "./routes/user";
 
-const app = new OpenAPIHono();
+const app = new OpenAPIHono<{
+  Bindings: CloudflareBindings;
+}>();
 app.use(
   "*",
   cors({
@@ -52,4 +55,26 @@ app.get(
   }),
 );
 
-export default app;
+const scheduled: ExportedHandlerScheduledHandler<CloudflareBindings> = async (
+  _event,
+  env,
+  ctx,
+) => {
+  ctx.waitUntil(
+    doSomeTaskOnASchedule(env)
+      .then((response) => {
+        console.log(
+          `スケジュール関数が正常に完了しました: ${response} 件の古いルームが削除されました。`,
+        );
+      })
+      .catch((error) => {
+        console.error("スケジュール関数の実行中にエラーが発生しました:", error);
+      }),
+  );
+  console.log("スケジュール関数が実行されました");
+};
+
+export default {
+  fetch: app.fetch,
+  scheduled,
+};
