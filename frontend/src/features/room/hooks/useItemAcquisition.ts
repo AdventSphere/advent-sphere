@@ -258,6 +258,18 @@ export function useItemAcquisition({
     resetFlow,
   ]);
 
+  /**
+   * 持ち物から配置モードに入る
+   */
+  const startPlacementFromInventory = useCallback(
+    (calendarItem: CalendarItemWithItem) => {
+      setTargetCalendarItem(calendarItem);
+      setTargetDay(null); // 持ち物からの配置なので日付は不要
+      setPhase("placement");
+    },
+    [],
+  );
+
   return {
     phase,
     targetCalendarItem,
@@ -270,6 +282,7 @@ export function useItemAcquisition({
     handlePlacement,
     handleSkipPlacement,
     resetFlow,
+    startPlacementFromInventory,
     isPending,
   };
 }

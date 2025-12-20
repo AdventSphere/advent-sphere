@@ -72,6 +72,7 @@ function RouteComponent() {
     handlePlacement,
     handleSkipPlacement,
     resetFlow,
+    startPlacementFromInventory,
     isPending,
   } = useItemAcquisition({
     roomId,
@@ -199,6 +200,7 @@ function RouteComponent() {
           roomId={roomId}
           open={isInventoryDialogOpen}
           onOpenChange={setIsInventoryDialogOpen}
+          onStartPlacement={startPlacementFromInventory}
         />
         {isFocusMode && !isPlacementMode && (
           <Button
