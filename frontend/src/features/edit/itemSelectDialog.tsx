@@ -18,8 +18,7 @@ const FILTER_TYPES = [
   { id: "all", label: "すべて" },
   { id: "photo_frame", label: "フォトフレーム" },
   { id: "christmas", label: "クリスマス" },
-  { id: "furniture", label: "家具" },
-  { id: "accessory", label: "小物" },
+  { id: "all_season", label: "その他" },
 ] as const;
 
 function ItemCard({
@@ -99,35 +98,35 @@ export default function ItemSelectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-[1100px] h-[90vh] bg-muted/95 border-2 border-white rounded-3xl p-10 flex flex-col gap-6"
+        className="w-[95vw] md:w-full max-w-[1100px] h-[90vh] bg-muted/95 border-2 border-white rounded-2xl md:rounded-3xl p-4 md:p-10 flex flex-col gap-4 md:gap-6"
       >
-        <DialogHeader className="flex flex-row justify-between items-center gap-4 shrink-0">
-          <div className="flex gap-4 items-center">
+        <DialogHeader className="flex flex-row justify-between items-center gap-2 md:gap-4 shrink-0">
+          <div className="flex gap-2 md:gap-4 items-center">
             <div className="bg-background p-2 rounded-2xl">
-              <InventoryIcon className="size-6 text-primary" />
+              <InventoryIcon className="size-5 md:size-6 text-primary" />
             </div>
-            <DialogTitle className="text-2xl text-primary font-bold leading-none">
+            <DialogTitle className="text-xl md:text-2xl text-primary font-bold leading-none">
               <span className="font-extrabold">{day}</span>日のアイテムを選ぶ
             </DialogTitle>
           </div>
           <Button
             onClick={handleConfirm}
             disabled={!selectedItemId}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-4 py-3 gap-1"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-3 py-2 md:px-4 md:py-3 gap-1 h-auto"
           >
-            <Check className="size-5" />
-            <span className="text-base font-bold">決定</span>
+            <Check className="size-4 md:size-5" />
+            <span className="text-sm md:text-base font-bold">決定</span>
           </Button>
         </DialogHeader>
 
-        <div className="flex items-center gap-2 shrink-0 overflow-x-auto">
+        <div className="flex items-center gap-2 shrink-0 overflow-x-auto pb-2 md:pb-0">
           {FILTER_TYPES.map((filter) => (
             <button
               key={filter.id}
               type="button"
               onClick={() => setSelectedFilter(filter.id)}
               className={cn(
-                "px-4 py-3 rounded-full text-sm font-bold transition-all",
+                "px-3 py-2 md:px-4 md:py-3 rounded-full text-xs md:text-sm font-bold transition-all whitespace-nowrap",
                 selectedFilter === filter.id
                   ? "bg-[#920209] text-primary-foreground"
                   : "bg-background text-foreground",
@@ -144,7 +143,7 @@ export default function ItemSelectDialog({
               <p className="text-muted-foreground text-base">読み込み中...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-6 gap-2 w-full">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 w-full">
               {items.map((item) => (
                 <ItemCard
                   key={item.id}

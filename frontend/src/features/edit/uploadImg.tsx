@@ -130,14 +130,14 @@ export default function UploadImg({
         </div>
       )}
 
-      <div className="bg-gray-100 rounded-lg p-10 w-3/4 my-auto">
+      <div className="bg-gray-100 rounded-lg p-4 md:p-10 w-full md:w-3/4 my-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           {onBack && (
             <Button
               onClick={onBack}
               disabled={isLoading}
-              className="bg-transparent hover:bg-transparent text-gray-600"
+              className="bg-transparent hover:bg-transparent text-gray-600 px-0 md:px-4 mb-2 md:mb-0"
             >
               <ChevronLeft className="size-4 mr-1" />
               アイテム選択に戻る
@@ -145,10 +145,10 @@ export default function UploadImg({
           )}
 
           <div className="flex items-center gap-3">
-            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <InventoryIcon className="size-6 text-primary" />
+            <div className="size-8 md:size-10 bg-white rounded-full flex items-center justify-center shadow-sm shrink-0">
+              <InventoryIcon className="size-5 md:size-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-primary">
+            <h1 className="text-lg md:text-2xl font-bold text-primary">
               フォトフレームに写真を入れる
             </h1>
           </div>
@@ -156,9 +156,9 @@ export default function UploadImg({
 
         {/* Main Content */}
         <div className="flex-1 flex items-start justify-center">
-          <div className=" max-w-6xl mx-auto flex items-center justify-center gap-12 w-full">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 w-full">
             {/* Photo Frames Display */}
-            <div className="flex-1 flex justify-center items-center">
+            <div className="w-full md:flex-1 flex justify-center items-center">
               {item && (
                 <div className="w-full bg-transparent rounded-sm flex items-center justify-center p-2">
                   {thumbnailUrl ? (
@@ -174,13 +174,13 @@ export default function UploadImg({
               )}
             </div>
 
-            <div className="flex-1 flex flex-col gap-6 max-w-lg mx-auto">
+            <div className="w-full md:flex-1 flex flex-col gap-4 md:gap-6 max-w-lg mx-auto">
               {/* AI Generate Button */}
               <div className="text-center w-full">
                 <Button
                   onClick={onAiGenerate}
                   disabled={isLoading}
-                  className="w-full bg-red-800  hover:bg-red-900 text-white px-24 py-5 rounded-lg font-medium text-lg"
+                  className="w-full bg-red-800 hover:bg-red-900 text-white py-5 rounded-lg font-medium text-base md:text-lg"
                 >
                   <Sparkles className="size-5 mr-2" />
                   AIで画像を生成する
@@ -202,7 +202,7 @@ export default function UploadImg({
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full h-48 border-2 border-dashed rounded-lg flex flex-col gap-2 relative",
+                      "w-full h-48 border-2 border-dashed rounded-lg flex flex-col gap-2 relative whitespace-normal",
                       dragOver
                         ? "border-primary bg-primary/5"
                         : "border-muted-foreground/25",
@@ -214,11 +214,12 @@ export default function UploadImg({
                     disabled={isLoading}
                     asChild
                   >
-                    <label>
-                      <Upload className="size-6 text-muted-foreground" />
-                      <div className="text-sm text-muted-foreground text-center">
-                        <p>ここにドラッグ&ドロップかクリックでファイルを選択</p>
-                        <p>【PNG/5MB以下】</p>
+                    <label className="cursor-pointer flex flex-col items-center justify-center w-full h-full p-4">
+                      <Upload className="size-6 text-muted-foreground mb-2" />
+                      <div className="text-sm text-muted-foreground text-center w-full break-words">
+                        <p>ここにドラッグ&ドロップか</p>
+                        <p>クリックでファイルを選択</p>
+                        <p className="mt-1 text-xs">【PNG/5MB以下】</p>
                       </div>
                       <input
                         type="file"
