@@ -10,18 +10,23 @@ import { ArrowUp, ChevronLeft, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import InventoryIcon from "@/components/icons/inventory";
 import { Button } from "@/components/ui/button";
+import { R2_BASE_URL } from "@/constants/r2-url";
 import { cn } from "@/lib/utils";
 
 interface AiGenerationScreenProps {
   onBack: () => void;
   roomId: string;
   onAdopt?: (base64Image: string) => void;
+  photoFrameId: string;
+  isLoading: boolean;
 }
 
 export default function AiGenerationScreen({
   onBack,
   roomId,
   onAdopt,
+  photoFrameId,
+  isLoading,
 }: AiGenerationScreenProps) {
   // State
   const [viewState, setViewState] = useState<"chat" | "result">("chat");
@@ -158,6 +163,7 @@ export default function AiGenerationScreen({
         <Button
           onClick={handleAdopt}
           className="w-full bg-christmas-red hover:bg-christmas-red/90 font-bold text-base h-fit py-3 rounded-2xl transition-transform active:scale-[0.99]"
+          disabled={isLoading}
         >
           <Sparkles />
           写真を採用
@@ -199,7 +205,7 @@ export default function AiGenerationScreen({
               <div className="w-full aspect-video bg-transparent flex items-center justify-center">
                 {/* This image mimics the one in the screenshot with two frames */}
                 <img
-                  src="/placeholder-frames.png"
+                  src={`${R2_BASE_URL}/item/thumbnail/${photoFrameId}.png`}
                   alt="Frames"
                   className="max-w-full h-auto object-contain"
                   onError={(e) => {
