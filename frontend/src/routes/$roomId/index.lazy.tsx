@@ -49,7 +49,6 @@ const CALENDAR_POSITION: [number, number, number] = [0, 1, 0];
 function RouteComponent() {
   const { roomId } = Route.useParams();
   const { data: room } = useGetRoomsId(roomId);
-  console.log("room", room);
   const { data: calendarItems } =
     useGetCalendarItemsRoomIdCalendarItems(roomId);
   const [isInventoryDialogOpen, setIsInventoryDialogOpen] = useState(false);
@@ -439,6 +438,7 @@ function RouteComponent() {
               ref={cameraControlsRef}
               enabled={!isFocusMode}
               minDistance={0}
+              maxDistance={5}
               dollySpeed={0.3}
               smoothTime={0.25}
               makeDefault

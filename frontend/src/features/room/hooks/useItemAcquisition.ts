@@ -60,6 +60,7 @@ function getTodayCalendarDay(startAt: Date): number {
   const now = new Date();
   const diffTime = now.getTime() - startAt.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  // HACK: あけたい日付を直接返すと自由にあけれる（例：12）
   return diffDays;
 }
 
@@ -132,6 +133,7 @@ export function useItemAcquisition({
       // openDateの時刻を過ぎているか
       const now = new Date();
       const openDate = new Date(item.openDate);
+      // HACK: テスト用に時刻チェックを一時的に無効化 (trueにすると自由にあけれる)
       return now >= openDate;
     },
     [room, getItemForDay],
