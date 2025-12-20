@@ -8,7 +8,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "drizzle:generate": "drizzle-kit generate",
     "local:migrate": "wrangler d1 migrations apply advent-sphere --local",
-    "remote:migrate": "wrangler d1 migrations apply advent-sphere"
+    "remote:migrate": "wrangler d1 migrations apply advent-sphere  --remote"
   },
   "dependencies": {
     "@google/genai": "^1.33.0",

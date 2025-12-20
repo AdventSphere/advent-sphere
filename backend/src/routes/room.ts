@@ -314,8 +314,26 @@ app.openapi(createRoomRoute, async (c) => {
       snowDomePartsLastDate: snowDomePartsUtcDates[0],
     })
     .returning();
+  const snowdomeItems = await db
+    .select()
+    .from(schema.itemTable)
+    .where(eq(schema.itemTable.type, "snowdome"));
 
-  // TODO: ここにスノードームパーツ追加処理を入れる
+  const snowDomePartsUtcDatesPromises = snowDomePartsUtcDates.map(
+    async (date, index) => {
+      const response = await db
+        .insert(schema.calendarItemTable)
+        .values({
+          userId: "snowman",
+          roomId: result[0].id,
+          openDate: date,
+          itemId: snowdomeItems[index].id,
+        })
+        .returning();
+      return response;
+    },
+  );
+  await Promise.all(snowDomePartsUtcDatesPromises);
 
   return c.json(
     {
