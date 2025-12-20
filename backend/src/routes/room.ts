@@ -311,7 +311,8 @@ app.openapi(createRoomRoute, async (c) => {
     .insert(schema.roomTable)
     .values({
       ...body,
-      snowDomePartsLastDate: snowDomePartsUtcDates[snowDomePartsUtcDates.length - 1],
+      snowDomePartsLastDate:
+        snowDomePartsUtcDates[snowDomePartsUtcDates.length - 1],
     })
     .returning();
   const snowdomeItems = await db
