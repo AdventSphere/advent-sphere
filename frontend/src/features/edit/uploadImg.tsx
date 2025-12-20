@@ -227,7 +227,6 @@ export default function UploadImg({
                             </div>
                           </div>
                         )}
-                        
                         <div className="flex items-center gap-2 mb-3">
                           <Upload className="size-4" />
                           <span className="text-sm font-medium">
