@@ -20,7 +20,8 @@ import type {
 import type {
   CalendarItem,
   CalendarItemWithItem,
-  CreateCalendarItemResponse
+  CreateCalendarItemResponse,
+  PostCalendarItemsUploadPhoto200
 } from '../adventSphereAPI.schemas';
 
 
@@ -33,6 +34,8 @@ export const getPatchCalendarItemsRoomIdCalendarItemsIdResponseMock = (overrideR
 export const getGetCalendarItemsRoomIdCalendarItemsInventoryResponseMock = (): CalendarItemWithItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({...{id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), userName: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), rotation: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), isOpened: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined])},...{item: {id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), type: faker.string.alpha({length: {min: 10, max: 20}})}},})))
 
 export const getGetCalendarItemsRoomIdCalendarItemsRoomResponseMock = (): CalendarItem[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.string.alpha({length: {min: 10, max: 20}}), userId: faker.string.alpha({length: {min: 10, max: 20}}), userName: faker.string.alpha({length: {min: 10, max: 20}}), roomId: faker.string.alpha({length: {min: 10, max: 20}}), createdAt: `${faker.date.past().toISOString().split('.')[0]}Z`, openDate: `${faker.date.past().toISOString().split('.')[0]}Z`, position: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), rotation: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.number.float({min: undefined, max: undefined, fractionDigits: 2}))), undefined]), isOpened: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), itemId: faker.string.alpha({length: {min: 10, max: 20}}), imageId: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined])})))
+
+export const getPostCalendarItemsUploadPhotoResponseMock = (overrideResponse: Partial< PostCalendarItemsUploadPhoto200 > = {}): PostCalendarItemsUploadPhoto200 => ({imageId: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
 
 
 export const getGetCalendarItemsRoomIdCalendarItemsMockHandler = (overrideResponse?: CalendarItemWithItem[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CalendarItemWithItem[]> | CalendarItemWithItem[]), options?: RequestHandlerOptions) => {
@@ -104,11 +107,24 @@ export const getGetCalendarItemsRoomIdCalendarItemsRoomMockHandler = (overrideRe
       })
   }, options)
 }
+
+export const getPostCalendarItemsUploadPhotoMockHandler = (overrideResponse?: PostCalendarItemsUploadPhoto200 | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<PostCalendarItemsUploadPhoto200> | PostCalendarItemsUploadPhoto200), options?: RequestHandlerOptions) => {
+  return http.post('*/calendarItems/uploadPhoto', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getPostCalendarItemsUploadPhotoResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
 export const getCalendarItemsMock = () => [
   getGetCalendarItemsRoomIdCalendarItemsMockHandler(),
   getPostCalendarItemsRoomIdCalendarItemsMockHandler(),
   getDeleteCalendarItemsRoomIdCalendarItemsIdMockHandler(),
   getPatchCalendarItemsRoomIdCalendarItemsIdMockHandler(),
   getGetCalendarItemsRoomIdCalendarItemsInventoryMockHandler(),
-  getGetCalendarItemsRoomIdCalendarItemsRoomMockHandler()
+  getGetCalendarItemsRoomIdCalendarItemsRoomMockHandler(),
+  getPostCalendarItemsUploadPhotoMockHandler()
 ]
