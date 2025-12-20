@@ -26,6 +26,7 @@ export default function UploadImg({
   const [dragOver, setDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const thumbnailUrl = item
     ? `${R2_BASE_URL}/item/thumbnail/${item.id}.png`
@@ -53,10 +54,12 @@ export default function UploadImg({
       if (validationError) {
         setError(validationError);
         setSelectedFile(null);
+        setPreviewUrl(null);
         return;
       }
       setError(null);
       setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
       // ファイル選択時は状態のみ更新、APIリクエストはしない
     }
   };
@@ -70,10 +73,12 @@ export default function UploadImg({
       if (validationError) {
         setError(validationError);
         setSelectedFile(null);
+        setPreviewUrl(null);
         return;
       }
       setError(null);
       setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
       // ファイル選択時は状態のみ更新、APIリクエストはしない
     }
   };
@@ -97,11 +102,11 @@ export default function UploadImg({
   return (
     <div
       className={cn(
-        "bg-background p-6 min-h-screen flex flex-col justify-center items-center",
+        "bg-background p-6 h-screen overflow-y-auto flex flex-col justify-start items-center",
         className,
       )}
     >
-      <div className="bg-gray-100 rounded-lg p-10 w-3/4">
+      <div className="bg-gray-100 rounded-lg p-10 w-3/4 my-auto">
         {/* Header */}
         <div className="mb-8">
           {onBack && (
@@ -210,6 +215,19 @@ export default function UploadImg({
                   {selectedFile && !error && !isUploading && (
                     <div className="space-y-4">
                       <div className="p-4 bg-muted rounded-lg">
+                        {/* 画像プレビュー */}
+                        {previewUrl && (
+                          <div className="mb-4">
+                            <div className="w-full max-w-md mx-auto aspect-video bg-neutral-100 rounded-lg overflow-hidden">
+                              <img
+                                src={previewUrl}
+                                alt="プレビュー"
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        
                         <div className="flex items-center gap-2 mb-3">
                           <Upload className="size-4" />
                           <span className="text-sm font-medium">
@@ -224,7 +242,13 @@ export default function UploadImg({
                         </div>
                         <div className="flex gap-2">
                           <Button
-                            onClick={() => setSelectedFile(null)}
+                            onClick={() => {
+                              setSelectedFile(null);
+                              if (previewUrl) {
+                                URL.revokeObjectURL(previewUrl);
+                                setPreviewUrl(null);
+                              }
+                            }}
                             variant="outline"
                             size="sm"
                             className="flex-1"

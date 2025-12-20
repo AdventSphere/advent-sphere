@@ -119,7 +119,7 @@ export default function AiGenerationScreen({
 
   if (viewState === "result" && generatedImage) {
     return (
-      <div className="flex flex-col h-full min-h-screen bg-neutral-100 p-6 text-foreground relative gap-6">
+      <div className="flex flex-col h-screen overflow-y-auto bg-neutral-100 p-6 text-foreground relative gap-6">
         {/* Header */}
         <div className="flex flex-col items-start gap-4">
           <button
@@ -167,145 +167,149 @@ export default function AiGenerationScreen({
   }
 
   return (
-    <div className="flex flex-col grow bg-neutral-100 p-6 text-foreground max-w-7xl mx-auto rounded-3xl gap-6">
-      {/* Header */}
-      <div className="flex flex-col items-start gap-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-        >
-          <ChevronLeft className="size-4 mr-1" />
-          画像アップロード画面に戻る
-        </button>
+    <div className="flex w-full py-8 px-8 items-center justify-center min-h-screen">
+      <div className="flex flex-col max-h-screen overflow-y-auto w-3/4 bg-neutral-100 p-6 text-foreground max-w-7xl rounded-3xl gap-6">
+        {/* Header */}
+        <div className="flex flex-col items-start gap-4">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+          >
+            <ChevronLeft className="size-4 mr-1" />
+            画像アップロード画面に戻る
+          </button>
 
-        <div className="flex items-center gap-3">
-          <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm">
-            <InventoryIcon className="size-6 text-primary" />
-          </div>
-          <h1 className="text-2xl font-bold text-primary">
-            写真をAIで生成する
-          </h1>
-        </div>
-      </div>
-
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Left Column: Info */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          {/* Photo Frame Section */}
-          <div className="flex flex-col gap-2">
-            <h2 className="text-sm font-bold">フォトフレーム</h2>
-            <div className="w-full aspect-video bg-transparent flex items-center justify-center">
-              {/* This image mimics the one in the screenshot with two frames */}
-              <img
-                src="/placeholder-frames.png"
-                alt="Frames"
-                className="max-w-full h-auto object-contain"
-                onError={(e) => {
-                  // Fallback if image doesn't exist (likely doesn't)
-                  e.currentTarget.style.display = "none";
-                  e.currentTarget.parentElement?.classList.add(
-                    "bg-white",
-                    "rounded-xl",
-                    "border-2",
-                    "border-dashed",
-                    "border-neutral-300",
-                  );
-                  if (e.currentTarget.parentElement) {
-                    e.currentTarget.parentElement.innerText =
-                      "フォトフレーム画像";
-                  }
-                }}
-              />
+          <div className="flex items-center gap-3">
+            <div className="size-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+              <InventoryIcon className="size-6 text-primary" />
             </div>
-            {/* Thumbnail of previously generated image could be shown here if we want, but logic separates views now */}
-          </div>
-
-          {/* Current Prompt Section */}
-          <div className="flex flex-col gap-2 flex-1">
-            <h2 className="text-sm font-bold">現状のプロンプト</h2>
-            <div className="bg-white rounded-3xl p-6 shadow-sm flex-1 min-h-[200px]">
-              <p className="text-base text-neutral-800 whitespace-pre-wrap leading-relaxed">
-                {prompt}
-              </p>
-            </div>
+            <h1 className="text-2xl font-bold text-primary">
+              写真をAIで生成する
+            </h1>
           </div>
         </div>
 
-        {/* Right Column: Chat */}
-        <div className="lg:col-span-7 flex flex-col bg-white rounded-3xl shadow-sm overflow-hidden relative">
-          {/* Chat History */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
-            {history.map((item, index) => (
-              <div
-                key={`${index}-${item.role}`}
-                className={cn(
-                  "flex w-full",
-                  item.role === CreatePromptRequestHistoryItemRole.user
-                    ? "justify-end"
-                    : "justify-start",
-                )}
-              >
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Left Column: Info */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            {/* Photo Frame Section */}
+            <div className="flex flex-col gap-2">
+              <h2 className="text-sm font-bold">フォトフレーム</h2>
+              <div className="w-full aspect-video bg-transparent flex items-center justify-center">
+                {/* This image mimics the one in the screenshot with two frames */}
+                <img
+                  src="/placeholder-frames.png"
+                  alt="Frames"
+                  className="max-w-full h-auto object-contain"
+                  onError={(e) => {
+                    // Fallback if image doesn't exist (likely doesn't)
+                    e.currentTarget.style.display = "none";
+                    e.currentTarget.parentElement?.classList.add(
+                      "bg-white",
+                      "rounded-xl",
+                      "border-2",
+                      "border-dashed",
+                      "border-neutral-300",
+                    );
+                    if (e.currentTarget.parentElement) {
+                      e.currentTarget.parentElement.innerText =
+                        "フォトフレーム画像";
+                    }
+                  }}
+                />
+              </div>
+              {/* Thumbnail of previously generated image could be shown here if we want, but logic separates views now */}
+            </div>
+
+            {/* Current Prompt Section */}
+            <div className="flex flex-col gap-2 flex-1">
+              <h2 className="text-sm font-bold">現状のプロンプト</h2>
+              <div className="bg-white rounded-3xl p-6 shadow-sm flex-1 min-h-[200px]">
+                <p className="text-base text-neutral-800 whitespace-pre-wrap leading-relaxed">
+                  {prompt}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Chat */}
+          <div className="lg:col-span-7 flex flex-col bg-white rounded-3xl shadow-sm overflow-hidden relative">
+            {/* Chat History */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {history.map((item, index) => (
                 <div
+                  key={`${index}-${item.role}`}
                   className={cn(
-                    "max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed",
+                    "flex w-full",
                     item.role === CreatePromptRequestHistoryItemRole.user
-                      ? "bg-neutral-100 text-neutral-800 rounded-tr-sm"
-                      : "bg-neutral-100 text-neutral-800 rounded-tl-sm",
+                      ? "justify-end"
+                      : "justify-start",
                   )}
                 >
-                  {item.content}
+                  <div
+                    className={cn(
+                      "max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed",
+                      item.role === CreatePromptRequestHistoryItemRole.user
+                        ? "bg-neutral-100 text-neutral-800 rounded-tr-sm"
+                        : "bg-neutral-100 text-neutral-800 rounded-tl-sm",
+                    )}
+                  >
+                    {item.content}
+                  </div>
                 </div>
-              </div>
-            ))}
-            {createPromptMutation.isPending && (
-              <div className="flex justify-start w-full">
-                <div className="bg-neutral-100 text-neutral-500 px-4 py-3 rounded-2xl rounded-tl-sm text-sm">
-                  考え中...
+              ))}
+              {createPromptMutation.isPending && (
+                <div className="flex justify-start w-full">
+                  <div className="bg-neutral-100 text-neutral-500 px-4 py-3 rounded-2xl rounded-tl-sm text-sm">
+                    考え中...
+                  </div>
                 </div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
 
-          {/* Input Area */}
-          <div className="p-4 border-t border-neutral-100 bg-white">
-            <div className="relative flex items-end">
-              <textarea
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                    e.preventDefault();
-                    handleSendMessage();
+            {/* Input Area */}
+            <div className="p-4 border-t border-neutral-100 bg-white">
+              <div className="relative flex items-end">
+                <textarea
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="生成したい画像"
+                  className="w-full bg-neutral-100 rounded-xl py-3 pl-4 pr-12 focus:outline-none focus:ring-2 focus:ring-neutral-200 resize-none min-h-14"
+                  rows={2}
+                />
+                <button
+                  type="button"
+                  onClick={handleSendMessage}
+                  disabled={
+                    !inputValue.trim() || createPromptMutation.isPending
                   }
-                }}
-                placeholder="生成したい画像"
-                className="w-full bg-neutral-100 rounded-xl py-3 pl-4 pr-12 focus:outline-none focus:ring-2 focus:ring-neutral-200 resize-none min-h-14"
-                rows={2}
-              />
-              <button
-                type="button"
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || createPromptMutation.isPending}
-                className="absolute right-2 bottom-2.5 p-1.5 bg-christmas-red text-white rounded-lg hover:bg-christmas-red/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ArrowUp className="size-5" />
-              </button>
+                  className="absolute right-2 bottom-2.5 p-1.5 bg-christmas-red text-white rounded-lg hover:bg-christmas-red/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ArrowUp className="size-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Footer / Action Button */}
-      <Button
-        onClick={handleGeneratePhoto}
-        disabled={createPhotoMutation.isPending}
-        className="w-full bg-christmas-red hover:bg-christmas-red/90 font-bold text-base h-fit py-3 rounded-2xl transition-transform active:scale-[0.99]"
-      >
-        <Sparkles />
-        {createPhotoMutation.isPending ? "生成中..." : "AIで画像を生成する"}
-      </Button>
+        {/* Footer / Action Button */}
+        <Button
+          onClick={handleGeneratePhoto}
+          disabled={createPhotoMutation.isPending}
+          className="w-full bg-christmas-red hover:bg-christmas-red/90 font-bold text-base h-fit py-3 rounded-2xl transition-transform active:scale-[0.99]"
+        >
+          <Sparkles />
+          {createPhotoMutation.isPending ? "生成中..." : "AIで画像を生成する"}
+        </Button>
+      </div>
     </div>
   );
 }
