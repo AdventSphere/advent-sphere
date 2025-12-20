@@ -1,0 +1,1 @@
+ALTER TABLE `room` ADD `snow_dome_parts_last_date` integer NOT NULL;
