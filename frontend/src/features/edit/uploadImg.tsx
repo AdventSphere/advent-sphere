@@ -3,8 +3,8 @@ import { ChevronLeft, Sparkles, Upload } from "lucide-react";
 import { useState } from "react";
 import InventoryIcon from "@/components/icons/inventory";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { R2_BASE_URL } from "@/constants/r2-url";
+import { cn } from "@/lib/utils";
 
 interface UploadImgProps {
   onBack?: () => void;

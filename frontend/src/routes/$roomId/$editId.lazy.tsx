@@ -1,9 +1,6 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Environment, Gltf } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import * as THREE from "three";
-import type { Group } from "three";
 import type { Item } from "common/generate/adventSphereAPI.schemas";
 import {
   useGetCalendarItemsRoomIdCalendarItems,
@@ -15,6 +12,9 @@ import {
   useGetRoomsIdIsPasswordProtected,
   usePostRoomsIdVerifyPassword,
 } from "common/generate/room/room";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import type { Group } from "three";
+import * as THREE from "three";
 import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import {
