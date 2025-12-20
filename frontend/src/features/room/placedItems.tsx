@@ -44,9 +44,30 @@ const PlacedItems = forwardRef<THREE.Group, PlacedItemsProps>(
         item.id !== excludeItemId,
     );
 
+    // snowdomeパーツと通常アイテムを分離
+    const snowdomeItems = placedItems.filter(
+      (item) => item.item.type === "snowdome",
+    );
+    const normalItems = placedItems.filter(
+      (item) => item.item.type !== "snowdome",
+    );
+
+    // snowdomeパーツを位置ごとにグループ化
+    const snowdomeGroups = new Map<string, CalendarItemWithItem[]>();
+    for (const item of snowdomeItems) {
+      const positionKey = JSON.stringify(item.position);
+      const existingGroup = snowdomeGroups.get(positionKey);
+      if (existingGroup) {
+        existingGroup.push(item);
+      } else {
+        snowdomeGroups.set(positionKey, [item]);
+      }
+    }
+
     return (
       <group ref={ref}>
-        {placedItems.map((item) => (
+        {/* 通常アイテム */}
+        {normalItems.map((item) => (
           <PlacedItem
             key={item.id}
             calendarItem={item}
@@ -57,6 +78,30 @@ const PlacedItems = forwardRef<THREE.Group, PlacedItemsProps>(
             isPending={isPending}
           />
         ))}
+        {/* snowdomeパーツグループ */}
+        {Array.from(snowdomeGroups.entries()).map(([positionKey, parts]) => {
+          // グループ内のいずれかのパーツが選択されているかチェック
+          const isSelected = parts.some((part) => part.id === selectedItemId);
+          const firstPart = parts[0];
+          const position = firstPart.position as [number, number, number];
+          const rotation = (firstPart.rotation as [number, number, number]) ?? [
+            0, 0, 0,
+          ];
+
+          return (
+            <PlacedSnowdomeGroup
+              key={positionKey}
+              snowdomeParts={parts}
+              position={position}
+              rotation={rotation}
+              isSelected={isSelected}
+              onItemClick={onItemClick}
+              onReposition={onReposition}
+              onReturnToInventory={onReturnToInventory}
+              isPending={isPending}
+            />
+          );
+        })}
       </group>
     );
   },
@@ -65,6 +110,84 @@ const PlacedItems = forwardRef<THREE.Group, PlacedItemsProps>(
 PlacedItems.displayName = "PlacedItems";
 
 export default PlacedItems;
+
+interface PlacedSnowdomeGroupProps {
+  snowdomeParts: CalendarItemWithItem[];
+  position: [number, number, number];
+  rotation: [number, number, number];
+  isSelected: boolean;
+  onItemClick: (calendarItem: CalendarItemWithItem) => void;
+  onReposition: () => void;
+  onReturnToInventory: () => void;
+  isPending: boolean;
+}
+
+/**
+ * 配置済みsnowdomeパーツをグループとしてレンダリング
+ */
+function PlacedSnowdomeGroup({
+  snowdomeParts,
+  position,
+  rotation,
+  isSelected,
+  onItemClick,
+  onReposition,
+  onReturnToInventory,
+  isPending,
+}: PlacedSnowdomeGroupProps) {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    // 最初のパーツをクリックとして扱う
+    onItemClick(snowdomeParts[0]);
+  };
+
+  return (
+    <RigidBody type="fixed" colliders="trimesh">
+      {/** biome-ignore lint/a11y/noStaticElementInteractions: 静的要素にはインタラクティブな操作を追加しない */}
+      <group onClick={handleClick} position={position} rotation={rotation}>
+        {/* 全snowdomeパーツを同じ位置に重ねてレンダリング */}
+        {snowdomeParts.map((part) => (
+          <Gltf
+            key={part.id}
+            src={`${R2_BASE_URL}/item/object/${part.itemId}.glb`}
+            scale={1}
+            position={[0, 0, 0]}
+          />
+        ))}
+      </group>
+      {isSelected && (
+        <Html center position={[position[0], position[1] + 0.5, position[2]]}>
+          <div className="flex gap-2 rounded-xl bg-background/90 p-2 shadow-lg backdrop-blur-md">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onReposition();
+              }}
+              disabled={isPending}
+            >
+              <Move className="mr-1 size-4" />
+              位置変更
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onReturnToInventory();
+              }}
+              disabled={isPending}
+            >
+              <Package className="mr-1 size-4" />
+              持ち物に戻す
+            </Button>
+          </div>
+        </Html>
+      )}
+    </RigidBody>
+  );
+}
 
 interface PlacedItemProps {
   calendarItem: CalendarItemWithItem;

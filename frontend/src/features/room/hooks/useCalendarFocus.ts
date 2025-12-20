@@ -38,7 +38,7 @@ export function useCalendarFocus() {
     // 縦横それぞれで必要な距離を計算し、大きい方を採用
     const distanceForHeight = calendarHeight / (2 * Math.tan(fov / 2));
     const distanceForWidth = calendarWidth / (2 * Math.tan(fov / 2) * aspect);
-    const distance = Math.max(distanceForHeight, distanceForWidth) * 0.6;
+    const distance = Math.max(distanceForHeight, distanceForWidth) * 0.9;
 
     // 先にフォーカスモードをONにして暗くする
     setIsFocusMode(true);
