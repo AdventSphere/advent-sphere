@@ -78,6 +78,7 @@ export function PlacementDraggableItem({
   onLockChange,
   roomRef,
   placedItemsRef,
+  tableRef,
 }: {
   calendarItem: CalendarItemWithItem;
   onPositionChange: (
@@ -90,6 +91,7 @@ export function PlacementDraggableItem({
   onLockChange?: (isLocked: boolean) => void;
   roomRef: React.RefObject<THREE.Group>;
   placedItemsRef?: React.RefObject<THREE.Group>;
+  tableRef: React.RefObject<THREE.Group>;
 }) {
   return (
     <DraggableItem
@@ -101,6 +103,7 @@ export function PlacementDraggableItem({
       setIsPlacementValid={setIsPlacementValid}
       initialRotation={initialRotation}
       onLockChange={onLockChange}
+      tableRef={tableRef}
     />
   );
 }
