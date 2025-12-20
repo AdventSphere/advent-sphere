@@ -237,7 +237,7 @@ export default function UploadImg({
                             className="flex-1 bg-primary hover:bg-primary/90"
                             disabled={isUploading}
                           >
-                            アップロード
+                            確定
                           </Button>
                         </div>
                       </div>
