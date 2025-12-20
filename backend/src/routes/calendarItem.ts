@@ -1,6 +1,6 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { set } from "date-fns";
-import { and, eq, isNotNull, isNull } from "drizzle-orm";
+import { and, asc, eq, isNotNull, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
 import * as schema from "../db/schema";
@@ -595,7 +595,8 @@ app.openapi(getInventoryItemRoute, async (c) => {
         isNull(schema.calendarItemTable.position),
         eq(schema.calendarItemTable.isOpened, true),
       ),
-    );
+    )
+    .orderBy(asc(schema.itemTable.name));
 
   const transformed = calendarItems.map((i) =>
     transformCalendarItemWithItem(i.calendarItem, i.item, i.user),
@@ -628,7 +629,8 @@ app.openapi(getRoomItemsRoute, async (c) => {
         isNotNull(schema.calendarItemTable.position),
         eq(schema.calendarItemTable.isOpened, true),
       ),
-    );
+    )
+    .orderBy(asc(schema.itemTable.name));
 
   const transformed = calendarItems.map((i) =>
     transformCalendarItemWithItem(i.calendarItem, i.item, i.user),
