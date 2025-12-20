@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, ne } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 
@@ -250,6 +250,7 @@ app.openapi(listItemsRoute, async (c) => {
   const result = await db
     .select()
     .from(schema.itemTable)
+    .where(ne(schema.itemTable.type, "snowdome"))
     .orderBy(asc(schema.itemTable.name))
     .limit(limit ?? 20)
     .offset(offset ?? 0);

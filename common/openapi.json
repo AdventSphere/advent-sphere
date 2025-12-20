@@ -539,6 +539,12 @@
             "type": "string",
             "example": "edit_12345",
             "description": "ルームの編集ID"
+          },
+          "snowDomePartsLastDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z",
+            "description": "雪だるまパーツ最終更新日時"
           }
         },
         "required": [
@@ -549,7 +555,8 @@
           "startAt",
           "createdAt",
           "generateCount",
-          "editId"
+          "editId",
+          "snowDomePartsLastDate"
         ]
       },
       "UpdateRoom": {

@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { set } from "date-fns";
+import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import { and, asc, eq, isNotNull, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { nanoid } from "nanoid";
@@ -431,44 +432,56 @@ app.openapi(createCalendarItemRoute, async (c) => {
   }
 
   // NOTE: itemGetTimeが設定されている場合はその時間を使用、されていない場合はランダムな時間を設定する
-  let openDate = calendarItem.openDate;
+  const baseDateJST = toZonedTime(
+    new Date(calendarItem.openDate),
+    "Asia/Tokyo",
+  );
+  let targetDateJST: Date;
   if (roomInfo[0].itemGetTime === null) {
-    {
-      const randomHours = Math.floor(Math.random() * 24);
-      const randomMinutes = Math.floor(Math.random() * 60);
-      openDate = set(openDate, {
-        hours: randomHours,
-        minutes: randomMinutes,
-        seconds: 0,
-        milliseconds: 0,
-      });
-    }
+    targetDateJST = set(baseDateJST, {
+      hours: Math.floor(Math.random() * 24),
+      minutes: Math.floor(Math.random() * 60),
+      seconds: 0,
+      milliseconds: 0,
+    });
   } else {
-    openDate = set(openDate, {
-      hours: roomInfo[0].itemGetTime.getHours(),
-      minutes: roomInfo[0].itemGetTime.getMinutes(),
+    const itemGetTimeJST = toZonedTime(roomInfo[0].itemGetTime, "Asia/Tokyo");
+    const getHours = itemGetTimeJST.getHours();
+    const getMinutes = itemGetTimeJST.getMinutes();
+
+    targetDateJST = set(baseDateJST, {
+      hours: getHours,
+      minutes: getMinutes,
       seconds: 0,
       milliseconds: 0,
     });
   }
+  const finalUtcDate = fromZonedTime(targetDateJST, "Asia/Tokyo");
 
   const calendarInfo = await db
     .insert(schema.calendarItemTable)
     .values({
       userId: calendarItem.userId,
       roomId: calendarItem.roomId,
-      openDate: openDate,
+      openDate: finalUtcDate,
       position: stringifyCoordinates(calendarItem.position),
       rotation: stringifyCoordinates(calendarItem.rotation),
       itemId: calendarItem.itemId,
       imageId: calendarItem.imageId,
     })
     .returning();
+
   if (calendarInfo.length === 0) {
     return c.json({ message: "カレンダーアイテムの作成に失敗しました" }, 500);
   }
 
-  return c.json({ id: calendarInfo[0].id }, 201);
+  return c.json(
+    {
+      id: calendarInfo[0].id,
+      openDate: calendarInfo[0].openDate,
+    },
+    201,
+  );
 });
 
 app.openapi(deleteCalendarItemRoute, async (c) => {

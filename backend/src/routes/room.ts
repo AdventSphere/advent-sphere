@@ -1,6 +1,7 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { addDays, set } from "date-fns";
+import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import { eq } from "drizzle-orm";
-
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 
@@ -62,6 +63,12 @@ export const RoomSchema = z
     editId: z
       .string()
       .openapi({ example: "edit_12345", description: "ルームの編集ID" }),
+    snowDomePartsLastDate: z.coerce.date().nullable().openapi({
+      type: "string",
+      format: "date-time",
+      example: "2024-01-01T00:00:00Z",
+      description: "雪だるまパーツ最終更新日時",
+    }),
   })
   .openapi("Room");
 
@@ -266,9 +273,75 @@ const app = new OpenAPIHono<{
 app.openapi(createRoomRoute, async (c) => {
   const body = c.req.valid("json");
   const db = drizzle(c.env.DB, { schema });
-  const result = await db.insert(schema.roomTable).values(body).returning();
+  // 開始日時をJSTとして解釈
+  const startAtJST = toZonedTime(new Date(body.startAt), "Asia/Tokyo");
 
-  return c.json({ editId: result[0].editId, id: result[0].id }, 201);
+  const randomDays = new Set<number>();
+  while (randomDays.size < 4) {
+    randomDays.add(Math.floor(Math.random() * 24) + 1);
+  }
+
+  const snowDomePartsUtcDates: Date[] = [];
+
+  for (const day of Array.from(randomDays)) {
+    let targetDateJST = addDays(startAtJST, day - 1);
+
+    if (body.itemGetTime) {
+      targetDateJST = set(targetDateJST, {
+        hours: body.itemGetTime.getHours(),
+        minutes: body.itemGetTime.getMinutes(),
+        seconds: body.itemGetTime.getSeconds(),
+        milliseconds: 0,
+      });
+    } else {
+      targetDateJST = set(targetDateJST, {
+        hours: Math.floor(Math.random() * 24),
+        minutes: Math.floor(Math.random() * 60),
+        seconds: 0,
+        milliseconds: 0,
+      });
+    }
+
+    const utcDate = fromZonedTime(targetDateJST, "Asia/Tokyo");
+    snowDomePartsUtcDates.push(utcDate);
+  }
+  snowDomePartsUtcDates.sort((a, b) => a.getTime() - b.getTime());
+
+  const result = await db
+    .insert(schema.roomTable)
+    .values({
+      ...body,
+      snowDomePartsLastDate: snowDomePartsUtcDates[0],
+    })
+    .returning();
+  const snowdomeItems = await db
+    .select()
+    .from(schema.itemTable)
+    .where(eq(schema.itemTable.type, "snowdome"));
+
+  const snowDomePartsUtcDatesPromises = snowDomePartsUtcDates.map(
+    async (date, index) => {
+      const response = await db
+        .insert(schema.calendarItemTable)
+        .values({
+          userId: "snowdome",
+          roomId: result[0].id,
+          openDate: date,
+          itemId: snowdomeItems[index].id,
+        })
+        .returning();
+      return response;
+    },
+  );
+  await Promise.all(snowDomePartsUtcDatesPromises);
+
+  return c.json(
+    {
+      editId: result[0].editId,
+      id: result[0].id,
+    },
+    201,
+  );
 });
 
 app.openapi(getRoomRoute, async (c) => {

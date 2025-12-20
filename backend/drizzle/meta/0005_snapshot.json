@@ -240,6 +240,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": 0
+        },
+        "snow_dome_parts_last_date": {
+          "name": "snow_dome_parts_last_date",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},

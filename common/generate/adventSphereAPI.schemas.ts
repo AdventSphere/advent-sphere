@@ -234,6 +234,8 @@ export interface Room {
   generateCount: number;
   /** ルームの編集ID */
   editId: string;
+  /** 雪だるまパーツ最終更新日時 */
+  snowDomePartsLastDate: string;
 }
 
 export interface UpdateRoom {
