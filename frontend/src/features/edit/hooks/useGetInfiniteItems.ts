@@ -8,7 +8,7 @@ export const useGetInfiniteItems = (type: string) => {
     queryFn: ({ pageParam }) =>
       getItems({
         offset: pageParam,
-        limit: 30,
+        limit: 60,
         type: type === "all" ? undefined : type,
       }),
     initialPageParam: 0,
