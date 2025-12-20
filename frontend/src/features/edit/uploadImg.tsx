@@ -1,10 +1,10 @@
+import type { Item } from "common/generate/adventSphereAPI.schemas";
 import { ChevronLeft, Sparkles, Upload } from "lucide-react";
 import { useState } from "react";
-import type { Item } from "common/generate/adventSphereAPI.schemas";
 import InventoryIcon from "@/components/icons/inventory";
 import { Button } from "@/components/ui/button";
-import { R2_BASE_URL } from "@/constants/r2-url";
 import { cn } from "@/lib/utils";
+import { R2_BASE_URL } from "@/constants/r2-url";
 
 interface UploadImgProps {
   onBack?: () => void;
@@ -57,7 +57,7 @@ export default function UploadImg({
       }
       setError(null);
       setSelectedFile(file);
-      onFileUpload?.(file);
+      // ファイル選択時は状態のみ更新、APIリクエストはしない
     }
   };
 
@@ -74,7 +74,7 @@ export default function UploadImg({
       }
       setError(null);
       setSelectedFile(file);
-      onFileUpload?.(file);
+      // ファイル選択時は状態のみ更新、APIリクエストはしない
     }
   };
 
@@ -86,6 +86,12 @@ export default function UploadImg({
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
+  };
+
+  const handleConfirmUpload = () => {
+    if (selectedFile) {
+      onFileUpload?.(selectedFile);
+    }
   };
 
   return (
@@ -201,16 +207,39 @@ export default function UploadImg({
                     </div>
                   )}
 
-                  {selectedFile && !error && (
-                    <div className="p-3 bg-muted rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Upload className="size-4" />
-                        <span className="text-sm font-meudim">
-                          {selectedFile.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
+                  {selectedFile && !error && !isUploading && (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-muted rounded-lg">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Upload className="size-4" />
+                          <span className="text-sm font-medium">
+                            {selectedFile.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
+                        <div className="text-xs text-muted-foreground mb-3">
+                          この画像をアップロードしますか？
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => setSelectedFile(null)}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                          >
+                            キャンセル
+                          </Button>
+                          <Button
+                            onClick={handleConfirmUpload}
+                            size="sm"
+                            className="flex-1 bg-primary hover:bg-primary/90"
+                            disabled={isUploading}
+                          >
+                            アップロード
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )}

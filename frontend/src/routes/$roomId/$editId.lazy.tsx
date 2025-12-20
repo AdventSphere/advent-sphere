@@ -1,6 +1,9 @@
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Environment, Gltf } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { createLazyFileRoute } from "@tanstack/react-router";
+import * as THREE from "three";
+import type { Group } from "three";
 import type { Item } from "common/generate/adventSphereAPI.schemas";
 import {
   useGetCalendarItemsRoomIdCalendarItems,
@@ -12,9 +15,6 @@ import {
   useGetRoomsIdIsPasswordProtected,
   usePostRoomsIdVerifyPassword,
 } from "common/generate/room/room";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import type { Group } from "three";
-import * as THREE from "three";
 import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,10 +27,10 @@ import { R2_BASE_URL } from "@/constants/r2-url";
 import { useUser } from "@/context/UserContext";
 import AiGenerationScreen from "@/features/edit/AiGenerationScreen";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
+import UploadImg from "@/features/edit/uploadImg";
 import Calendar from "@/features/room/calendar";
 import PasswordInput from "@/features/room/passwordInput";
 import NameInput from "@/features/user/nameInput";
-import UploadImg from "@/features/edit/uploadImg";
 
 export const Route = createLazyFileRoute("/$roomId/$editId")({
   component: RouteComponent,
@@ -383,7 +383,7 @@ function RouteComponent() {
       <Dialog open={showUploadSuccess} onOpenChange={setShowUploadSuccess}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-green-600">
+            <DialogTitle className="text-center text-primary">
               画像のアップロードに成功しました！
             </DialogTitle>
           </DialogHeader>
