@@ -198,6 +198,7 @@ app.openapi(createPhotoRoute, async (c) => {
       {
         prompt: prompt,
         seed: Math.floor(Math.random() * 10),
+        steps: 1, //TODO: 本番は3に変更する
       },
     );
     const dataURI = `data:image/jpeg;charset=utf-8;base64,${response.image}`;
