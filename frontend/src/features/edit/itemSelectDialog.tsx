@@ -73,15 +73,15 @@ export default function ItemSelectDialog({
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const { data, isLoading, fetchNextPage, hasNextPage } =
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useGetInfiniteItems(selectedFilter);
   const items = data?.pages.flat() ?? [];
 
   const handleLoadMore = useCallback(() => {
-    if (hasNextPage && !isLoading) {
+    if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [hasNextPage, fetchNextPage, isLoading]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
   useInfiniteScroll(loadMoreRef, handleLoadMore);
 
   const handleConfirm = () => {
@@ -120,7 +120,7 @@ export default function ItemSelectDialog({
           </Button>
         </DialogHeader>
 
-        <div className="flex items-center gap-2 shrink-0 overflow-y-auto">
+        <div className="flex items-center gap-2 shrink-0 overflow-x-auto">
           {FILTER_TYPES.map((filter) => (
             <button
               key={filter.id}
@@ -157,6 +157,11 @@ export default function ItemSelectDialog({
                   }}
                 />
               ))}
+            </div>
+          )}
+          {isFetchingNextPage && (
+            <div className="flex items-center justify-center py-2">
+              <p className="text-muted-foreground text-base">読み込み中...</p>
             </div>
           )}
           <div ref={loadMoreRef} />
