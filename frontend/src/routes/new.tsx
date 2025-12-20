@@ -35,6 +35,7 @@ import { useUser } from "@/context/UserContext";
 import { useGetInfiniteItems } from "@/features/edit/hooks/useGetInfiniteItems";
 import NameInput from "@/features/user/nameInput";
 import { cn } from "@/lib/utils";
+import { subWeeks } from "date-fns";
 
 // zodスキーマ定義
 const formSchema = z
@@ -185,8 +186,8 @@ function RouteComponent() {
                 calendarItem: {
                   userId: user.id,
                   roomId: response.id,
-                  openDate: apiData.startAt,
                   itemId,
+                  openDate: subWeeks(watchedValues.start_at, 2).toISOString(),
                   isOpened: true,
                   position: null,
                   rotation: null,
