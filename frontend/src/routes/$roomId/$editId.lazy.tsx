@@ -5,14 +5,17 @@ import {
   useGetCalendarItemsRoomIdCalendarItems,
   usePostCalendarItemsRoomIdCalendarItems,
 } from "common/generate/calendar-items/calendar-items";
-import { useGetRoomsId } from "common/generate/room/room";
+import {
+  useGetRoomsId,
+  useGetRoomsIdIsPasswordProtected,
+  usePostRoomsIdVerifyPassword,
+} from "common/generate/room/room";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
 import Loading from "@/components/Loading";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import { useUser } from "@/context/UserContext";
-import { usePassword } from "@/context/PasswordContext";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import Calendar from "@/features/room/calendar";
 import NameInput from "@/features/user/nameInput";
@@ -75,13 +78,42 @@ function RouteComponent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [openedDrawers, setOpenedDrawers] = useState<number[]>([]);
 
+  // ローカルでパスワード認証を管理
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const { user } = useUser();
-  const {
-    setRoomId,
-    isPasswordProtected,
-    isAuthenticated,
-    isLoading: passwordLoading,
-  } = usePassword();
+
+  // パスワード保護状態をチェック
+  const { data: passwordProtectionData, isLoading: isCheckingProtection } =
+    useGetRoomsIdIsPasswordProtected(roomId, {
+      query: {
+        enabled: !!roomId,
+        retry: false,
+      },
+    });
+
+  // パスワード保護されているかどうかの状態
+  const isPasswordProtected =
+    passwordProtectionData?.isPasswordProtected ?? null;
+  const passwordLoading = isCheckingProtection;
+
+  // パスワード認証
+  const { mutateAsync: verifyPassword, isPending: isVerifyingPassword } =
+    usePostRoomsIdVerifyPassword();
+
+  // パスワード送信処理
+  const sendPassword = async (password: string) => {
+    try {
+      await verifyPassword({
+        id: roomId,
+        data: { password },
+      });
+      console.log("Password verified successfully");
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Password verification failed:", error);
+    }
+  };
 
   const { data: room } = useGetRoomsId(roomId);
   const { data: calendarItems, refetch } =
@@ -90,10 +122,7 @@ function RouteComponent() {
   const { mutateAsync: postCalendarItem } =
     usePostCalendarItemsRoomIdCalendarItems();
 
-  // ルームIDを設定
-  useEffect(() => {
-    setRoomId(roomId);
-  }, [roomId, setRoomId]);
+  // ルームIDは既にuseParamsで取得されているため、特別な設定は不要
 
   // calendarItemsから埋まっている日付とユーザー名のマップを計算
   const { filledDays, filledDayUserNames } = useMemo(() => {
@@ -171,7 +200,9 @@ function RouteComponent() {
 
   // パスワード保護されていて認証されていない場合
   if (isPasswordProtected === true && !isAuthenticated) {
-    return <PasswordInput />;
+    return (
+      <PasswordInput onSubmit={sendPassword} isLoading={isVerifyingPassword} />
+    );
   }
 
   // ユーザーが存在しない場合

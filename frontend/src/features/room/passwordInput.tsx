@@ -1,23 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { usePassword } from "@/context/PasswordContext";
 import { Key } from "lucide-react";
 
-export default function PasswordInput() {
-  const { sendPassword, isLoading } = usePassword();
+interface PasswordInputProps {
+  onSubmit: (password: string) => Promise<void>;
+  isLoading: boolean;
+}
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+export default function PasswordInput({
+  onSubmit,
+  isLoading,
+}: PasswordInputProps) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const password = formData.get("password") as string;
-    await sendPassword(password);
+    await onSubmit(password);
   };
 
   return (
     <div className="bg-muted flex items-center justify-center grow w-full">
       <form
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         className="flex flex-col gap-5 w-full max-w-md mx-auto p-6"
       >
         <Key className="text-gray-600 w-10 h-10  mx-auto" />
@@ -25,8 +30,8 @@ export default function PasswordInput() {
           編集には合言葉が必要です
         </h1>
         <Input
-          type="password"
-          placeholder="password"
+          type="text"
+          placeholder="編集用合言葉"
           className="w-full p-3 h-fit rounded-xl bg-background text-base"
           name="password"
           required
