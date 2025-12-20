@@ -89,6 +89,7 @@ export default function Calendar({
       castShadow
       receiveShadow
       onClick={(e) => {
+        e.stopPropagation();
         // フォーカスモードでない場合は、カレンダー全体クリックでフォーカスモードへ
         if (!isFocusMode) {
           e.stopPropagation();

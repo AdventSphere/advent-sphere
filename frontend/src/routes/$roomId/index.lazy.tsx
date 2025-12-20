@@ -13,6 +13,7 @@ import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import { R2_BASE_URL } from "@/constants/r2-url";
 import Calendar from "@/features/room/calendar";
+import DraggableSnowdome from "@/features/room/draggableSnowdome";
 import { useCalendarFocus } from "@/features/room/hooks/useCalendarFocus";
 import { useItemAcquisition } from "@/features/room/hooks/useItemAcquisition";
 import InventoryDialog from "@/features/room/inventoryDialog";
@@ -48,6 +49,7 @@ const CALENDAR_POSITION: [number, number, number] = [0, 1, 0];
 function RouteComponent() {
   const { roomId } = Route.useParams();
   const { data: room } = useGetRoomsId(roomId);
+  console.log("room", room);
   const { data: calendarItems } =
     useGetCalendarItemsRoomIdCalendarItems(roomId);
   const [isInventoryDialogOpen, setIsInventoryDialogOpen] = useState(false);
@@ -73,9 +75,12 @@ function RouteComponent() {
     handleNextFromGetModal,
     handlePlacement,
     handleSkipPlacement,
+    handleSnowdomePlacement,
     resetFlow,
     startPlacementFromInventory,
     returnPlacedItemToInventory,
+    getInventorySnowdomeParts,
+    getPlacedSnowdomePartsAtPosition,
     isPending,
   } = useItemAcquisition({
     roomId,
@@ -216,11 +221,53 @@ function RouteComponent() {
 
   // 配置モード中かどうか
   const isPlacementMode = phase === "placement";
+  const isSnowdomePlacementMode = phase === "snowdome_placement";
+  const isAnyPlacementMode = isPlacementMode || isSnowdomePlacementMode;
+
+  // snowdome配置用のパーツを計算
+  const snowdomePartsForPlacement = useMemo(() => {
+    if (!isSnowdomePlacementMode || !calendarItems || !targetCalendarItem) {
+      return [];
+    }
+
+    // 再配置の場合（既に配置済みのsnowdomeを移動）
+    if (
+      targetCalendarItem.position &&
+      targetCalendarItem.position.length === 3
+    ) {
+      const position = targetCalendarItem.position as [number, number, number];
+      return getPlacedSnowdomePartsAtPosition(position);
+    }
+
+    // 新規配置の場合（インベントリから配置）
+    const inventoryParts = getInventorySnowdomeParts();
+    const allParts = [...inventoryParts, targetCalendarItem];
+
+    // 重複を除去
+    return allParts.filter(
+      (part, index, self) => self.findIndex((p) => p.id === part.id) === index,
+    );
+  }, [
+    isSnowdomePlacementMode,
+    calendarItems,
+    targetCalendarItem,
+    getInventorySnowdomeParts,
+    getPlacedSnowdomePartsAtPosition,
+  ]);
+
+  // snowdome配置確定時
+  const handleConfirmSnowdomePlacement = async () => {
+    if (tempPosition && tempRotation && isPlacementValid) {
+      await handleSnowdomePlacement(tempPosition, tempRotation);
+      setOpenedDrawers([]);
+      resetTempPlacement();
+    }
+  };
 
   return (
     <div className="w-full h-svh flex">
       <div className="w-full p-3 md:p-6 lg:p-8 grow h-full grid grid-cols-2">
-        {!isFocusMode && !isPlacementMode && (
+        {!isFocusMode && !isAnyPlacementMode && (
           <Button
             onClick={() => setIsInventoryDialogOpen((prev) => !prev)}
             className="relative z-30 self-end size-20 md:size-22 lg:size-24 border-4 border-primary-foreground rounded-3xl font-bold text-sm md:text-base shadow-xl hover:[&_span]:animate-bounce active:scale-95"
@@ -237,7 +284,7 @@ function RouteComponent() {
           onOpenChange={setIsInventoryDialogOpen}
           onStartPlacement={startPlacementFromInventory}
         />
-        {isFocusMode && !isPlacementMode && (
+        {isFocusMode && !isAnyPlacementMode && (
           <Button
             onClick={handleExitFocusMode}
             className="justify-self-end col-span-2 w-fit z-40"
@@ -264,6 +311,17 @@ function RouteComponent() {
       {isPlacementMode && (
         <ItemPlacementOverlay
           onConfirm={handleConfirmPlacement}
+          onSkip={handleSkip}
+          isPending={isPending}
+          isPlacementValid={isPlacementValid}
+          isLocked={isLocked}
+        />
+      )}
+
+      {/* snowdome配置モードオーバーレイ */}
+      {isSnowdomePlacementMode && (
+        <ItemPlacementOverlay
+          onConfirm={handleConfirmSnowdomePlacement}
           onSkip={handleSkip}
           isPending={isPending}
           isPlacementValid={isPlacementValid}
@@ -301,13 +359,13 @@ function RouteComponent() {
               <group position={[0, 0, 1]}>
                 <RigidBody
                   lockRotations
-                  type={isPlacementMode ? "kinematicPosition" : "dynamic"}
+                  type={isAnyPlacementMode ? "kinematicPosition" : "dynamic"}
                 >
                   <Gltf src={tableUrl} scale={6} position={[0, 0, 0]} />
                 </RigidBody>
                 <RigidBody
                   lockRotations
-                  type={isPlacementMode ? "kinematicPosition" : "dynamic"}
+                  type={isAnyPlacementMode ? "kinematicPosition" : "dynamic"}
                 >
                   <Calendar
                     groupRef={calendarRef}
@@ -315,7 +373,7 @@ function RouteComponent() {
                     rotation={[0, 0, 0]}
                     isFocusMode={isFocusMode}
                     onCalendarClick={
-                      isPlacementMode ? () => {} : handleFocusCalendar
+                      isAnyPlacementMode ? () => {} : handleFocusCalendar
                     }
                     onDayClick={handleDrawerClick}
                     openedDrawers={effectiveOpenedDrawers}
@@ -357,6 +415,24 @@ function RouteComponent() {
                   onLockChange={handleLockChange}
                 />
               )}
+
+              {/* snowdome配置モード時のドラッグ可能snowdome */}
+              {isSnowdomePlacementMode &&
+                snowdomePartsForPlacement.length > 0 &&
+                roomRef && (
+                  <DraggableSnowdome
+                    snowdomeParts={snowdomePartsForPlacement}
+                    onPositionChange={handlePositionChange}
+                    isPlacementValid={isPlacementValid}
+                    setIsPlacementValid={setIsPlacementValid}
+                    initialRotation={tempRotation ?? undefined}
+                    onLockChange={handleLockChange}
+                    roomRef={roomRef as React.RefObject<THREE.Group>}
+                    placedItemsRef={
+                      placedItemsRef as React.RefObject<THREE.Group>
+                    }
+                  />
+                )}
             </Physics>
 
             <CameraControls
