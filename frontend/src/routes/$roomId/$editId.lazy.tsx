@@ -20,8 +20,8 @@ import { useUser } from "@/context/UserContext";
 import AiGenerationScreen from "@/features/edit/AiGenerationScreen";
 import ItemSelectDialog from "@/features/edit/itemSelectDialog";
 import Calendar from "@/features/room/calendar";
-import NameInput from "@/features/user/nameInput";
 import PasswordInput from "@/features/room/passwordInput";
+import NameInput from "@/features/user/nameInput";
 
 export const Route = createLazyFileRoute("/$roomId/$editId")({
   component: RouteComponent,

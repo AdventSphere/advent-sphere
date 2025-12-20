@@ -1,7 +1,7 @@
+import { Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { Key } from "lucide-react";
 
 interface PasswordInputProps {
   onSubmit: (password: string) => Promise<void>;
