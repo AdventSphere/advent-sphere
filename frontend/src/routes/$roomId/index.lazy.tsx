@@ -62,6 +62,7 @@ function RouteComponent() {
   } = useCalendarFocus();
   const roomRef = useRef<THREE.Group>(null);
   const placedItemsRef = useRef<THREE.Group>(null);
+  const tableRef = useRef<THREE.Group>(null);
   // アイテム取得フロー
   const {
     phase,
@@ -358,9 +359,15 @@ function RouteComponent() {
               <group position={[0, 0, 1]}>
                 <RigidBody
                   lockRotations
+                  colliders="trimesh"
                   type={isAnyPlacementMode ? "kinematicPosition" : "dynamic"}
                 >
-                  <Gltf src={tableUrl} scale={6} position={[0, 0, 0]} />
+                  <Gltf
+                    src={tableUrl}
+                    ref={tableRef}
+                    scale={6}
+                    position={[0, 0, 0]}
+                  />
                 </RigidBody>
                 <RigidBody
                   lockRotations
@@ -406,6 +413,7 @@ function RouteComponent() {
                   placedItemsRef={
                     placedItemsRef as React.RefObject<THREE.Group>
                   }
+                  tableRef={tableRef as React.RefObject<THREE.Group>}
                   calendarItem={targetCalendarItem}
                   onPositionChange={handlePositionChange}
                   isPlacementValid={isPlacementValid}
@@ -421,6 +429,7 @@ function RouteComponent() {
                 roomRef && (
                   <DraggableSnowdome
                     snowdomeParts={snowdomePartsForPlacement}
+                    tableRef={tableRef as React.RefObject<THREE.Group>}
                     onPositionChange={handlePositionChange}
                     isPlacementValid={isPlacementValid}
                     setIsPlacementValid={setIsPlacementValid}
