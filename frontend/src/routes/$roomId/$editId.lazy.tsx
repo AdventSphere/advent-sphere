@@ -439,7 +439,7 @@ function RouteComponent() {
             />
 
             <Gltf
-              src={`${R2_BASE_URL}/static/room.glb`}
+              src={`${R2_BASE_URL}/static/room_2.glb`}
               position={[0, -0.8, 0]}
             />
             <Gltf

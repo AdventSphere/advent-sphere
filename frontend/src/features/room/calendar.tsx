@@ -1,7 +1,9 @@
-import { Gltf, Text } from "@react-three/drei";
+import { Gltf, Html, Text } from "@react-three/drei";
+import { CalendarIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import type { Group } from "three";
+import { Button } from "@/components/ui/button";
 import { R2_BASE_URL } from "@/constants/r2-url";
 
 const calendarBoxUrl = `${R2_BASE_URL}/static/calendar_box.glb`;
@@ -94,6 +96,7 @@ export default function Calendar({
         }
       }}
     >
+      {!isFocusMode && <ToolTip />}
       <Gltf src={calendarMainUrl} />
 
       {Array.from({ length: COLS * ROWS }).map((_, i) => {
@@ -124,6 +127,20 @@ export default function Calendar({
         );
       })}
     </group>
+  );
+}
+
+function ToolTip() {
+  return (
+    <Html center position={[0, 4.2, 2]}>
+      <Button
+        variant="outline"
+        className="text-primary bg-background/80 font-semibold text-xs backdrop-blur-md border-background"
+      >
+        <CalendarIcon className="size-4" />
+        カレンダーを開ける
+      </Button>
+    </Html>
   );
 }
 
