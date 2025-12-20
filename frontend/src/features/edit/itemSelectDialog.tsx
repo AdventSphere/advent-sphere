@@ -66,7 +66,7 @@ export default function ItemSelectDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   day: number;
-  onSelect?: (itemId: string) => void;
+  onSelect?: (item: Item) => void;
 }) {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -81,7 +81,10 @@ export default function ItemSelectDialog({
 
   const handleConfirm = () => {
     if (selectedItemId && onSelect) {
-      onSelect(selectedItemId);
+      const selectedItem = items.find((item) => item.id === selectedItemId);
+      if (selectedItem) {
+        onSelect(selectedItem);
+      }
     }
     onOpenChange(false);
     setSelectedItemId(null);
