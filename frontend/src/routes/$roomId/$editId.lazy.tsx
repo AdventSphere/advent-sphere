@@ -295,6 +295,22 @@ function RouteComponent() {
   }, [room, calendarItems, selectedDay]);
 
   const handleDayClick = (day: number) => {
+    // 他人の作成したアイテムがある場合はクリックを無効化
+    if (room && calendarItems && user) {
+      const startDate = new Date(room.startAt);
+      const existingItem = calendarItems.find((item) => {
+        const openDate = new Date(item.openDate);
+        const diffTime = openDate.getTime() - startDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays === day;
+      });
+
+      if (existingItem && existingItem.userId !== user.id) {
+        console.log("他人のアイテムは編集できません");
+        return;
+      }
+    }
+
     const drawerIndex = day - 1;
     setSelectedDay(day);
     setIsDialogOpen(true);
