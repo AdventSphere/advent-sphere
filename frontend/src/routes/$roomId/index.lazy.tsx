@@ -138,6 +138,7 @@ function RouteComponent() {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Failed to capture photo:", error);
+      alert("写真の保存に失敗しました。エラーを確認してください。");
     }
   }, []);
 
@@ -366,6 +367,7 @@ function RouteComponent() {
         <Suspense fallback={<Loading text="部屋を読み込み中..." />}>
           <Canvas
             ref={canvasRef}
+            gl={{ preserveDrawingBuffer: true }}
             camera={{ position: [2.3, 0.5, 2], fov: 45 }}
             onPointerMissed={handleCloseMenu}
           >
