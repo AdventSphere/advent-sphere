@@ -5,7 +5,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import type { CalendarItemWithItem } from "common/generate/adventSphereAPI.schemas";
 import { useGetCalendarItemsRoomIdCalendarItems } from "common/generate/calendar-items/calendar-items";
 import { useGetRoomsId } from "common/generate/room/room";
-import { X } from "lucide-react";
+import { Camera, X } from "lucide-react";
 import { Suspense, useCallback, useMemo, useRef, useState } from "react";
 import type * as THREE from "three";
 import InventoryIcon from "@/components/icons/inventory";
@@ -63,6 +63,7 @@ function RouteComponent() {
   const roomRef = useRef<THREE.Group>(null);
   const placedItemsRef = useRef<THREE.Group>(null);
   const tableRef = useRef<THREE.Group>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   // アイテム取得フロー
   const {
     phase,
@@ -118,6 +119,24 @@ function RouteComponent() {
   // メニュー閉じる
   const handleCloseMenu = useCallback(() => {
     setSelectedPlacedItem(null);
+  }, []);
+
+  // 写真撮影
+  const handleTakePhoto = useCallback(() => {
+    if (!canvasRef.current) return;
+
+    try {
+      // Canvas要素からBase64データURLを取得
+      const dataURL = canvasRef.current.toDataURL("image/png");
+
+      // ダウンロードリンクを作成
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "screenshot.png";
+      link.click();
+    } catch (error) {
+      console.error("Failed to capture photo:", error);
+    }
   }, []);
 
   // 配置モード
@@ -284,6 +303,17 @@ function RouteComponent() {
           onOpenChange={setIsInventoryDialogOpen}
           onStartPlacement={startPlacementFromInventory}
         />
+        {!isFocusMode && !isAnyPlacementMode && (
+          <Button
+            onClick={handleTakePhoto}
+            className="justify-self-end z-30 self-start size-12 md:size-14 lg:size-16 rounded-full border-2 border-primary-foreground shadow-xl active:scale-95"
+            variant="default"
+            size="icon"
+            title="写真を撮る"
+          >
+            <Camera className="size-5 md:size-6 lg:size-7" />
+          </Button>
+        )}
         {isFocusMode && !isAnyPlacementMode && (
           <Button
             onClick={handleExitFocusMode}
@@ -333,6 +363,7 @@ function RouteComponent() {
       <div className="fixed inset-0 z-0">
         <Suspense fallback={<Loading text="部屋を読み込み中..." />}>
           <Canvas
+            ref={canvasRef}
             camera={{ position: [2.3, 0.5, 2], fov: 45 }}
             onPointerMissed={handleCloseMenu}
           >
