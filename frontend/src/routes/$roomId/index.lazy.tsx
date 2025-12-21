@@ -129,11 +129,13 @@ function RouteComponent() {
       // Canvas要素からBase64データURLを取得
       const dataURL = canvasRef.current.toDataURL("image/png");
 
-      // ダウンロードリンクを作成
+      // ダウンロードリンクを作成して実行
       const link = document.createElement("a");
       link.href = dataURL;
       link.download = "screenshot.png";
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error("Failed to capture photo:", error);
     }
